@@ -95,10 +95,27 @@
 			<h1 class="text-6xl lg:text-6xl xl:text-8xl font-semibold font-mono">Jackson Welsh_</h1>
 		</div>
 		<div in:fade class="text-transparent text-xl">
-			{#each links as { name, href, class: className }, idx}
+			{#each links.slice(0, links.length - 1) as { name, href, class: className }, idx}
 				<a {href} class={className}>{name}</a>
-				{#if idx !== links.length - 1}<Divider />&nbsp;{/if}
+				{#if idx !== links.length - 2}<Divider />&nbsp;{/if}
 			{/each}
+		</div>
+		<div class="text-xl" transition:fade|local>
+			<a href="//twitter.com/_jacksonwelsh" target="_blank" class="text-blue-700 dark:text-blue-300"
+				>twitter</a
+			>
+			<Divider />
+			<a
+				href="//linkedin.com/in/jacksonwelsh"
+				target="_blank"
+				class="text-blue-900 dark:text-blue-400">linkedin</a
+			>
+			<Divider />
+			<a href="//github.com/jacksonwelsh" target="_blank" class="text-gray-700 dark:text-gray-400"
+				>github</a
+			>
+			<Divider />
+			me@${'{'}window.location.host}
 		</div>
 	</noscript>
 </main>
