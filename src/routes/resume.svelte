@@ -1,5 +1,6 @@
 <script>
 	import Divider from '$lib/divider.svelte';
+	import LogoCloud from '$lib/logocloud.svelte';
 	import LogoGithub16 from 'carbon-icons-svelte/lib/LogoGithub16';
 	import LogoLinkedin16 from 'carbon-icons-svelte/lib/LogoLinkedin16';
 	import Launch16 from 'carbon-icons-svelte/lib/Launch16';
@@ -124,6 +125,34 @@
 				></strong
 			>&nbsp;• <span class="font-light">&nbsp;{position.org}&nbsp;</span> • {position.start} – {position.end ??
 				'Present'}
+			<ul class="w-full list-dash list-inside ml-6 -indent-3">
+				{#each position.responsibilities as responsibility}<li>{@html responsibility}</li>{/each}
+			</ul>
+		</div>
+	{/each}
+
+	<h2 class="font-bold text-teal-800 dark:text-teal-300 font-mono text-xl mt-6 mb-3">Skills</h2>
+	<div class="w-full xl:w-3/4 block print:hidden">
+		<LogoCloud />
+	</div>
+	<div class="grid-cols-3 text-sm w-5/6 hidden print:grid">
+		{#each skills as skill}
+			<span>- {skill}</span>
+		{/each}
+	</div>
+
+	<h2 class="font-bold text-teal-800 dark:text-teal-300 font-mono text-xl mt-6 mb-3">
+		Volunteering
+	</h2>
+	{#each volunteering as position}
+		<div class="flex flex-wrap my-3">
+			<strong>{position.title}</strong>&nbsp;•
+			<span class="font-light mx-1.5" class:underline={position.url}
+				><a href={position.url} class="flex items-center"
+					>{position.org}{#if position.url}<Launch16 class="underline ml-2" />{/if}</a
+				></span
+			>
+			• {position.start} – {position.end ?? 'Present'}
 			<ul class="w-full list-dash list-inside ml-6 -indent-3">
 				{#each position.responsibilities as responsibility}<li>{@html responsibility}</li>{/each}
 			</ul>

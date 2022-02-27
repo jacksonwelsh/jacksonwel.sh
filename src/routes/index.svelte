@@ -1,12 +1,13 @@
 <script>
-	import { fade } from 'svelte/transition';
+	import { fade, scale } from 'svelte/transition';
 	import Divider from '$lib/divider.svelte';
-  
-  // no dynamic content, so go ahead and make this static.
-  export const prerender = true;
-	
-  let name = '';
+
+	// no dynamic content, so go ahead and make this static.
+	export const prerender = true;
+
+	let name = '';
 	let cursorVisible = true;
+	let showSocial = false;
 
 	let acclSpeed = 150;
 
@@ -39,8 +40,8 @@
 		},
 		{
 			name: 'social',
-			href: '/contact',
-			class: 'text-sky-700 dark:text-sky-300'
+			class: 'text-sky-700 dark:text-sky-300 cursor-pointer',
+			onClick: () => (showSocial = !showSocial)
 		}
 	];
 
@@ -48,21 +49,46 @@
 	flashCursor();
 </script>
 
-<main class="container mx-auto h-screen flex content-center flex-wrap px-2 md:px-0">
-	<div class="w-full">
+<main class="container mx-auto h-screen flex content-center flex-wrap px-2 md:px-0 transition-all">
+	<div class="w-full transition-all">
 		<h1 class="text-6xl lg:text-6xl xl:text-8xl font-semibold font-mono">
 			{name}{#if cursorVisible}<span class="transition-all duration-75">_</span>{/if}
 		</h1>
 	</div>
 	{#if name === 'Jackson Welsh'}
-		<div in:fade class="text-transparent text-xl">
-			{#each links as { name, href, class: className }, idx}
-				<a {href} class={className}>{name}</a>
+		<div in:fade class="text-xl w-full transition-all">
+			{#each links as { name, href, class: className, onClick }, idx}
+				<a {href} class={className} on:click={onClick}>{name}</a>
 				{#if idx !== links.length - 1}<Divider />&nbsp;{/if}
 			{/each}
 		</div>
+
+		{#if showSocial}
+			<div class="text-xl" transition:fade|local>
+				<a
+					href="//twitter.com/_jacksonwelsh"
+					target="_blank"
+					class="text-blue-700 dark:text-blue-300">twitter</a
+				>
+				<Divider />
+				<a
+					href="//linkedin.com/in/jacksonwelsh"
+					target="_blank"
+					class="text-blue-900 dark:text-blue-400">linkedin</a
+				>
+				<Divider />
+				<a href="//github.com/jacksonwelsh" target="_blank" class="text-gray-700 dark:text-gray-400"
+					>github</a
+				>
+				<Divider />
+				me@${'{'}window.location.host}
+			</div>
+		{:else}
+			<div class="text-xl">&nbsp;</div>
+		{/if}
 	{:else}
-		<div class="text-xl">&nbsp;</div>
+		<div class="text-xl w-full">&nbsp;</div>
+		<div class="text-xl w-full">&nbsp;</div>
 	{/if}
 	<noscript>
 		<div class="w-full">
