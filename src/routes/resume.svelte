@@ -9,7 +9,8 @@
 	// no dynamic content, so go ahead and make this static.
 	export const prerender = true;
 
-	const addr = 'bWVAamFja3NvbndlbC5zaA==';
+	const addr =
+		'Ly9qYWNrc29ud2VsLnNoIDxzcGFuIGNsYXNzPSJ0ZXh0LXNsYXRlLTUwMCI+JiN4MjAyMjwvc3Bhbj4gbWVAamFja3NvbndlbC5zaA==';
 	let emailToShow = 'me@thisdomain';
 
 	const socials = [
@@ -102,7 +103,7 @@
 <main class="container mx-auto px-2 md:px-0 print:text-sm">
 	<h1 class="text-6xl font-bold mt-6 mb-2 font-mono text-center">Jackson Welsh</h1>
 	<h2 class="font-light font-mono text-teal-800 dark:text-teal-100 text-center my-2">
-		{emailToShow}
+		{@html emailToShow}
 		<Divider /> Denton, TX
 	</h2>
 
