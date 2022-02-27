@@ -9,6 +9,9 @@
 	// no dynamic content, so go ahead and make this static.
 	export const prerender = true;
 
+	const addr = 'bWVAamFja3NvbndlbC5zaA==';
+	let emailToShow = 'me@thisdomain';
+
 	const socials = [
 		{
 			handle: '@jacksonwelsh',
@@ -86,16 +89,21 @@
 			]
 		}
 	];
+
+	const updateEmail = () => (emailToShow = atob(addr));
 </script>
+
+<svelte:window on:beforeprint={updateEmail} />
 
 <div class="mx-auto text-center mt-3 text-slate-400 print:hidden flex items-center justify-center">
 	<a href="/">home</a>
 	<ChevronRight16 /> resume
 </div>
-<main class="container mx-auto px-2 md:px-0">
+<main class="container mx-auto px-2 md:px-0 print:text-sm">
 	<h1 class="text-6xl font-bold mt-6 mb-2 font-mono text-center">Jackson Welsh</h1>
 	<h2 class="font-light font-mono text-teal-800 dark:text-teal-100 text-center my-2">
-		me@thisdomain <Divider /> Denton, TX
+		{emailToShow}
+		<Divider /> Denton, TX
 	</h2>
 
 	<!-- display the socials all pretty-like -->
