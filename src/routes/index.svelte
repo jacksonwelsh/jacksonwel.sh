@@ -58,7 +58,11 @@
 	{#if name === 'Jackson Welsh'}
 		<div in:fade class="text-xl w-full transition-all">
 			{#each links as { name, href, class: className, onClick }, idx}
-				<a {href} class={className} on:click={onClick}>{name}</a>
+				{#if href}
+					<a {href} class={className} on:click={onClick}>{name}</a>
+				{:else}
+					<button class={className} on:click={onClick}>{name}</button>
+				{/if}
 				{#if idx !== links.length - 1}<Divider />&nbsp;{/if}
 			{/each}
 		</div>
