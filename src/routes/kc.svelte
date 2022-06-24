@@ -69,7 +69,7 @@
 	<ChevronRight16 /> form
 </div>
 <main class="container mx-auto px-2 md:px-0 print:text-sm">
-	<h1 class="text-6xl font-bold mt-6 mb-2 font-mono text-center">Cookout/Kickback</h1>
+	<h1 class="text-6xl font-bold mt-6 mb-2 font-mono text-center overflow-x-hidden">Cookout<br class="block sm:hidden" />/Kickback</h1>
 	<h2 class="font-light font-mono text-teal-800 dark:text-teal-100 text-center my-2">
 		Friday, June 24 <Divider /> 7:30 PM <Divider />
     See Discord event for the address (Cap Hill)
