@@ -1,5 +1,6 @@
 <script context="module">
 	/** @type {import('@sveltejs/kit').Load} */
+	/*
 	export async function load({ params, fetch }) {
 		const responseCount = await fetch('https://forms.jacksonwelsh.workers.dev/ck/participants', {
 			method: 'GET'
@@ -13,6 +14,7 @@
 			props: { id: params.id, acceptingResponses, responseCount }
 		};
 	}
+	*/
 </script>
 
 <script>
@@ -21,13 +23,15 @@
 	import Input from '$lib/input.svelte';
 	import TextArea from '$lib/textarea.svelte';
 
-	export let acceptingResponses;
-	export let responseCount;
+	const acceptingResponses = false;
+	const responseCount = 12;
+	export const prerender = true;
 	let name = '';
 	let discord = '';
 	let food = '';
 	let submitStatus = false;
 
+	/*
 	const submit = async () => {
 		if (name.trim() === '') {
 			alert('name cannot be empty');
@@ -62,6 +66,7 @@
 
 		return false;
 	};
+	*/
 </script>
 
 <div class="mx-auto text-center mt-3 text-slate-400 print:hidden flex items-center justify-center">
@@ -69,11 +74,13 @@
 	<ChevronRight16 /> form
 </div>
 <main class="container mx-auto px-2 md:px-0 print:text-sm">
-	<h1 class="text-6xl font-bold mt-6 mb-2 font-mono text-center overflow-x-hidden">Cookout<br class="block sm:hidden" />/Kickback</h1>
+	<h1 class="text-6xl font-bold mt-6 mb-2 font-mono text-center overflow-x-hidden">
+		Cookout<br class="block sm:hidden" />/Kickback
+	</h1>
 	<h2 class="font-light font-mono text-teal-800 dark:text-teal-100 text-center my-2">
 		Friday, June 24 <Divider /> 7:30 PM <Divider />
-    See Discord event for the address (Cap Hill)
-    <Divider />
+		See Discord event for the address (Cap Hill)
+		<Divider />
 		<span class="font-bold text-red-700 dark:text-red-300">{12 - responseCount} spots remain</span>
 	</h2>
 
