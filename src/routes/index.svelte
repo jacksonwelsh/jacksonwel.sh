@@ -70,12 +70,6 @@
 		{#if showSocial}
 			<div class="text-xl" transition:fade|local>
 				<a
-					href="//twitter.com/_jacksonwelsh"
-					target="_blank"
-					class="text-blue-700 dark:text-blue-300">twitter</a
-				>
-				<Divider />
-				<a
 					href="//linkedin.com/in/jacksonwelsh"
 					target="_blank"
 					class="text-blue-900 dark:text-blue-400">linkedin</a
