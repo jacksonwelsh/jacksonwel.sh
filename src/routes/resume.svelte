@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	import Divider from '$lib/divider.svelte';
 	import LogoCloud from '$lib/logocloud.svelte';
 	import LogoGithub16 from 'carbon-icons-svelte/lib/LogoGithub16';
@@ -8,6 +8,23 @@
 
 	// no dynamic content, so go ahead and make this static.
 	export const prerender = true;
+
+	type JobDates =
+		| {
+				start: string;
+				end?: string;
+		  }
+		| {
+				start: string[];
+				end: string[];
+		  };
+
+	type Job = {
+		title: string;
+		org: string;
+		url?: string;
+		responsibilities: string[];
+	} & JobDates;
 
 	const addr =
 		'Ly9qYWNrc29ud2VsLnNoIDxzcGFuIGNsYXNzPSJ0ZXh0LXNsYXRlLTUwMCI+JiN4MjAyMjwvc3Bhbj4gbWVAamFja3NvbndlbC5zaA==';
@@ -26,12 +43,22 @@
 		}
 	];
 
-	const positions = [
+	const positions: Job[] = [
+		{
+			title: 'Software Development Engineer Intern',
+			org: 'Amazon Web Services',
+			start: 'May 2022',
+			responsibilities: [
+				'Intern on the EC2 Networking team.',
+				'Developer of a tool to detect anomalies in internal network configurations.'
+			]
+		},
 		{
 			title: 'DevOps Engineer',
 			url: 'https://newlighttechnologies.com/staff/jackson-welsh/',
 			org: 'New Light Technologies',
-			start: 'Sep 2020',
+			start: ['Sep 2020'],
+			end: ['May 2022'],
 			responsibilities: [
 				'Lead developer of the new <a href="//geo4.dev" target="_blank" class="underline font-semibold">Geo4.Dev</a> website in collaboration with partner organizations including The World Bank, CEGA, and others.',
 				'Deploying serverless applications to Amazon Web Services using Docker and AWS Elastic Container Service.',
@@ -77,7 +104,7 @@
 		'Basic system administration'
 	];
 
-	const volunteering = [
+	const volunteering: Job[] = [
 		{
 			org: 'Destination Imagination',
 			url: '//destinationimagination.org',
@@ -104,7 +131,7 @@
 	<h1 class="text-6xl font-bold mt-6 mb-2 font-mono text-center">Jackson Welsh</h1>
 	<h2 class="font-light font-mono text-teal-800 dark:text-teal-100 text-center my-2">
 		{@html emailToShow}
-		<Divider /> Denton, TX
+		<Divider /> Seattle, WA
 	</h2>
 
 	<!-- display the socials all pretty-like -->
@@ -132,8 +159,16 @@
 				><a href={position.url} class="flex items-center"
 					>{position.title}{#if position.url}<Launch16 class="underline ml-2" />{/if}</a
 				></strong
-			>&nbsp;• <span class="font-light">&nbsp;{position.org}&nbsp;</span> • {position.start} – {position.end ??
-				'Present'}
+			>&nbsp;• <span class="font-light">&nbsp;{position.org}&nbsp;</span> •
+			{#if Array.isArray(position.start)}
+				{#each position.start as startDate, idx}
+					{startDate} – {position.end[idx] ?? 'Present'}{idx < position.start.length - 1
+						? ', '
+						: ''}
+				{/each}
+			{:else}
+				{position.start} – {position.end ?? 'Present'}
+			{/if}
 			<ul class="w-full list-dash list-inside ml-6 -indent-3">
 				{#each position.responsibilities as responsibility}<li>{@html responsibility}</li>{/each}
 			</ul>
