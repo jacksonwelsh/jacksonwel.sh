@@ -45,25 +45,26 @@
 
 	const positions: Job[] = [
 		{
-			title: 'Software Development Engineer Intern',
-			org: 'Amazon Web Services',
-			start: 'May 2022',
-			responsibilities: [
-				'Intern on the EC2 Networking team.',
-				'Developer of a tool to detect anomalies in internal network configurations.'
-			]
-		},
-		{
 			title: 'DevOps Engineer',
 			url: 'https://newlighttechnologies.com/staff/jackson-welsh/',
 			org: 'New Light Technologies',
-			start: ['Sep 2020'],
+			start: ['Sep 2020', 'Aug 2022'],
 			end: ['May 2022'],
 			responsibilities: [
 				'Lead developer of the new <a href="//geo4.dev" target="_blank" class="underline font-semibold">Geo4.Dev</a> website in collaboration with partner organizations including The World Bank, CEGA, and others.',
 				'Deploying serverless applications to Amazon Web Services using Docker and AWS Elastic Container Service.',
 				'Developer for a new web mapping application to replace a legacy ArcGIS plugin for address management within local governments.',
 				'Developer of a survey platform for the US Army Corps of Engineers, written in React with TypeScript.'
+			]
+		},
+		{
+			title: 'Software Development Engineer Intern',
+			org: 'Amazon Web Services',
+			start: 'May 2022',
+			end: 'Aug 2022',
+			responsibilities: [
+				'Intern on the EC2 Networking team developing a programmable layer for packet processing.',
+				'Developed a tool to detect anomalies in internal network configurations.'
 			]
 		},
 		{
@@ -131,7 +132,7 @@
 	<h1 class="text-6xl font-bold mt-6 mb-2 font-mono text-center">Jackson Welsh</h1>
 	<h2 class="font-light font-mono text-teal-800 dark:text-teal-100 text-center my-2">
 		{@html emailToShow}
-		<Divider /> Seattle, WA
+		<Divider /> Denton, TX
 	</h2>
 
 	<!-- display the socials all pretty-like -->
