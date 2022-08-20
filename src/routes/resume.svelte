@@ -102,7 +102,7 @@
 		'Cloud computing',
 		'C++',
 		'React',
-		'Basic system administration'
+		'AWS Certified Devloper Associate'
 	];
 
 	const volunteering: Job[] = [
@@ -185,6 +185,19 @@
 			<span>- {skill}</span>
 		{/each}
 	</div>
+
+	<!-- Credly AWS CDA Badge -->
+	<a
+		href="https://www.credly.com/badges/d19cbb75-30f7-449e-8029-36bb73058eff/embedded"
+		target="_blank"
+	>
+		<img
+			class="h-44 mx-auto my-4 print:hidden"
+			src="https://images.credly.com/size/680x680/images/b9feab85-1a43-4f6c-99a5-631b88d5461b/image.png"
+			alt="AWS Certified Developer Associate - Credly badge"
+		/>
+	</a>
+	<!-- End Credly badge -->
 
 	<h2 class="font-bold text-teal-800 dark:text-teal-300 font-mono text-xl mt-6 mb-3">
 		Volunteering
