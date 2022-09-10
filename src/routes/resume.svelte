@@ -1,6 +1,7 @@
 <script lang="ts">
 	import Divider from '$lib/divider.svelte';
 	import LogoCloud from '$lib/logocloud.svelte';
+	import ResumeHeader from '$lib/resumeHeader.svelte';
 	import LogoGithub16 from 'carbon-icons-svelte/lib/LogoGithub16';
 	import LogoLinkedin16 from 'carbon-icons-svelte/lib/LogoLinkedin16';
 	import Launch16 from 'carbon-icons-svelte/lib/Launch16';
@@ -102,7 +103,7 @@
 		'Cloud computing',
 		'C++',
 		'React',
-		'AWS Certified Devloper Associate'
+		'Serverless'
 	];
 
 	const volunteering: Job[] = [
@@ -124,96 +125,173 @@
 
 <svelte:window on:beforeprint={updateEmail} />
 
-<div class="mx-auto text-center mt-3 text-slate-400 print:hidden flex items-center justify-center">
-	<a href="/">home</a>
-	<ChevronRight16 /> resume
-</div>
-<main class="container mx-auto px-2 md:px-0 print:text-sm">
-	<h1 class="text-6xl font-bold mt-6 mb-2 font-mono text-center">Jackson Welsh</h1>
-	<h2 class="font-light font-mono text-teal-800 dark:text-teal-100 text-center my-2">
-		{@html emailToShow}
-		<Divider /> Denton, TX
-	</h2>
-
-	<!-- display the socials all pretty-like -->
-	<h2 class="font-light font-mono text-teal-800 dark:text-teal-100 justify-center flex my-2">
-		{#each socials as { handle, logo, href }, idx}
-			<a class="flex items-center underline" {href} target="_blank"
-				><svelte:component this={logo} class="mr-2" />{handle}</a
-			>{#if idx !== socials.length - 1}&nbsp;<Divider />&nbsp;{/if}
-		{/each}
-	</h2>
-
-	<h2 class="font-bold text-teal-800 dark:text-teal-300 font-mono text-xl mt-6 mb-3">Profile</h2>
-	<p>
-		Jackson Welsh is a cloud-native software engineer and Eagle Scout with excellent written and
-		verbal communications specializing in solution engineering to meet and exceed customer
-		requirements. Jackson's primary focus is in web development and is proficient in many modern
-		technologies such as Vue.js and React. Jackson has experience in both new product development
-		and maintenance of legacy applications.
-	</p>
-
-	<h2 class="font-bold text-teal-800 dark:text-teal-300 font-mono text-xl mt-6 mb-3">Experience</h2>
-	{#each positions as position}
-		<div class="flex flex-wrap my-3">
-			<strong class:underline={position.url}
-				><a href={position.url} class="flex items-center"
-					>{position.title}{#if position.url}<Launch16 class="underline ml-2" />{/if}</a
-				></strong
-			>&nbsp;• <span class="font-light">&nbsp;{position.org}&nbsp;</span> •
-			{#if Array.isArray(position.start)}
-				{#each position.start as startDate, idx}
-					{startDate} – {position.end[idx] ?? 'Present'}{idx < position.start.length - 1
-						? ', '
-						: ''}
-				{/each}
-			{:else}
-				{position.start} – {position.end ?? 'Present'}
-			{/if}
-			<ul class="w-full list-dash list-inside ml-6 -indent-3">
-				{#each position.responsibilities as responsibility}<li>{@html responsibility}</li>{/each}
-			</ul>
-		</div>
-	{/each}
-
-	<h2 class="font-bold text-teal-800 dark:text-teal-300 font-mono text-xl mt-6 mb-3">Skills</h2>
-	<div class="w-full xl:w-3/4 block print:hidden">
-		<LogoCloud />
-	</div>
-	<div class="grid-cols-3 text-sm w-5/6 hidden print:grid">
-		{#each skills as skill}
-			<span>- {skill}</span>
-		{/each}
-	</div>
-
-	<!-- Credly AWS CDA Badge -->
-	<a
-		href="https://www.credly.com/badges/d19cbb75-30f7-449e-8029-36bb73058eff/embedded"
-		target="_blank"
+<article class="container mx-auto sm:px-4 lg:max-w-5xl">
+	<div
+		class="mx-auto text-center mt-3 text-slate-400 print:hidden flex items-center justify-center"
 	>
-		<img
-			class="h-44 mx-auto my-4 print:hidden"
-			src="https://images.credly.com/size/680x680/images/b9feab85-1a43-4f6c-99a5-631b88d5461b/image.png"
-			alt="AWS Certified Developer Associate - Credly badge"
-		/>
-	</a>
-	<!-- End Credly badge -->
+		<a href="/">home</a>
+		<ChevronRight16 /> resume
+	</div>
+	<main class="container mx-auto px-2 md:px-0 print:text-sm">
+		<h1 class="text-6xl font-bold mt-6 print:mt-0 mb-2 font-mono text-center">Jackson Welsh</h1>
+		<h2 class="font-light font-mono text-teal-800 dark:text-teal-100 text-center my-2">
+			{@html emailToShow}
+			<Divider /> Denton, TX
+		</h2>
 
-	<h2 class="font-bold text-teal-800 dark:text-teal-300 font-mono text-xl mt-6 mb-3">
-		Volunteering
-	</h2>
-	{#each volunteering as position}
-		<div class="flex flex-wrap my-3">
-			<strong>{position.title}</strong>&nbsp;•
-			<span class="font-light mx-1.5" class:underline={position.url}
-				><a href={position.url} class="flex items-center"
-					>{position.org}{#if position.url}<Launch16 class="underline ml-2" />{/if}</a
-				></span
-			>
-			• {position.start} – {position.end ?? 'Present'}
-			<ul class="w-full list-dash list-inside ml-6 -indent-3">
-				{#each position.responsibilities as responsibility}<li>{@html responsibility}</li>{/each}
-			</ul>
+		<!-- display the socials all pretty-like -->
+		<h2 class="font-light font-mono text-teal-800 dark:text-teal-100 justify-center flex my-2">
+			{#each socials as { handle, logo, href }, idx}
+				<a class="flex items-center underline" {href} target="_blank"
+					><svelte:component this={logo} class="mr-2" />{handle}</a
+				>{#if idx !== socials.length - 1}<Divider />{/if}
+			{/each}
+		</h2>
+
+		<section>
+			<ResumeHeader>Profile</ResumeHeader>
+			<p>
+				Jackson Welsh is a cloud-native software engineer and Eagle Scout with excellent written and
+				verbal communications specializing in solution engineering to meet and exceed customer
+				requirements. Jackson's primary focus is in web development and is proficient in many modern
+				technologies such as Vue.js and React. Jackson has experience in both new product
+				development and maintenance of legacy applications.
+			</p>
+		</section>
+
+		<section>
+			<ResumeHeader>Experience</ResumeHeader>
+			{#each positions as position}
+				<div class="flex flex-wrap mb-2">
+					<strong class:underline={position.url} class="print:no-underline"
+						><a href={position.url} class="flex items-center"
+							>{position.title}{#if position.url}<Launch16
+									class="underline ml-2 print:hidden"
+								/>{/if}</a
+						></strong
+					><Divider /><span class="font-light">{position.org}</span><Divider />
+					{#if Array.isArray(position.start)}
+						{#each position.start as startDate, idx}
+							{startDate} – {position.end[idx] ?? 'Present'}{idx < position.start.length - 1
+								? ', '
+								: ''}
+						{/each}
+					{:else}
+						{position.start} – {position.end ?? 'Present'}
+					{/if}
+					<ul class="w-full list-dash list-inside ml-6 -indent-3">
+						{#each position.responsibilities as responsibility}<li>
+								{@html responsibility}
+							</li>{/each}
+					</ul>
+				</div>
+			{/each}
+		</section>
+
+		<section>
+			<ResumeHeader>Education</ResumeHeader>
+			{#each education as school}
+				<div class="flex flex-wrap mb-2">
+					<strong>{school.institution}</strong><Divider />
+					<span class="font-light">{school.degree}</span>
+					<Divider />
+					{#if Array.isArray(school.start)}
+						{#each school.start as startDate, idx}
+							{startDate} – {school.end[idx] ?? 'Present'}{idx < school.start.length - 1
+								? ', '
+								: ''}
+						{/each}
+					{:else}
+						{school.start} – {school.end ?? 'Present'}
+					{/if}
+					<ul class="w-full list-dash list-inside ml-6 -indent-3">
+						{#each school.details as detail}<li>{@html detail}</li>{/each}
+					</ul>
+				</div>
+			{/each}
+		</section>
+
+		<section>
+			<ResumeHeader>Certifications</ResumeHeader>
+			<div class="flex print:hidden">
+				<!-- Credly AWS CLF Badge -->
+				<div class="">
+					<a
+						href="https://www.credly.com/badges/06bc4a57-47ca-4962-b51f-daccd4583258/embedded"
+						target="_blank"
+					>
+						<img
+							class="h-44 my-4 print:h-20 print:my-0"
+							src="https://images.credly.com/size/680x680/images/00634f82-b07f-4bbd-a6bb-53de397fc3a6/image.png"
+							alt="AWS Certified Cloud Practitioner - Credly badge"
+						/>
+					</a>
+				</div>
+				<!-- End Credly badge -->
+				<!-- Credly AWS CDA Badge -->
+				<div class="">
+					<a
+						href="https://www.credly.com/badges/d19cbb75-30f7-449e-8029-36bb73058eff/embedded"
+						target="_blank"
+					>
+						<img
+							class="h-44 my-4 print:h-20 print:my-0"
+							src="https://images.credly.com/size/680x680/images/b9feab85-1a43-4f6c-99a5-631b88d5461b/image.png"
+							alt="AWS Certified Developer Associate - Credly badge"
+						/>
+					</a>
+				</div>
+				<!-- End Credly badge -->
+				<!-- Credly AWS CDA Badge -->
+				<div class="">
+					<a
+						href="https://www.credly.com/badges/73898499-b625-4ef0-bec7-3b8bba9ee93d/embedded"
+						target="_blank"
+					>
+						<img
+							class="h-44 my-4 print:h-20 print:my-0"
+							src="https://images.credly.com/size/680x680/images/53acdae5-d69f-4dda-b650-d02ed7a50dd7/image.png"
+							alt="AWS Certified Security Specialty - Credly badge"
+						/>
+					</a>
+				</div>
+				<!-- End Credly badge -->
+			</div>
+			<div class="hidden print:block">
+				<ul class="w-full list-dash ml-6">
+					<li>AWS Certified Security - Specialty (exp. 09/25)</li>
+					<li>AWS Certified Developer - Associate (exp. 07/25)</li>
+				</ul>
+			</div>
+		</section>
+
+		<ResumeHeader>Skills</ResumeHeader>
+		<div class="w-full xl:w-3/4 block print:hidden">
+			<LogoCloud />
 		</div>
-	{/each}
-</main>
+		<div class="grid-cols-3 text-sm w-5/6 hidden print:grid">
+			{#each skills as skill}
+				<span>- {skill}</span>
+			{/each}
+		</div>
+
+		<section class="print:hidden">
+			<ResumeHeader>Volunteering</ResumeHeader>
+			{#each volunteering as position}
+				<div class="flex flex-wrap my-3">
+					<strong>{position.title}</strong><Divider />
+					<span class="font-light mx-1.5" class:underline={position.url}
+						><a href={position.url} class="flex items-center"
+							>{position.org}{#if position.url}<Launch16 class="underline ml-2" />{/if}</a
+						></span
+					><Divider />{position.start} – {position.end ?? 'Present'}
+					<ul class="w-full list-dash list-inside ml-6 -indent-3">
+						{#each position.responsibilities as responsibility}<li>
+								{@html responsibility}
+							</li>{/each}
+					</ul>
+				</div>
+			{/each}
+		</section>
+	</main>
+</article>
