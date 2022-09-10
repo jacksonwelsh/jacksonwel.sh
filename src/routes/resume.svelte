@@ -213,7 +213,7 @@
 
 		<section>
 			<ResumeHeader>Certifications</ResumeHeader>
-			<div class="flex print:hidden">
+			<div class="flex flex-wrap print:hidden">
 				<!-- Credly AWS CLF Badge -->
 				<div class="">
 					<a
@@ -221,7 +221,7 @@
 						target="_blank"
 					>
 						<img
-							class="h-44 my-4 print:h-20 print:my-0"
+							class="h-44 w-44 mt-4 print:h-20 print:my-0"
 							src="https://images.credly.com/size/680x680/images/00634f82-b07f-4bbd-a6bb-53de397fc3a6/image.png"
 							alt="AWS Certified Cloud Practitioner - Credly badge"
 						/>
@@ -235,7 +235,7 @@
 						target="_blank"
 					>
 						<img
-							class="h-44 my-4 print:h-20 print:my-0"
+							class="h-44 w-44 mt-4 print:h-20 print:my-0"
 							src="https://images.credly.com/size/680x680/images/b9feab85-1a43-4f6c-99a5-631b88d5461b/image.png"
 							alt="AWS Certified Developer Associate - Credly badge"
 						/>
@@ -249,7 +249,7 @@
 						target="_blank"
 					>
 						<img
-							class="h-44 my-4 print:h-20 print:my-0"
+							class="h-44 w-44 mt-4 print:h-20 print:my-0"
 							src="https://images.credly.com/size/680x680/images/53acdae5-d69f-4dda-b650-d02ed7a50dd7/image.png"
 							alt="AWS Certified Security Specialty - Credly badge"
 						/>
