@@ -46,16 +46,26 @@
 
 	const positions: Job[] = [
 		{
+			title: 'Lead Solutions Engineer',
+			url: 'https://newlighttechnologies.com/staff/jackson-welsh/',
+			org: 'New Light Technologies',
+			start: 'Sep 2022',
+			responsibilities: [
+				'Improving internal processes and unblocking other engineers.',
+				'Supporting various client projects.'
+			]
+		},
+		{
 			title: 'DevOps Engineer',
 			url: 'https://newlighttechnologies.com/staff/jackson-welsh/',
 			org: 'New Light Technologies',
-			start: ['Sep 2020', 'Aug 2022'],
-			end: ['May 2022'],
+			start: ['Sep 2020'],
+			end: ['Aug 2022'],
 			responsibilities: [
 				'Lead developer of the new <a href="//geo4.dev" target="_blank" class="underline font-semibold">Geo4.Dev</a> website in collaboration with partner organizations including The World Bank, CEGA, and others.',
-				'Deploying serverless applications to Amazon Web Services using Docker and AWS Elastic Container Service.',
-				'Developer for a new web mapping application to replace a legacy ArcGIS plugin for address management within local governments.',
-				'Developer of a survey platform for the US Army Corps of Engineers, written in React with TypeScript.'
+				'Deployed serverless applications to Amazon Web Services using Docker and AWS Elastic Container Service.',
+				'Developed a new web mapping application to replace a legacy ArcGIS plugin for address management within local governments.',
+				'Developed a survey platform for the US Army Corps of Engineers, written in React with TypeScript.'
 			]
 		},
 		{
