@@ -44,7 +44,7 @@
 			onClick: () => (showSocial = !showSocial)
 		},
 		{
-			name: 'current entrepreneurial interest',
+			name: 'i make websites, want one?',
 			class: 'text-violet-700 dark:text-violet-300 cursor-pointer',
 			href: '//onarctus.com'
 		}
