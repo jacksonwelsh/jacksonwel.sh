@@ -42,11 +42,6 @@
 			name: 'social',
 			class: 'text-sky-700 dark:text-sky-300 cursor-pointer',
 			onClick: () => (showSocial = !showSocial)
-		},
-		{
-			name: 'i make websites, want one?',
-			class: 'text-violet-700 dark:text-violet-300 cursor-pointer',
-			href: '//onarctus.com'
 		}
 	];
 
