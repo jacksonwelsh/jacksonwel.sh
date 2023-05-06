@@ -1,14 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<title>Jackson Welsh</title>
-		<meta charset="utf-8" />
-		<meta name="description" content="Software engineer. Person of interest. Government watchlist member." />
-		<link rel="icon" href="%svelte.assets%/favicon.png" />
-		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		%svelte.head%
-	</head>
-	<body class="dark:bg-black bg-slate-100 dark:text-slate-100">
-		<div>%svelte.body%</div>
-	</body>
+
+<head>
+	<title>Jackson Welsh</title>
+	<meta charset="utf-8" />
+	<meta name="description" content="Software engineer. Person of interest. Government watchlist member." />
+	<link rel="icon" href="%sveltekit.assets%/favicon.png" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	%sveltekit.head%
+</head>
+
+<body class="dark:bg-black bg-slate-100 dark:text-slate-100" data-sveltekit-preload-data="hover">
+	<div>%sveltekit.body%</div>
+</body>
+
 </html>

@@ -7,9 +7,6 @@
 	import Launch16 from 'carbon-icons-svelte/lib/Launch16';
 	import ChevronRight16 from 'carbon-icons-svelte/lib/ChevronRight16';
 
-	// no dynamic content, so go ahead and make this static.
-	export const prerender = true;
-
 	type JobDates =
 		| {
 				start: string;

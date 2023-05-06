@@ -2,9 +2,6 @@
 	import { fade, scale } from 'svelte/transition';
 	import Divider from '$lib/divider.svelte';
 
-	// no dynamic content, so go ahead and make this static.
-	export const prerender = true;
-
 	let name = '';
 	let cursorVisible = true;
 	let showSocial = false;
