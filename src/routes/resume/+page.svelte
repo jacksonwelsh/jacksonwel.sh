@@ -94,10 +94,7 @@
 			degree: 'B.S. Computer Science',
 			start: 'August 2020',
 			end: 'May 2023',
-			details: [
-				"4.0 GPA – recognized on the Dean's List and President's List",
-				'Member of the Honors College'
-			]
+			details: ['4.0 GPA – graduated <em>summa cum laude</em>']
 		}
 	];
 
