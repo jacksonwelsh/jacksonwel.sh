@@ -3,3 +3,28 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.ce-popover {
+	@apply dark:bg-gray-900 dark:border-gray-600;
+}
+
+.ce-popover__item-icon {
+	@apply dark:bg-gray-800;
+}
+
+.ce-popover__item:hover:not(.ce-popover__item--no-visible-hover) {
+	@apply dark:bg-gray-700;
+}
+
+.cdx-search-field {
+	@apply dark:bg-gray-800 dark:text-gray-300;
+}
+
+.ce-toolbar__plus,
+.ce-toolbar__settings-btn {
+	@apply dark:text-gray-400 dark:hover:bg-gray-700;
+}
+
+.ce-block--selected .ce-block__content {
+	@apply dark:bg-gray-800;
+}

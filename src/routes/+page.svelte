@@ -1,5 +1,5 @@
-<script>
-	import { fade, scale } from 'svelte/transition';
+<script lang="ts">
+	import { fade } from 'svelte/transition';
 	import Divider from '$lib/divider.svelte';
 
 	let name = '';
@@ -9,7 +9,7 @@
 	let acclSpeed = 150;
 
 	const target = 'Jackson Welsh';
-	const buildName = (n) => {
+	const buildName = (n: string) => {
 		if (n.length === 0) return;
 		setTimeout(() => {
 			name += n.charAt(0);
@@ -26,8 +26,8 @@
 
 	const links = [
 		{
-			name: 'thoughts',
-			href: '/blog',
+			name: 'travel',
+			href: '/travel',
 			class: 'text-green-700 dark:text-green-300'
 		},
 		{
@@ -101,10 +101,6 @@
 			{/each}
 		</div>
 		<div class="text-xl" transition:fade|local>
-			<a href="//twitter.com/_jacksonwelsh" target="_blank" class="text-blue-700 dark:text-blue-300"
-				>twitter</a
-			>
-			<Divider />
 			<a
 				href="//linkedin.com/in/jacksonwelsh"
 				target="_blank"

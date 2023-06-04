@@ -176,7 +176,7 @@
 					><Divider /><span class="font-light">{position.org}</span><Divider />
 					{#if Array.isArray(position.start)}
 						{#each position.start as startDate, idx}
-							{startDate} – {position.end[idx] ?? 'Present'}{idx < position.start.length - 1
+							{startDate} – {position.end?.[idx] ?? 'Present'}{idx < position.start.length - 1
 								? ', '
 								: ''}
 						{/each}
