@@ -20,6 +20,22 @@
 	@apply dark:bg-gray-800 dark:text-gray-300;
 }
 
+.cdx-notify {
+	@apply dark:bg-gray-800 dark:text-gray-300;
+}
+
+.cdx-button {
+	@apply dark:bg-gray-900 dark:hover:bg-gray-800 transition dark:text-gray-300;
+}
+
+.image-tool--withBackground .image-tool__image {
+	@apply dark:!bg-gray-900;
+}
+
+.ce-inline-toolbar {
+	@apply dark:!bg-gray-900;
+}
+
 .ce-toolbar__plus,
 .ce-toolbar__settings-btn {
 	@apply dark:text-gray-400 dark:hover:bg-gray-700;
@@ -27,4 +43,36 @@
 
 .ce-block--selected .ce-block__content {
 	@apply dark:bg-gray-800;
+}
+
+.raw-text > a {
+	@apply underline text-blue-900 dark:text-blue-200;
+}
+
+.ce-inline-toolbar__dropdown:hover {
+	@apply dark:!bg-gray-800;
+}
+
+.ce-inline-tool:hover {
+	@apply dark:!bg-gray-800;
+}
+
+.ce-inline-tool-input--showed {
+	@apply dark:bg-gray-900;
+}
+
+.ce-conversion-toolbar--showed {
+	@apply dark:bg-gray-900;
+}
+
+.ce-conversion-tool__icon {
+	@apply dark:text-gray-400 dark:bg-gray-900;
+}
+
+.ce-conversion-tool:hover {
+	@apply dark:!bg-gray-800;
+}
+
+.cdx-list__item {
+	@apply !leading-5 my-1;
 }

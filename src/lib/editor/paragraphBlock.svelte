@@ -5,6 +5,6 @@
 	export let data: ParagraphData;
 </script>
 
-<p {id}>
-	{data.text}
+<p {id} class="raw-text my-4">
+	{@html data.text}
 </p>

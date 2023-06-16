@@ -21,6 +21,11 @@ export type ImageData = {
 	};
 };
 
+export type ListData = {
+	style: 'unordered' | 'ordered';
+	items: string[];
+};
+
 export type QuoteData = {
 	text: string;
 	caption: string;
@@ -45,4 +50,10 @@ export type Block = {
 			data: QuoteData;
 			type: 'quote';
 	  }
+	| {
+			data: ListData;
+			type: 'list';
+	  }
 );
+
+export type GBlock<N, T> = { id: string; data: T; type: N };

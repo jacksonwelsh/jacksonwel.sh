@@ -19,6 +19,7 @@
 		"@sveltejs/kit": "^1.16.2",
 		"@tailwindcss/typography": "^0.5.9",
 		"@types/editorjs__header": "^2.6.0",
+		"@types/uuid": "^9.0.1",
 		"@typescript-eslint/eslint-plugin": "^5.10.1",
 		"@typescript-eslint/parser": "^5.10.1",
 		"autoprefixer": "^10.4.2",
@@ -38,8 +39,13 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"@aws-sdk/client-s3": "^3.345.0",
+		"@aws-sdk/s3-request-presigner": "^3.345.0",
 		"@editorjs/editorjs": "^2.26.5",
 		"@editorjs/header": "^2.7.0",
+		"@editorjs/list": "^1.8.0",
+		"@passageidentity/passage-js": "^3.6.2",
+		"@passageidentity/passage-node": "^2.3.0",
 		"uuid": "^8.3.2"
 	}
 }

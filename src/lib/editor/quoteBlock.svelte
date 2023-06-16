@@ -5,7 +5,7 @@
 	export let data: QuoteData;
 </script>
 
-<figure class="mt-10 border-l border-emerald-600 pl-9" {id}>
+<figure class="my-10 border-l border-emerald-600 pl-9" {id}>
 	<blockquote class="font-semibold">
 		<p>{data.text}</p>
 	</blockquote>
