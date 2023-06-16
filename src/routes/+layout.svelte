@@ -10,6 +10,12 @@
 
 	const passage = new Passage(PUBLIC_PASSAGE_APP_ID);
 
+	const refreshLogin = async () => {
+		const session = passage.getCurrentSession();
+		await session.getAuthToken();
+		console.debug('refreshed or fetched token');
+	};
+
 	onMount(async () => {
 		const urlParams = new URLSearchParams(window.location.search);
 		console.log({ urlParams });
@@ -20,6 +26,9 @@
 			const result = await passage.magicLinkActivateWebAuthnNewDevice(magicLink);
 			console.log({ result });
 		}
+
+		await refreshLogin();
+		setInterval(refreshLogin, 15000);
 	});
 </script>
 

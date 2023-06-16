@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Passage } from '@passageidentity/passage-js';
+	import { Passage, User } from '@passageidentity/passage-js';
 	import type { PageServerData } from './$types';
 	import { PUBLIC_PASSAGE_APP_ID } from '$env/static/public';
 	import Locked16 from 'carbon-icons-svelte/lib/Locked16';
@@ -20,7 +20,7 @@
 	};
 
 	const passage = new Passage(PUBLIC_PASSAGE_APP_ID);
-	const user = passage.getCurrentUser();
+	let user: User | null = passage.getCurrentUser();
 
 	const signOut = () => {
 		passage.getCurrentSession().signOut();
@@ -56,12 +56,16 @@
 		return text;
 	};
 
-	onMount(() => {
+	onMount(async () => {
 		// passkeys only work on jacksonwel.sh
 		const domain = window.location.host;
-		if (domain.includes('localhost')) return;
-		if (domain !== 'jacksonwel.sh')
+		if (domain !== 'jacksonwel.sh' && !domain.includes('localhost'))
 			window.location.replace(`https://jacksonwel.sh${window.location.pathname}`);
+
+		const session = passage.getCurrentSession();
+
+		const isSignedIn = await session.authGuard();
+		if (!isSignedIn) user = null;
 	});
 </script>
 
@@ -76,7 +80,7 @@
 		</p>
 	</div>
 	{#if user}
-		{#await user.getMetadata()}
+		{#await user?.getMetadata()}
 			<p>thinking...</p>
 		{:then metadata}
 			{#if metadata && metadata.isjackson}
