@@ -38,10 +38,12 @@ export const getAllPosts = async () => {
 		.then(({ result }: { result: { name: string }[] }) => result.map(({ name }) => name));
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	const response: Record<string, Record<string, any>>[] = [];
+	const responseQueue: Promise<Record<string, Record<string, any>>>[] = [];
 	for (const key of keys) {
-		response.push(await getPost(key));
+		responseQueue.push(getPost(key));
 	}
+
+	const response = await Promise.all(responseQueue);
 
 	return response.sort((a, b) => {
 		return b.content.time - a.content.time;
