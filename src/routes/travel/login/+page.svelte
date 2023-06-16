@@ -16,6 +16,7 @@
 	let doLoginPasskey = false;
 	let showRegisterScreen = false;
 	let doRegisterPasskey = false;
+	let magicLinkSent = false;
 	const logError = (e: Error) => {
 		console.error(e);
 		return '';
@@ -51,6 +52,12 @@
 	const signOut = () => {
 		passage.getCurrentSession().signOut();
 		window.location.reload();
+	};
+
+	const sendMagicLink = () => {
+		passage.newLoginMagicLink(email).then(() => {
+			magicLinkSent = true;
+		});
 	};
 </script>
 
@@ -120,13 +127,27 @@
 						class="py-1.5 w-full bg-teal-500 hover:bg-teal-400 dark:bg-teal-400/10 dark:border-2 dark:border-teal-400/50 dark:hover:bg-teal-400/25 transition rounded-lg"
 						on:click={reset}>Go back</button
 					>
+				{:else if !magicLinkSent}
+					<p class="my-4">
+						Something didn't go quite right there, please try again or click the button below to get
+						a magic link in your email.
+					</p>
+					<div class="grid gap-2">
+						<button
+							class="py-1.5 w-full bg-teal-500 hover:bg-teal-400 dark:bg-teal-400/10 dark:border-2 dark:border-teal-400/50 dark:hover:bg-teal-400/25 transition rounded-lg"
+							on:click={sendMagicLink}>Send a magic link</button
+						>
+						<button
+							class="py-1.5 w-full bg-gray-900 hover:bg-gray-800 text-gray-50 dark:bg-gray-400/10 dark:border-2 dark:border-gray-400/50 dark:hover:bg-gray-400/25 transition rounded-lg"
+							on:click={reset}>Go back</button
+						>
+					</div>
 				{:else}
-					<p class="my-4">Something didn't go quite right there, please try again.</p>
-					{logError(e)}
-					<button
-						class="py-1.5 w-full bg-teal-500 hover:bg-teal-400 dark:bg-teal-400/10 dark:border-2 dark:border-teal-400/50 dark:hover:bg-teal-400/25 transition rounded-lg"
-						on:click={reset}>Go back</button
-					>
+					<p class="my-4 text-lg">Sent!</p>
+					<p class="my-4">
+						Click the link in your email to sign in. Make sure to do this from the device you want
+						to sign in from.
+					</p>
 				{/if}
 			{/await}
 		{:else if showRegisterScreen}
