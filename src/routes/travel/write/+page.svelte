@@ -24,7 +24,7 @@
 							const formData = new FormData();
 							formData.append('image', image);
 							formData.append('postId', postId);
-							const result = await fetch('http://localhost:5173/travel/write/upload', {
+							const result = await fetch('/travel/write/upload', {
 								method: 'POST',
 								body: formData
 							}).then((res) => res.json());
@@ -51,7 +51,7 @@
 
 	const save = async () => {
 		const output = await editor.save();
-		await fetch('http://localhost:5173/travel/write/save', {
+		await fetch('/travel/write/save', {
 			method: 'POST',
 			body: JSON.stringify({
 				editorData: JSON.stringify(output),
