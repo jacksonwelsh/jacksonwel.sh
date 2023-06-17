@@ -59,7 +59,7 @@
 	onMount(async () => {
 		// passkeys only work on jacksonwel.sh
 		const domain = window.location.host;
-		if (domain !== 'jacksonwel.sh' && !domain.includes('localhost'))
+		if (domain !== 'jacksonwel.sh' && process.env.NODE_ENV === 'production')
 			window.location.replace(`https://jacksonwel.sh${window.location.pathname}`);
 
 		const session = passage.getCurrentSession();
@@ -90,6 +90,8 @@
 		{:catch}
 			<a href="/travel/login">login</a>
 		{/await}
+	{:else}
+		<a href="/travel/login">login</a>
 	{/if}
 	<div class="grid gap-4">
 		{#each posts as post}
