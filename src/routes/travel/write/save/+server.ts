@@ -1,6 +1,5 @@
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { WORKERS_API_KEY } from '$env/static/private';
 import { getUser, isAdmin } from '$lib/user';
 import { putPost } from '../workers';
 

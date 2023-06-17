@@ -85,6 +85,7 @@
 		{:then metadata}
 			{#if metadata && metadata.isjackson}
 				<a href="/travel/write">write</a>
+				<a href="/travel/users">users</a>
 			{/if}
 			<button on:click={signOut}>log out</button>
 		{:catch}

@@ -7,7 +7,6 @@
 	import '../app.css';
 	import { PUBLIC_PASSAGE_APP_ID } from '$env/static/public';
 	import { onMount } from 'svelte';
-	import { redirect } from '@sveltejs/kit';
 	import { goto } from '$app/navigation';
 
 	const passage = new Passage(PUBLIC_PASSAGE_APP_ID);

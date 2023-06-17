@@ -4,10 +4,11 @@
 	import { v4 as uuid } from 'uuid';
 
 	export let label = '';
+	export let name = '';
 	export let hint = '';
 	export let value = '';
 	export let type = 'text';
-	export let autocomplete: string = 'none';
+	export let autocomplete = 'none';
 	export let required = false;
 	export let className = '';
 
@@ -29,6 +30,7 @@
 			on:focus={onFocus}
 			{type}
 			{autocomplete}
+			{name}
 			{required}
 			class={[
 				'w-full h-10 font-mono rounded-md p-2 focus:ring-teal-500 focus:ring-2 focus:outline-none dark:border-slate-700 dark:bg-slate-900',

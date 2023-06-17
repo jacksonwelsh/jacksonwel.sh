@@ -32,12 +32,14 @@
 
 <main class="container mx-auto my-16">
 	<div class="mb-6">
-		<h1 class="text-4xl font-mono">{user.email}</h1>
-		<h2 class="font-mono text-gray-500 dark:text-gray-400">{user.id}</h2>
+		<h1 class="text-4xl font-mono">{user.user_metadata?.name ?? user.email}</h1>
+		<h2 class="font-mono text-gray-500 dark:text-gray-400">
+			{user.id}{user.user_metadata?.name && ` - ${user.email}`}
+		</h2>
 	</div>
 	<div class="flex justify-between flex-wrap">
 		<h2 class="font-mono text-3xl font-bold mt-4">Devices</h2>
-		<button on:click={() => passage.newLoginMagicLink(user.email)}>add new</button>
+		<button on:click={() => passage.newLoginMagicLink(user.email)}>send a magic link</button>
 	</div>
 	<div class="flow-root">
 		<div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">

@@ -47,6 +47,7 @@
 			url: 'https://newlighttechnologies.com/staff/jackson-welsh/',
 			org: 'New Light Technologies',
 			start: 'Sep 2022',
+			end: 'Jun 2023',
 			responsibilities: [
 				'Improving internal processes and unblocking other engineers.',
 				'Supporting various client projects.'
