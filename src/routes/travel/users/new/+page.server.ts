@@ -1,4 +1,4 @@
-import { AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, PASSAGE_API_KEY } from '$env/static/private';
+import { AWS_AKIA, AWS_SECA, PASSAGE_API_KEY } from '$env/static/private';
 import { PUBLIC_PASSAGE_APP_ID } from '$env/static/public';
 import type { CreateUserPayload } from '@passageidentity/passage-node';
 import Passage from '@passageidentity/passage-node';
@@ -9,8 +9,8 @@ import { getUser } from '$lib/user.js';
 const client = new SESv2Client({
 	region: 'us-east-1',
 	credentials: {
-		accessKeyId: AWS_ACCESS_KEY_ID,
-		secretAccessKey: AWS_SECRET_ACCESS_KEY
+		accessKeyId: AWS_AKIA,
+		secretAccessKey: AWS_SECA
 	}
 });
 
