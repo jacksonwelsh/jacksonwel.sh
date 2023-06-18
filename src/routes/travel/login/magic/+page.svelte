@@ -29,8 +29,11 @@
 	// 	console.error(e);
 	// });
 
+	let hasTriedJustSignIn = false;
+
 	const justSignIn = () => {
 		pageState = 'validating';
+		hasTriedJustSignIn = true;
 		passage
 			.magicLinkActivate(magicLink)
 			.then(() => {
@@ -109,6 +112,12 @@
 				class="py-1.5 w-full text-center bg-teal-500 hover:bg-teal-400 dark:bg-teal-400/10 dark:border-2 dark:border-teal-400/50 dark:hover:bg-teal-400/25 transition rounded-lg"
 				href="/travel/login">Login page</a
 			>
+			{#if !hasTriedJustSignIn}
+				<button
+					class="py-1.5 w-full bg-gray-900 hover:bg-gray-800 text-gray-50 dark:bg-gray-400/10 dark:border-2 dark:border-gray-400/50 dark:hover:bg-gray-400/25 transition rounded-lg"
+					on:click={justSignIn}>Try just signing in</button
+				>
+			{/if}
 		{/if}
 	</div>
 </main>

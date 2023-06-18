@@ -20,10 +20,6 @@
 		| 'doRegisterPasskey'
 		| 'magicLinkSent' = 'fresh';
 
-	let nextClicked = false;
-	let doLoginPasskey = false;
-	let showRegisterScreen = false;
-	let doRegisterPasskey = false;
 	let magicLinkSent = false;
 	const logError = (e: Error) => {
 		console.error(e);
@@ -46,12 +42,17 @@
 	};
 
 	let isSignedIn = false;
+	let isFirefox = false;
 
 	onMount(() => {
 		const session = passage.getCurrentSession();
 		session.authGuard().then((state) => {
 			isSignedIn = state;
 		});
+
+		if (navigator.userAgent.indexOf('Firefox') > 0) {
+			isFirefox = true;
+		}
 	});
 
 	const signOut = () => {
@@ -66,7 +67,13 @@
 	};
 </script>
 
-<main class="h-screen flex items-center justify-center">
+<main class="h-screen flex items-center justify-center flex-wrap">
+	{#if isFirefox}
+		<div class="bg-red-600 text-white w-full absolute top-0 p-1 text-center">
+			passkey support for firefox isn't great, if you're having sign in issues you can use Magic
+			Links or try a different browser
+		</div>
+	{/if}
 	<div
 		class="bg-gray-200 dark:bg-gray-950 w-96 p-4 rounded-md border border-gray-300 dark:border-gray-800"
 	>

@@ -32,6 +32,7 @@
 			{autocomplete}
 			{name}
 			{required}
+			{value}
 			class={[
 				'w-full h-10 font-mono rounded-md p-2 focus:ring-teal-500 focus:ring-2 focus:outline-none dark:border-slate-700 dark:bg-slate-900',
 				className

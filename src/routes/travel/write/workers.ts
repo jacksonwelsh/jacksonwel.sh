@@ -3,13 +3,15 @@ import {
 	WORKERS_KV_ID,
 	WORKERS_API_KEY,
 	R2_ACCESS_KEY_ID,
-	R2_SECRET_KEY
+	R2_SECRET_KEY,
+	WORKERS_KV_CONFIG_ID
 } from '$env/static/private';
 import { S3Client, type GetObjectCommandInput, GetObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { error, redirect } from '@sveltejs/kit';
 
 const API_ROOT = `https://api.cloudflare.com/client/v4/accounts/${R2_ACCOUNT_ID}/storage/kv/namespaces/${WORKERS_KV_ID}`;
+const CONFIG_API_ROOT = `https://api.cloudflare.com/client/v4/accounts/${R2_ACCOUNT_ID}/storage/kv/namespaces/${WORKERS_KV_CONFIG_ID}`;
 
 const headers = {
 	Authorization: `Bearer ${WORKERS_API_KEY}`,
@@ -48,6 +50,16 @@ export const getAllPosts = async () => {
 	return response.sort((a, b) => {
 		return b.content.time - a.content.time;
 	});
+};
+
+export const validateInviteCode = async (code: string): Promise<boolean> => {
+	const remoteCode = await fetch(`${CONFIG_API_ROOT}/values/invite`, {
+		headers,
+		method: 'GET'
+	}).then((r) => r.text());
+	console.log({ remoteCode });
+
+	return code === remoteCode;
 };
 
 export const putPost = async (title: string, slug: string, postId: string, content: object) => {

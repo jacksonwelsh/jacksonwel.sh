@@ -4,6 +4,7 @@ import type { CreateUserPayload } from '@passageidentity/passage-node';
 import Passage from '@passageidentity/passage-node';
 import { error } from '@sveltejs/kit';
 import { SESv2Client, SendEmailCommand, type SendEmailCommandInput } from '@aws-sdk/client-sesv2';
+import { getUser } from '$lib/user.js';
 
 const client = new SESv2Client({
 	region: 'us-east-1',
@@ -14,7 +15,10 @@ const client = new SESv2Client({
 });
 
 export const actions = {
-	default: async ({ request }) => {
+	default: async ({ request, cookies }) => {
+		const requestingUser = await getUser(cookies);
+		if (!requestingUser) throw error(401, 'Not authenticated');
+		if (!requestingUser.user_metadata?.isjackson) throw error(403, 'Not authorized');
 		// make a new user
 		const passage = new Passage({
 			appID: PUBLIC_PASSAGE_APP_ID,
