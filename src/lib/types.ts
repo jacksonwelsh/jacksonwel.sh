@@ -57,3 +57,11 @@ export type Block = {
 );
 
 export type GBlock<N, T> = { id: string; data: T; type: N };
+
+export type PostListing = {
+	slug: string;
+	title: string;
+	time: number;
+	excerpt: string;
+	forcePrivacy?: boolean;
+};

@@ -6,6 +6,7 @@ import {
 	R2_SECRET_KEY,
 	WORKERS_KV_CONFIG_ID
 } from '$env/static/private';
+import type { Block, GBlock, ParagraphData, PostListing } from '$lib/types';
 import { S3Client, type GetObjectCommandInput, GetObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { error, redirect } from '@sveltejs/kit';
@@ -52,6 +53,15 @@ export const getAllPosts = async () => {
 	});
 };
 
+export const getPostListing = async (): Promise<Array<PostListing>> => {
+	const listing = await fetch(`${API_ROOT}/values/meta.index`, {
+		method: 'GET',
+		headers
+	}).then((r) => r.json());
+
+	return listing;
+};
+
 export const validateInviteCode = async (code: string): Promise<boolean> => {
 	const remoteCode = await fetch(`${CONFIG_API_ROOT}/values/invite`, {
 		headers,
@@ -62,13 +72,42 @@ export const validateInviteCode = async (code: string): Promise<boolean> => {
 	return code === remoteCode;
 };
 
-export const putPost = async (title: string, slug: string, postId: string, content: object) => {
+const makeExcerpt = (content: EditorJS.OutputData): string => {
+	const paragraphs = content?.blocks.filter((block) => block.type === 'paragraph');
+	if (paragraphs.length === 0) return '';
+	const firstParagraph = paragraphs[0];
+	const text = firstParagraph.data.text;
+	if (text.length > 200) return text.slice(0, 200) + '...';
+	return text;
+};
+
+export const putPost = async (
+	title: string,
+	slug: string,
+	postId: string,
+	content: EditorJS.OutputData
+) => {
 	const command = {
 		title,
 		slug: slug.toLowerCase(),
 		content,
 		postId
 	};
+
+	// extend the post listing
+	const listing = await getPostListing();
+	listing.push({
+		slug: command.slug,
+		title: command.title,
+		time: content.time ?? Date.now(),
+		excerpt: makeExcerpt(content)
+	});
+
+	await fetch(`${API_ROOT}/values/meta.index`, {
+		headers,
+		method: 'PUT',
+		body: JSON.stringify(listing)
+	});
 
 	return await fetch(`${API_ROOT}/values/${command.slug}`, {
 		headers,

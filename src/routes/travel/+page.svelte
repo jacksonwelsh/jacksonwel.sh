@@ -7,7 +7,7 @@
 	import { onMount } from 'svelte';
 
 	export let data: PageServerData;
-	const { posts } = data;
+	const { listing } = data;
 
 	const toDateString = (timestamp: any): string => {
 		if (typeof timestamp === 'string') timestamp = parseInt(timestamp);
@@ -28,15 +28,13 @@
 		window.location.reload();
 	};
 
-	const isAuthorized = async (content: any): Promise<boolean> => {
+	const isAuthorized = async (time: number, forcePrivacy?: boolean): Promise<boolean> => {
 		const session = passage.getCurrentSession();
 		const isSignedIn = await session.authGuard();
 		if (isSignedIn) return true;
 
-		const forcePrivacy = content?.forcePrivacy;
 		if (forcePrivacy != null) return !forcePrivacy;
 
-		const time = content.time;
 		if (!time) return false;
 
 		const now = new Date().getTime();
@@ -95,8 +93,8 @@
 		<a href="/travel/login">login</a>
 	{/if}
 	<div class="grid gap-4">
-		{#each posts as post}
-			{#await isAuthorized(post.content) then allowed}
+		{#each listing as post}
+			{#await isAuthorized(post.time, post.forcePrivacy) then allowed}
 				{#if allowed}
 					<a href={`/travel/${post.slug}`}>
 						<div
@@ -105,10 +103,10 @@
 							<div class="mb-2">
 								<h2 class="text-xl font-bold">{post.title}</h2>
 								<span class="text-sm text-gray-400 dark:text-gray-600"
-									>{toDateString(post.content.time)}</span
+									>{toDateString(post.time)}</span
 								>
 							</div>
-							<p>{post.excerpt ?? makeExcerpt(post.content)}</p>
+							<p>{post.excerpt}</p>
 						</div>
 					</a>
 				{:else}
@@ -122,7 +120,7 @@
 									{post.title}
 								</h2>
 								<span class="text-sm text-gray-400 dark:text-gray-600"
-									>{toDateString(post.content.time)}</span
+									>{toDateString(post.time)}</span
 								>
 							</div>
 							<p class="italic">

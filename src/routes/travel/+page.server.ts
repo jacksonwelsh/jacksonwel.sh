@@ -1,12 +1,10 @@
 import type { ServerLoad } from '@sveltejs/kit';
-import { getAllPosts } from './write/workers';
+import { getPostListing } from './write/workers';
 
-export const load: ServerLoad = async ({ setHeaders }) => {
-	const posts = await getAllPosts();
+export const load: ServerLoad = async () => {
+	const listing = await getPostListing();
 
-	setHeaders({
-		'cache-control': 'max-age=600'
-	});
+	console.log({ listing });
 
-	return { posts };
+	return { listing };
 };

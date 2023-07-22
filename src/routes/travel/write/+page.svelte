@@ -61,8 +61,8 @@
 			})
 		})
 			.then((r) => {
-				if (r.ok) window.location.replace(`/travel/${slug}`);
-				throw new Error(r.statusText);
+				if (r.ok || r.status === 301) window.location.replace(`/travel/${slug}`);
+				throw new Error(r.status + ' ' + r.statusText);
 			})
 			.catch((e) => {
 				alert('something went wrong :(\n' + e.message);
