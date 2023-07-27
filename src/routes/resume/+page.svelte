@@ -44,26 +44,24 @@
 	const positions: Job[] = [
 		{
 			title: 'Lead Solutions Engineer',
-			url: 'https://newlighttechnologies.com/staff/jackson-welsh/',
 			org: 'New Light Technologies',
 			start: 'Sep 2022',
 			end: 'Jun 2023',
 			responsibilities: [
-				'Improving internal processes and unblocking other engineers.',
-				'Supporting various client projects.'
+				'Built an internal components library and website creation workflow to bring new site creation time from ~4 hours down to ~10 minutes.',
+				'Streamlined management of AWS accounts by enforcing consistent organization-level policies and migrating to temporary security credentials in a majority of our applications.',
+				'Built an AI-based web scraper that uses natual language prompts to extract precise data from heterogenous websites.'
 			]
 		},
 		{
 			title: 'DevOps Engineer',
-			url: 'https://newlighttechnologies.com/staff/jackson-welsh/',
 			org: 'New Light Technologies',
 			start: ['Sep 2020'],
 			end: ['Aug 2022'],
 			responsibilities: [
-				'Lead developer of the new <a href="//geo4.dev" target="_blank" class="underline font-semibold">Geo4.Dev</a> website in collaboration with partner organizations including The World Bank, CEGA, and others.',
 				'Deployed serverless applications to Amazon Web Services using Docker and AWS Elastic Container Service.',
 				'Developed a new web mapping application to replace a legacy ArcGIS plugin for address management within local governments.',
-				'Developed a survey platform for the US Army Corps of Engineers, written in React with TypeScript.'
+				'Built a novel spatial authentication system for the US Army Corps of Engineers, integrating with Login.gov and supporting PIV-based login.'
 			]
 		},
 		{
@@ -80,11 +78,10 @@
 			title: 'Independent Tutor',
 			org: 'Wyzant',
 			start: 'Jan 2020',
-			end: 'Feb 2021',
+			end: 'Dec 2020',
 			responsibilities: [
 				'Online tutor using the Wyzant platform.',
-				'Taught Python, SQL, and Java to students ranging from middle school to university levels.',
-				'Ran every aspect of the tutoring business, from finding students to preparing curriculum.'
+				'Taught Python, SQL, and Java to students ranging from middle school to university levels.'
 			]
 		}
 	];
