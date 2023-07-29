@@ -5,6 +5,7 @@
 	import Locked16 from 'carbon-icons-svelte/lib/Locked16';
 	import type { Block, GBlock, ParagraphData } from '$lib/types';
 	import { onMount } from 'svelte';
+	import Button from '$lib/button.svelte';
 
 	export let data: PageServerData;
 	const { listing } = data;
@@ -42,18 +43,6 @@
 		return now > time + 86400 * 5 * 1000;
 	};
 
-	const makeExcerpt = (content: any): string => {
-		const typedContent = content as Block[];
-		const paragraphs: Array<GBlock<'paragraph', ParagraphData>> = content?.blocks.filter(
-			(block: any) => block.type === 'paragraph'
-		);
-		if (paragraphs.length === 0) return '';
-		const firstParagraph = paragraphs[0];
-		const text = firstParagraph.data.text;
-		if (text.length > 200) return text.slice(0, 200) + '...';
-		return text;
-	};
-
 	onMount(async () => {
 		// passkeys only work on jacksonwel.sh
 		const domain = window.location.host;
@@ -68,7 +57,7 @@
 </script>
 
 <main class="container mx-auto sm:px-4 lg:max-w-5xl my-12">
-	<div class="my-12">
+	<div class="mt-12 mb-6">
 		<h1 class="text-4xl font-bold mb-4 font-mono">travel</h1>
 		<p>
 			A simple travel blog that I'm updating as I go. Check my <a
@@ -77,29 +66,37 @@
 			> for more info about how this all works.
 		</p>
 	</div>
-	{#if user}
-		{#await user?.getMetadata()}
-			<p>thinking...</p>
-		{:then metadata}
-			{#if metadata && metadata.isjackson}
-				<a href="/travel/write">write</a>
-				<a href="/travel/users">users</a>
-			{/if}
-			<button on:click={signOut}>log out</button>
-		{:catch}
-			<a href="/travel/login">login</a>
-		{/await}
-	{:else}
-		<a href="/travel/login">login</a>
-	{/if}
-	<div class="grid gap-4">
+	<div class="my-6 flex gap-2">
+		{#if user}
+			{#await user?.getMetadata()}
+				<p>thinking...</p>
+			{:then metadata}
+				{#if metadata && metadata.isjackson}
+					<Button type="a" href="/travel/write" variant="primary">write</Button>
+					<Button type="a" href="/travel/users" variant="secondary">users</Button>
+				{/if}
+				<Button on:click={signOut} variant="danger">log out</Button>
+			{:catch}
+				<a
+					href="/travel/login"
+					class="rounded-full bg-zinc-900 py-1 px-3 text-white hover:bg-zinc-700 dark:bg-cyan-400/10 dark:text-cyan-400 dark:ring-1 dark:ring-inset dark:ring-cyan-400/20 dark:hover:bg-cyan-400/10 dark:hover:text-cyan-300 dark:hover:ring-cyan-300 inline-flex gap-0.5 justify-center overflow-hidden text-sm font-medium transition"
+					>login</a
+				>
+			{/await}
+		{:else}
+			<a
+				href="/travel/login"
+				class="rounded-full bg-zinc-900 py-1 px-3 text-white hover:bg-zinc-700 dark:bg-cyan-400/10 dark:text-cyan-400 dark:ring-1 dark:ring-inset dark:ring-cyan-400/20 dark:hover:bg-cyan-400/10 dark:hover:text-cyan-300 dark:hover:ring-cyan-300 inline-flex gap-0.5 justify-center overflow-hidden text-sm font-medium transition"
+				>login</a
+			>
+		{/if}
+	</div>
+	<div class="grid divide-y divide-gray-300 dark:divide-gray-700">
 		{#each listing as post}
 			{#await isAuthorized(post.time, post.forcePrivacy) then allowed}
 				{#if allowed}
 					<a href={`/travel/${post.slug}`}>
-						<div
-							class="rounded-md dark:bg-gray-900/50 bg-gray-200/50 p-4 hover:bg-gray-200/75 dark:hover:bg-gray-900/75 transition border border-gray-300 dark:border-gray-700"
-						>
+						<div class="p-4 hover:bg-gray-200/75 dark:hover:bg-gray-900/75 transition py-6">
 							<div class="mb-2">
 								<h2 class="text-xl font-bold">{post.title}</h2>
 								<span class="text-sm text-gray-400 dark:text-gray-600"
