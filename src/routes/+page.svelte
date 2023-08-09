@@ -1,6 +1,16 @@
 <script lang="ts">
 	import { fade } from 'svelte/transition';
 	import Divider from '$lib/divider.svelte';
+	import {
+		createNoise2D,
+		createNoise3D,
+		type NoiseFunction2D,
+		type NoiseFunction3D
+	} from 'simplex-noise';
+	import { onMount } from 'svelte';
+
+	let canvas: HTMLCanvasElement;
+	let ctx: CanvasRenderingContext2D | null;
 
 	let name = '';
 	let cursorVisible = true;
@@ -42,12 +52,80 @@
 		}
 	];
 
-	buildName(target);
-	flashCursor();
+	let t = 0;
+
+	const backgroundGraphics = (noise3d: NoiseFunction3D, imageData: ImageData) => {
+		if (canvas == null) {
+			console.log('no canvas :(');
+			return;
+		} else {
+			console.log('canvas! :)');
+		}
+
+		if (ctx == null) {
+			return;
+		}
+
+		for (let x = 0; x < canvas.width; x++) {
+			for (let y = 0; y < canvas.height; y++) {
+				const r = noise3d(x / 110, y / 300, t / 70);
+				const g = noise3d(x / 120, y / 3015, t / 100);
+				const b = noise3d(x / 130, y / 330, t / 130);
+				imageData.data[(x + y * Math.max(canvas.width, canvas.height)) * 4 + 0] =
+					((r + b) * 255) / 4;
+				imageData.data[(x + y * Math.max(canvas.width, canvas.height)) * 4 + 1] =
+					((g + r) * 255) / 2;
+				imageData.data[(x + y * Math.max(canvas.width, canvas.height)) * 4 + 2] =
+					((b + r + g) * 255) / 3;
+				imageData.data[(x + y * Math.max(canvas.width, canvas.height)) * 4 + 3] =
+					Math.random() * 5 + 250;
+			}
+		}
+		ctx.putImageData(imageData, 0, 0);
+		++t;
+	};
+
+	onMount(() => {
+		const isReduced = matchMedia(`(prefers-reduced-motion: reduce)`).matches === true;
+
+		if (isReduced) {
+			// skip build and just show the name
+			name = 'Jackson Welsh';
+		} else {
+			buildName(target);
+			flashCursor();
+		}
+
+		if (canvas == null) {
+			return;
+		}
+
+		ctx = canvas.getContext('2d');
+		if (ctx == null) {
+			return;
+		}
+
+		const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+		const noise3d = createNoise3D();
+
+		if (isReduced) {
+			// run the first frame and leave it
+			backgroundGraphics(noise3d, imageData);
+		} else {
+			// continuously run
+			setInterval(() => backgroundGraphics(noise3d, imageData), 60);
+		}
+	});
 </script>
 
 <main class="container mx-auto h-screen flex content-center flex-wrap px-2 md:px-0 transition-all">
-	<div class="w-full transition-all">
+	<canvas
+		bind:this={canvas}
+		id="gradient-canvas"
+		class="absolute h-screen w-screen top-0 left-0 -z-40 overflow-hidden"
+		data-transition-in
+	/>
+	<div class="w-full transition-all h-[7.5rem] lg:h-auto">
 		<h1 class="text-6xl lg:text-6xl xl:text-8xl font-semibold font-mono">
 			{name}{#if cursorVisible}<span class="transition-all duration-75">_</span>{/if}
 		</h1>
