@@ -68,17 +68,18 @@
 
 		for (let x = 0; x < canvas.width; x++) {
 			for (let y = 0; y < canvas.height; y++) {
-				const r = noise3d(x / 110, y / 300, t / 70);
-				const g = noise3d(x / 120, y / 3015, t / 100);
-				const b = noise3d(x / 130, y / 330, t / 130);
-				imageData.data[(x + y * Math.max(canvas.width, canvas.height)) * 4 + 0] =
-					((r + b) * 255) / 4;
-				imageData.data[(x + y * Math.max(canvas.width, canvas.height)) * 4 + 1] =
-					((g + r) * 255) / 2;
-				imageData.data[(x + y * Math.max(canvas.width, canvas.height)) * 4 + 2] =
-					((b + r + g) * 255) / 3;
-				imageData.data[(x + y * Math.max(canvas.width, canvas.height)) * 4 + 3] =
-					Math.random() * 5 + 250;
+				const maxDimension = Math.max(canvas.width, canvas.height);
+				const majorAxis = maxDimension === canvas.width ? x : y;
+				const minorAxis = majorAxis === x ? y : x;
+
+				const r = noise3d(majorAxis / 110, minorAxis / 300, t / 70 / 8);
+				const g = noise3d(majorAxis / 120, minorAxis / 315, t / 100 / 8);
+				const b = noise3d(majorAxis / 130, minorAxis / 330, t / 130 / 8);
+
+				imageData.data[(majorAxis + minorAxis * maxDimension) * 4 + 0] = ((r + b) * 255) / 4;
+				imageData.data[(majorAxis + minorAxis * maxDimension) * 4 + 1] = ((g + r) * 255) / 2;
+				imageData.data[(majorAxis + minorAxis * maxDimension) * 4 + 2] = ((b + r + g) * 255) / 3;
+				imageData.data[(majorAxis + minorAxis * maxDimension) * 4 + 3] = 255; //Math.random() * 5 + 250;
 			}
 		}
 		ctx.putImageData(imageData, 0, 0);
@@ -113,7 +114,7 @@
 			backgroundGraphics(noise3d, imageData);
 		} else {
 			// continuously run
-			setInterval(() => backgroundGraphics(noise3d, imageData), 60);
+			setInterval(() => backgroundGraphics(noise3d, imageData), 15);
 		}
 	});
 </script>
