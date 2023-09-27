@@ -38,16 +38,16 @@
 		{
 			name: 'travel',
 			href: '/travel',
-			class: 'text-green-700 dark:text-green-300'
+			class: 'text-green-300'
 		},
 		{
 			name: 'history',
 			href: '/resume',
-			class: 'text-teal-700 dark:text-teal-300'
+			class: 'text-teal-300'
 		},
 		{
 			name: 'social',
-			class: 'text-sky-700 dark:text-sky-300 cursor-pointer',
+			class: 'text-sky-300 cursor-pointer',
 			onClick: () => (showSocial = !showSocial)
 		}
 	];
@@ -66,20 +66,23 @@
 			return;
 		}
 
-		for (let x = 0; x < canvas.width; x++) {
-			for (let y = 0; y < canvas.height; y++) {
-				const maxDimension = Math.max(canvas.width, canvas.height);
-				const majorAxis = maxDimension === canvas.width ? x : y;
-				const minorAxis = majorAxis === x ? y : x;
+		const maxDimension = Math.max(canvas.width, canvas.height);
+		const minDimension = Math.min(canvas.width, canvas.height);
+		if (maxDimension === canvas.width) {
+			console.info(`width is longer! (${canvas.width} > ${canvas.height}))`);
+		} else {
+			console.info('height is longer!');
+		}
+		for (let a = 0; a < maxDimension; a++) {
+			for (let k = 0; k < minDimension; k++) {
+				const r = noise3d(a / 110, k / 300, t / 70 / 8);
+				const g = noise3d(a / 120, k / 315, t / 100 / 8);
+				const b = noise3d(a / 130, k / 330, t / 130 / 8);
 
-				const r = noise3d(majorAxis / 110, minorAxis / 300, t / 70 / 8);
-				const g = noise3d(majorAxis / 120, minorAxis / 315, t / 100 / 8);
-				const b = noise3d(majorAxis / 130, minorAxis / 330, t / 130 / 8);
-
-				imageData.data[(majorAxis + minorAxis * maxDimension) * 4 + 0] = ((r + b) * 255) / 4;
-				imageData.data[(majorAxis + minorAxis * maxDimension) * 4 + 1] = ((g + r) * 255) / 2;
-				imageData.data[(majorAxis + minorAxis * maxDimension) * 4 + 2] = ((b + r + g) * 255) / 3;
-				imageData.data[(majorAxis + minorAxis * maxDimension) * 4 + 3] = 255; //Math.random() * 5 + 250;
+				imageData.data[(a + k * maxDimension) * 4 + 0] = ((r + b) * 255) / 4;
+				imageData.data[(a + k * maxDimension) * 4 + 1] = ((g + r) * 255) / 2;
+				imageData.data[(a + k * maxDimension) * 4 + 2] = ((b + r + g) * 255) / 3;
+				imageData.data[(a + k * maxDimension) * 4 + 3] = 255; //Math.random() * 5 + 250;
 			}
 		}
 		ctx.putImageData(imageData, 0, 0);
@@ -126,13 +129,13 @@
 		class="absolute h-screen w-screen top-0 left-0 -z-40 overflow-hidden"
 		data-transition-in
 	/>
-	<div class="w-full transition-all h-[7.5rem] lg:h-auto">
-		<h1 class="text-6xl lg:text-6xl xl:text-8xl font-semibold font-mono">
+	<div class="w-full transition-all h-[7.5rem] sm:h-auto">
+		<h1 class="dark text-6xl lg:text-6xl xl:text-8xl font-semibold font-mono text-slate-100">
 			{name}{#if cursorVisible}<span class="transition-all duration-75">_</span>{/if}
 		</h1>
 	</div>
 	{#if name === 'Jackson Welsh'}
-		<div in:fade class="text-xl w-full transition-all">
+		<div in:fade class="dark text-xl w-full transition-all">
 			{#each links as { name, href, class: className, onClick }, idx}
 				{#if href}
 					<a
@@ -150,11 +153,7 @@
 
 		{#if showSocial}
 			<div class="text-xl" transition:fade|local>
-				<a
-					href="//linkedin.com/in/jacksonwelsh"
-					target="_blank"
-					class="text-blue-900 dark:text-blue-400">linkedin</a
-				>
+				<a href="//linkedin.com/in/jacksonwelsh" target="_blank" class="text-blue-400">linkedin</a>
 				<Divider />
 				<a href="//github.com/jacksonwelsh" target="_blank" class="text-gray-700 dark:text-gray-400"
 					>github</a
