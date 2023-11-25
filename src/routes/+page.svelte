@@ -1,13 +1,8 @@
 <script lang="ts">
 	import { fade } from 'svelte/transition';
 	import Divider from '$lib/divider.svelte';
-	import {
-		createNoise2D,
-		createNoise3D,
-		type NoiseFunction2D,
-		type NoiseFunction3D
-	} from 'simplex-noise';
-	import { onMount } from 'svelte';
+	import { createNoise3D, type NoiseFunction3D } from 'simplex-noise';
+	import { onDestroy, onMount } from 'svelte';
 
 	let canvas: HTMLCanvasElement;
 	let ctx: CanvasRenderingContext2D | null;
@@ -18,7 +13,7 @@
 
 	let acclSpeed = 150;
 
-	const target = 'Jackson Welsh';
+	const target = 'jackson welsh';
 	const buildName = (n: string) => {
 		if (n.length === 0) return;
 		setTimeout(() => {
@@ -36,8 +31,8 @@
 
 	const links = [
 		{
-			name: 'travel',
-			href: '/travel',
+			name: 'blog',
+			href: '/blog',
 			class: 'text-green-300'
 		},
 		{
@@ -66,35 +61,30 @@
 			return;
 		}
 
-		const maxDimension = Math.max(canvas.width, canvas.height);
-		const minDimension = Math.min(canvas.width, canvas.height);
-		if (maxDimension === canvas.width) {
-			console.info(`width is longer! (${canvas.width} > ${canvas.height}))`);
-		} else {
-			console.info('height is longer!');
-		}
-		for (let a = 0; a < maxDimension; a++) {
-			for (let k = 0; k < minDimension; k++) {
+		for (let a = 0; a < canvas.width; a++) {
+			for (let k = 0; k < canvas.height; k++) {
 				const r = noise3d(a / 110, k / 300, t / 70 / 8);
 				const g = noise3d(a / 120, k / 315, t / 100 / 8);
 				const b = noise3d(a / 130, k / 330, t / 130 / 8);
 
-				imageData.data[(a + k * maxDimension) * 4 + 0] = ((r + b) * 255) / 4;
-				imageData.data[(a + k * maxDimension) * 4 + 1] = ((g + r) * 255) / 2;
-				imageData.data[(a + k * maxDimension) * 4 + 2] = ((b + r + g) * 255) / 3;
-				imageData.data[(a + k * maxDimension) * 4 + 3] = 255; //Math.random() * 5 + 250;
+				imageData.data[(a + k * canvas.width) * 4 + 0] = ((r + b) * 255) / 4;
+				imageData.data[(a + k * canvas.width) * 4 + 1] = ((g + r) * 255) / 2;
+				imageData.data[(a + k * canvas.width) * 4 + 2] = ((b + r + g) * 255) / 3;
+				imageData.data[(a + k * canvas.width) * 4 + 3] = 255; //Math.random() * 5 + 250;
 			}
 		}
 		ctx.putImageData(imageData, 0, 0);
 		++t;
 	};
 
+	let scheduledGraphics: NodeJS.Timer;
+
 	onMount(() => {
 		const isReduced = matchMedia(`(prefers-reduced-motion: reduce)`).matches === true;
 
 		if (isReduced) {
 			// skip build and just show the name
-			name = 'Jackson Welsh';
+			name = target;
 		} else {
 			buildName(target);
 			flashCursor();
@@ -117,25 +107,33 @@
 			backgroundGraphics(noise3d, imageData);
 		} else {
 			// continuously run
-			setInterval(() => backgroundGraphics(noise3d, imageData), 15);
+			scheduledGraphics = setInterval(() => backgroundGraphics(noise3d, imageData), 15);
 		}
+	});
+
+	onDestroy(() => {
+		if (scheduledGraphics) clearInterval(scheduledGraphics);
 	});
 </script>
 
-<main class="container mx-auto h-screen flex content-center flex-wrap px-2 md:px-0 transition-all">
+<main
+	class="container mx-auto h-screen flex content-center flex-wrap px-2 md:px-0 transition-all font-mono text-slate-100"
+>
 	<canvas
 		bind:this={canvas}
 		id="gradient-canvas"
 		class="absolute h-screen w-screen top-0 left-0 -z-40 overflow-hidden"
 		data-transition-in
 	/>
-	<div class="w-full transition-all h-[7.5rem] sm:h-auto">
-		<h1 class="dark text-6xl lg:text-6xl xl:text-8xl font-semibold font-mono text-slate-100">
+	<div class="w-full transition-all h-32 sm:h-auto">
+		<h1
+			class="dark drop-shadow-lg text-6xl lg:text-6xl xl:text-8xl font-mono-medium text-slate-100"
+		>
 			{name}{#if cursorVisible}<span class="transition-all duration-75">_</span>{/if}
 		</h1>
 	</div>
-	{#if name === 'Jackson Welsh'}
-		<div in:fade class="dark text-xl w-full transition-all">
+	{#if name === target}
+		<div in:fade class="dark drop-shadow-lg text-xl w-full transition-all font-mono-normal mt-4">
 			{#each links as { name, href, class: className, onClick }, idx}
 				{#if href}
 					<a
@@ -152,12 +150,10 @@
 		</div>
 
 		{#if showSocial}
-			<div class="text-xl" transition:fade|local>
+			<div class="text-xl font-mono-normal" transition:fade|local>
 				<a href="//linkedin.com/in/jacksonwelsh" target="_blank" class="text-blue-400">linkedin</a>
 				<Divider />
-				<a href="//github.com/jacksonwelsh" target="_blank" class="text-gray-700 dark:text-gray-400"
-					>github</a
-				>
+				<a href="//github.com/jacksonwelsh" target="_blank" class="text-gray-400">github</a>
 				<Divider />
 				me@${'{'}window.location.host}
 			</div>
@@ -165,12 +161,12 @@
 			<div class="text-xl">&nbsp;</div>
 		{/if}
 	{:else}
-		<div class="text-xl w-full">&nbsp;</div>
+		<div class="text-xl w-full mt-4">&nbsp;</div>
 		<div class="text-xl w-full">&nbsp;</div>
 	{/if}
 	<noscript>
 		<div class="w-full">
-			<h1 class="text-6xl lg:text-6xl xl:text-8xl font-semibold font-mono">Jackson Welsh_</h1>
+			<h1 class="text-6xl lg:text-6xl xl:text-8xl font-semibold font-mono">{target}_</h1>
 		</div>
 		<div in:fade class="text-transparent text-xl">
 			{#each links.slice(0, links.length - 1) as { name, href, class: className }, idx}
@@ -179,15 +175,9 @@
 			{/each}
 		</div>
 		<div class="text-xl" transition:fade|local>
-			<a
-				href="//linkedin.com/in/jacksonwelsh"
-				target="_blank"
-				class="text-blue-900 dark:text-blue-400">linkedin</a
-			>
+			<a href="//linkedin.com/in/jacksonwelsh" target="_blank" class="text-blue-400">linkedin</a>
 			<Divider />
-			<a href="//github.com/jacksonwelsh" target="_blank" class="text-gray-700 dark:text-gray-400"
-				>github</a
-			>
+			<a href="//github.com/jacksonwelsh" target="_blank" class="text-gray-400">github</a>
 			<Divider />
 			me@${'{'}window.location.host}
 		</div>

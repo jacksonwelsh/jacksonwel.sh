@@ -1,1 +1,1 @@
-<span class="text-slate-500 dark:text-slate-400">&nbsp;•&nbsp;</span>
+<span class={$$props.class + ' text-gray-500 dark:text-gray-400 pointer-events-none'}>//</span>
