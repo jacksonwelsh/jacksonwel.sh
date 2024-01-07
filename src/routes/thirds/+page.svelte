@@ -41,7 +41,9 @@
 	};
 
 	const stop = () => {
-		clearInterval(intervalId);
+		if (intervalId) {
+			clearInterval(intervalId);
+		}
 		intervalId = null;
 	};
 
