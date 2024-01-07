@@ -119,7 +119,7 @@
 			start: 'Fall 2016',
 			responsibilities: [
 				'Volunteer at regional DI tournaments and team training events',
-				'Appraiser at Instant Challenge, scoring teams on creative ability and teamwork',
+				'Appraiser/Challenge Master at Instant Challenge, organizing the tournament and scoring teams on creative ability and teamwork',
 				'Teaching teams of elementary and middle school students on how to communicate with each other and solve problems together'
 			]
 		}
