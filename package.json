@@ -47,6 +47,7 @@
 		"@editorjs/list": "^1.8.0",
 		"@passageidentity/passage-js": "^3.6.2",
 		"@passageidentity/passage-node": "^2.3.0",
+		"dotenv": "^16.3.1",
 		"simplex-noise": "^4.0.1",
 		"uuid": "^8.3.2"
 	}
