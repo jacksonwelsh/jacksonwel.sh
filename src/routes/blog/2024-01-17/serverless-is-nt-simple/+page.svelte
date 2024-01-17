@@ -185,12 +185,12 @@
 					type="email"
 					name="email"
 					id="bd-email"
-					class="bg-gray-900 rounded-md border-gray-700 border py-1 px-4 focus:outline-none"
+					class="font-mono focus:ring-blue-600 focus:ring-2 font-mono-light dark:bg-gray-900 rounded-md dark:border-gray-700 border py-1 px-4 focus:outline-none"
 				/>
 				<input
 					type="submit"
 					value="Subscribe"
-					class="my-2 focus:ring-blue-600 focus:ring-2 rounded-md px-4 py-1 border border-blue-800 bg-blue-900/25 hover:bg-blue-900/50 hover:cursor-pointer"
+					class="my-2 dark:text-blue-200 rounded-md px-4 py-1 border bg-blue-600 text-blue-50 hover:text-blue-100 border-blue-400 dark:hover:text-blue-100 hover:bg-blue-800 dark:border-blue-800 dark:bg-blue-900/25 dark:hover:bg-blue-900/50 hover:cursor-pointer transition-colors"
 				/>
 			</div>
 			<p>
