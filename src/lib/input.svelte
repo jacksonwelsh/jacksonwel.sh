@@ -1,3 +1,5 @@
+<svelte:options accessors />
+
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
 
@@ -11,6 +13,7 @@
 	export let autocomplete = 'none';
 	export let required = false;
 	export let className = '';
+	export let placeholder = '';
 
 	const dispatch = createEventDispatcher();
 	const onFocus = () => dispatch('focus');
@@ -33,6 +36,7 @@
 			{name}
 			{required}
 			{value}
+			{placeholder}
 			class={[
 				'w-full h-10 font-mono rounded-md p-2 focus:ring-teal-500 focus:ring-2 focus:outline-none dark:border-slate-700 dark:bg-slate-900',
 				className

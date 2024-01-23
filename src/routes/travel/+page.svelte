@@ -72,8 +72,8 @@
 				<p>thinking...</p>
 			{:then metadata}
 				{#if metadata && metadata.isjackson}
-					<Button type="a" href="/travel/write" variant="primary">write</Button>
-					<Button type="a" href="/travel/users" variant="secondary">users</Button>
+					<Button kind="a" href="/travel/write" variant="primary">write</Button>
+					<Button kind="a" href="/travel/users" variant="secondary">users</Button>
 				{/if}
 				<Button on:click={signOut} variant="danger">log out</Button>
 			{:catch}

@@ -1,3 +1,7 @@
+<script>
+	import MailingListCta from '$lib/mailing-list-cta.svelte';
+</script>
+
 <svelte:head>
 	<title>Serverless is(n't) simple | Jackson Welsh</title>
 	<meta property="og:type" content="article" />
@@ -165,44 +169,8 @@
 			simplifies maintaining your application.
 		</p>
 
-		<hr />
+		<MailingListCta />
 
-		<h2>Think this was interesting?</h2>
-		<p>
-			I have a mailing list that I'll send new blog posts out to. Drop your email in if you're
-			interested.
-		</p>
-		<form
-			action="https://buttondown.email/api/emails/embed-subscribe/jacksonwelsh"
-			method="post"
-			target="popupwindow"
-			on:submit={() => window.open('https://buttondown.email/jacksonwelsh', 'popupwindow')}
-			class="flex flex-col"
-		>
-			<div class="w-full flex flex-col">
-				<label for="bd-email" class="w-full">Enter your email</label>
-				<input
-					type="email"
-					name="email"
-					id="bd-email"
-					class="font-mono focus:ring-blue-600 focus:ring-2 font-mono-light dark:bg-gray-900 rounded-md dark:border-gray-700 border py-1 px-4 focus:outline-none"
-				/>
-				<input
-					type="submit"
-					value="Subscribe"
-					class="my-2 dark:text-blue-200 rounded-md px-4 py-1 border bg-blue-600 text-blue-50 hover:text-blue-100 border-blue-400 dark:hover:text-blue-100 hover:bg-blue-800 dark:border-blue-800 dark:bg-blue-900/25 dark:hover:bg-blue-900/50 hover:cursor-pointer transition-colors"
-				/>
-			</div>
-			<p>
-				<a
-					href="https://buttondown.email/refer/jacksonwelsh"
-					target="_blank"
-					class="text-gray-400 font-normal">Powered by Buttondown.</a
-				>
-			</p>
-		</form>
-
-		<hr />
 		<sup>1</sup> Email verification doesn't technically work after 10 minutes, but the foundation is
 		there. Because I had each site isolated to its own AWS account, each account needed to get the SES
 		(Simple Email Service) identity approved for production usage by customer support. This process typically
