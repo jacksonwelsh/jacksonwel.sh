@@ -63,12 +63,27 @@
 <main class="mx-auto my-16 p-2 md:p-0">
 	<article class="mx-auto prose dark:prose-invert">
 		<div
-			class="flex items-center rounded-md border-2 bg-gradient-to-tr dark:border-green-600 border-green-400 dark:from-blue-900/25 dark:to-green-900/25 from-blue-100 to-green-100 text-green-800 dark:text-green-200 p-4 my-4"
+			class="flex items-center flex-wrap rounded-md border-2 bg-gradient-to-tr dark:border-green-600 border-green-400 dark:from-blue-900/25 dark:to-green-900/25 from-blue-100 to-green-100 text-green-800 dark:text-green-200 p-4 my-4"
 		>
-			<div class="text-sm">
+			<div class="text-sm w-full">
 				<strong>You found an unreleased blog post!</strong> All content here is tentative, and the final
 				blog may look significantly different from what you see today. Shoot me an email if you have
 				any comments.
+			</div>
+			<div class="text-sm w-full">
+				<p>Planned changes:</p>
+				<ul>
+					<li>Add collapsed "caveats" to each demo, explaining their limitations</li>
+					<li>Actually make footnotes for the referenced footnotes</li>
+					<li>
+						Make a sources section, linking back to the W3C spec along with some other resources for
+						further reading
+					</li>
+					<li>
+						Maybe get a more extensive list of sites that use passkeys? i'll probably just link back
+						to passkeys.dev tbh
+					</li>
+				</ul>
 			</div>
 		</div>
 
