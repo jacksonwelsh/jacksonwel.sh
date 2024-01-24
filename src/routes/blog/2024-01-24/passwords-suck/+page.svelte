@@ -234,7 +234,7 @@
 			passkey is nearly impossible: you simply <em>can't</em> use a passkey on a domain different
 			from the one it was generated on.<sup>3</sup> If you're using a passkey on a different device,
 			the pairing procedure uses bluetooth to ensure the device you're pairing with is nearby - so unless
-			your roommate is spearphishing you, you're safe.
+			your roommate is spear phishing you, you're safe.
 		</p>
 
 		{#if !goodPasskeySupport()}
