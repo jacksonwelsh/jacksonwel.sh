@@ -474,5 +474,10 @@
 			the site the user is visiting, the browser will reject the request. This means malicious
 			websites can't trick your authenticator into sending back a credential for another site.
 		</p>
+
+		<h2>Comments</h2>
+		<p>
+			Want to chat about this post? Shoot me an email - you can reach me at me@[any of my domains].
+		</p>
 	</article>
 </main>
