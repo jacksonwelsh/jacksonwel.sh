@@ -8,12 +8,12 @@
 <section class="container mx-auto flex h-screen flex-wrap content-center relative">
 	<h1 class="font-bold text-6xl w-full">blog</h1>
 	<ul class="my-4">
-		<!-- shhhhhh secret <li>
+		<li>
 			<div class="inline font-mono font-light mr-4">
 				2024-01-24
 				<a class="underline w-full mt-6" href="/blog/2024-01-24/passwords-suck">passwords suck.</a>
 			</div>
-		</li> -->
+		</li>
 		<li>
 			<div class="inline font-mono font-light mr-4">
 				2024-01-17

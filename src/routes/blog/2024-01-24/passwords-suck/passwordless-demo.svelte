@@ -8,6 +8,7 @@
 	let errorMessage = '';
 	let successMessage = '';
 	let lastCredentialId = '';
+	let isAddingNewCredential = false;
 
 	let pageState: 'select' | 'register' | 'login' | 'logged-in' = 'select';
 
@@ -330,6 +331,9 @@
 				console.trace(err);
 				errorMessage = err.message;
 				return;
+			})
+			.finally(() => {
+				isAddingNewCredential = false;
 			});
 	};
 
@@ -514,6 +518,20 @@
 		allCredentials[username] = newData;
 		window.localStorage.setItem('passwords-suck.saved-credentials', JSON.stringify(allCredentials));
 	};
+
+	const handleRegisterBack = () => {
+		if (isAddingNewCredential) {
+			isAddingNewCredential = false;
+			pageState = 'logged-in';
+		} else {
+			pageState = 'select';
+		}
+	};
+
+	const registerNewCredential = () => {
+		isAddingNewCredential = true;
+		pageState = 'register';
+	};
 </script>
 
 <div class="p-4">
@@ -533,12 +551,28 @@
 	{:else if pageState === 'register'}
 		<div>
 			<p>
-				<span class="font-mono font-mono-normal">{username}</span> has not been registered yet. Press
-				"Register" to set up a passkey for this user, or "Back" if this isn't you.
+				{#if !isAddingNewCredential}
+					<span class="font-mono font-mono-normal">{username}</span> has not been registered yet. Press
+					"Register" to set up a passkey for this user, or "Back" if this isn't you.
+				{:else}
+					Press "Register" to add a new passkey for <span class="font-mono font-mono-normal"
+						>{username}</span
+					>.
+				{/if}
 			</p>
 		</div>
 		<Button size="xl" on:click={register}>Register</Button>
-		<Button size="xl" variant="outline" on:click={() => (pageState = 'select')}>Back</Button>
+		<Button size="xl" variant="outline" on:click={handleRegisterBack}>Back</Button>
+	{:else if pageState === 'login'}
+		<div>
+			<p>
+				Follow the prompts from your browser to log in as <span class="font-mono font-mono-normal"
+					>{username}</span
+				>.
+			</p>
+		</div>
+		<div class="text-sm">Not working? Go back to try again.</div>
+		<Button size="xl" variant="secondary" on:click={() => (pageState = 'select')}>Back</Button>
 	{:else if pageState === 'logged-in'}
 		{#if successMessage !== ''}
 			<div
@@ -569,8 +603,7 @@
 				<div class="text-sm">Backup state: {credential.backupState ? 'yes' : 'no'}</div>
 			</div>
 		{/each}
-		<Button class="my-2" on:click={() => (pageState = 'register')}>add a new credential</Button><br
-		/>
+		<Button class="my-2" on:click={registerNewCredential}>add a new credential</Button><br />
 		<Button
 			class="my-2"
 			on:click={() => {

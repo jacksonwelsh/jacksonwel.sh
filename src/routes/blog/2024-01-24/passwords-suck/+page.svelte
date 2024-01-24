@@ -62,35 +62,10 @@
 </div>
 <main class="mx-auto my-16 p-2 md:p-0">
 	<article class="mx-auto prose dark:prose-invert">
-		<div
-			class="flex items-center flex-wrap rounded-md border-2 bg-gradient-to-tr dark:border-green-600 border-green-400 dark:from-blue-900/25 dark:to-green-900/25 from-blue-100 to-green-100 text-green-800 dark:text-green-200 p-4 my-4"
-		>
-			<div class="text-sm w-full">
-				<strong>You found an unreleased blog post!</strong> All content here is tentative, and the final
-				blog may look significantly different from what you see today. Shoot me an email if you have
-				any comments.
-			</div>
-			<div class="text-sm w-full">
-				<p>Planned changes:</p>
-				<ul>
-					<li>Add collapsed "caveats" to each demo, explaining their limitations</li>
-					<li>Actually make footnotes for the referenced footnotes</li>
-					<li>
-						Make a sources section, linking back to the W3C spec along with some other resources for
-						further reading
-					</li>
-					<li>
-						Maybe get a more extensive list of sites that use passkeys? i'll probably just link back
-						to passkeys.dev tbh
-					</li>
-				</ul>
-			</div>
-		</div>
-
 		<h1 class="font-mono mb-2">Passwords suck.</h1>
 		<div class="text-lg text-gray-600 dark:text-gray-400">
 			Your password must be at least 12 characters long. Your password must include at least one
-			symbol (but not that one!). Your password must include at least one number. <a
+			symbol (but not that one!). <a
 				class="text-inherit"
 				href="https://neal.fun/password-game/"
 				target="_blank"
@@ -121,10 +96,26 @@
 		<div class="rounded-b-md border-2 border-t-1 dark:border-gray-700 border-gray-300 mb-2">
 			<PasswordDemo />
 		</div>
-		<div class="text-center text-gray-700 dark:text-gray-300 text-sm mb-6">
+		<div class="text-center text-gray-700 dark:text-gray-300 text-sm mb-1">
 			Frustrating password reset experience. Checks passwords against HIBP database using a
 			locally-generated hash prefix.
 		</div>
+		<details>
+			<summary class="cursor-pointer">Caveats</summary>
+			<ul>
+				<li>
+					"all interactions are local" is slightly false, but I think it accurately gets the point
+					across: your password never leaves your browser for this demo. I make a SHA-1 hash of it
+					in your browser and send the first 5 characters of it to the <a
+						href="//haveibeenpwned.com">haveibeenpwned</a
+					> API, then locally check your full SHA-1 against the hashes of pwned passwords the API returns
+				</li>
+				<li>
+					No, your password is not the same as your old one. It just does that with the first valid
+					password to make it more frustrating :)
+				</li>
+			</ul>
+		</details>
 
 		<h2>Problems with passwords</h2>
 
@@ -188,9 +179,24 @@
 		<div class="rounded-b-md border-2 border-t-1 dark:border-gray-700 border-gray-300 mb-2">
 			<SmartCardDemo />
 		</div>
-		<div class="text-center text-gray-700 dark:text-gray-300 text-sm mb-8">
+		<div class="text-center text-gray-700 dark:text-gray-300 text-sm mb-2">
 			Example of smart card sign-in flow (no smart card needed)
 		</div>
+
+		<details>
+			<summary class="cursor-pointer">Caveats</summary>
+			<ul>
+				<li>
+					This demo doesn't actually "do" anything - it's just to show what the UX of smart card
+					sign in looks like.
+				</li>
+				<li>Smart card UX can vary depending on the implementation.</li>
+				<li>
+					While the PIN modal in this demo is just built on this website, the modal would normally
+					be presented by your browser or operating system.
+				</li>
+			</ul>
+		</details>
 
 		<p>
 			Another solution that's seen adoption is public key cryptography. For this method of
@@ -251,9 +257,28 @@
 		<div class="rounded-b-md border-2 border-t-1 dark:border-gray-700 border-gray-300 mb-2">
 			<PasswordlessDemo />
 		</div>
-		<div class="text-center text-gray-700 dark:text-gray-300 text-sm mb-8">
+		<div class="text-center text-gray-700 dark:text-gray-300 text-sm mb-2">
 			Live example of passwordless registration and login.
 		</div>
+		<details>
+			<summary class="cursor-pointer">Caveats</summary>
+			<ul>
+				<li>
+					This demo is mostly real! If you complete the registration and sign-in flow, you're seeing
+					exactly how it looks to use a passkey on a website.
+				</li>
+				<li>
+					That being said, it's still missing some security features. It doesn't check device
+					attestation (i.e. if a passkey claims to be from an iOS device, I don't try to prove
+					that's true) since that's labor-intensive to implement.
+				</li>
+				<li>
+					This demo runs entirely in your browser (try turning off your wifi) and stores credentials
+					in localStorage. WebAuthn challenges should normally be generated on your server, not in
+					the browser.
+				</li>
+			</ul>
+		</details>
 
 		<MailingListCta title="Like what you're seeing?" />
 
@@ -262,8 +287,12 @@
 		<p>
 			The above demo uses a "toy" implementation of passwordless authentication, done by hand. It
 			works entirely in your browser, saving the registered credentials to localStorage. The
-			implementation was made based on the W3C specification <a
-				href="https://w3c.github.io/webauthn"
+			implementation <a
+				href="https://github.com/jacksonwelsh/jacksonwel.sh/blob/master/src/routes/blog/2024-01-24/passwords-suck/passwordless-demo.svelte"
+				>(available on github)</a
+			>
+			was made based on the W3C specification
+			<a href="https://w3c.github.io/webauthn"
 				>Web Authentication: An API for accessing Public Key Credentials</a
 			>. Let's walk through it step-by-step.
 		</p>
@@ -335,8 +364,11 @@
 
 		<p>
 			The authenticator signs the challenge, which the server then verifies using the passkey's
-			public key. The private key data never leaves the device it's stored on (unless you're syncing
-			it to other devices).
+			public key. Verification involves checking the authenticator's work, extracting the values
+			that it signed from the authenticator response and using a library like
+			<a href="https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/verify">SubtleCrypto</a
+			> to verify that the signature is correct for the input values. The private key data never leaves
+			the device it's stored on (unless you're syncing it to other devices).
 		</p>
 
 		<p>
@@ -355,12 +387,17 @@
 		</p>
 
 		<p>
-			Passkeys are also more challenging to implement on a website as a developer, when compared to
-			passwords. The above implementation does not check for attestation (essentially: testing if
-			the authenticator is one that has legitimately high security) since each vendor has its own
-			attestation process (Passkeys generated on Apple devices use a different process than those on
-			Android devices). This means that the server can't be sure that the authenticator is secure,
-			but overall the implementation works <em>well enough</em>.
+			Compared to passwords, passkeys are a lot more challenging to implement on a website. For
+			passwords, you can simply salt and hash user input and store the result in a database. For
+			passkeys, you need to perform several cryptographic operations, decipher values sent from
+			clients, and handle the varying user experiences that appear across device vendors.
+		</p>
+		<p>
+			Even the above implementation is not complete: it doesn't check for attestation (essentially:
+			testing if the authenticator is one that has legitimately high security) since each vendor has
+			its own attestation process – Passkeys generated on Apple devices use a different attestation
+			process than those on Android devices. This means that the server can't be sure that the
+			authenticator is secure, but overall the implementation works <em>well enough</em>.
 		</p>
 
 		<h2>Closing thoughts</h2>
@@ -379,11 +416,63 @@
 			on if some of the edges are smoothed out (like cross-platform transfers).
 		</p>
 
+		<h2>Further reading</h2>
+
+		<ul>
+			<li><a href="https://passkeys.dev">passkeys.dev</a></li>
+			<li>
+				<a href="https://w3c.github.io/webauthn"
+					>W3C - Web Authentication: An API for accessing Public Key Credentials</a
+				> (what most of this post is based on)
+			</li>
+			<li><a href="https://fidoalliance.org/passkeys/">FIDO Alliance - Passkeys</a></li>
+			<li>
+				<a
+					href="https://support.apple.com/guide/iphone/use-passkeys-to-sign-in-to-apps-and-websites-iphf538ea8d0/ios"
+					>Apple Support - Use passkeys to sign in to apps and websites on iPhone</a
+				>
+			</li>
+			<li>
+				<a href="https://support.google.com/accounts/answer/13548313?hl=en"
+					>Google Help Center - Sign in with a passkey instead of a password</a
+				>
+			</li>
+		</ul>
+
 		<MailingListCta />
 
-		<sup>1</sup>Credit card numbers are remarkably similar to passwords. It's a static secret that,
-		once exposed, will completely fuck you over. Magnetic stripes are essentially barcodes that
-		present your card number, along with information like your name, to the payment terminal (the
-		key difference being that you can't just snap a picture of the stripe).
+		<p>
+			<sup>0</sup>Password rotation has long been thought to be a security best practice, but
+			<a href="https://pages.nist.gov/800-63-3/sp800-63b.html#sec5">NIST guidelines</a>
+			have recently changes to note that "Verifiers SHOULD NOT require memorized secrets to be changed
+			arbitrarily (e.g., periodically)." (section 5.1.1.2). Also notable - NIST advises against arbitrary
+			character requirements like including special characters: "Verifiers SHOULD NOT impose other composition
+			rules (e.g., requiring mixtures of different character types or prohibiting consecutively repeated
+			characters) for memorized secrets."
+		</p>
+
+		<p>
+			<sup>1</sup>Credit card numbers are remarkably similar to passwords. It's a static secret
+			that, once exposed, will completely fuck you over. Magnetic stripes are essentially barcodes
+			that present your card number, along with information like your name, to the payment terminal
+			(the key difference being that you can't just snap a picture of the stripe).
+		</p>
+
+		<p>
+			<sup>2</sup><a href="https://blog.1password.com/hardware-security-keys-explained/">Yubikeys</a
+			>
+			(or generically, <em>hardware security keys</em>) are small devices that connect to your
+			computer or phone over USB, NFC, or Bluetooth and can be used as an alternative to entering a
+			code for multifactor authentication. They use the same underlying technology as Passkeys, but
+			have typically been used only as a second factor for authentication rather than the primary
+			factor.
+		</p>
+
+		<p>
+			<sup>3</sup>Part of the WebAuthn registration and verification ritual is that the relying
+			party (the website) sends the site's domain to the authenticator. If the domain does not match
+			the site the user is visiting, the browser will reject the request. This means malicious
+			websites can't trick your authenticator into sending back a credential for another site.
+		</p>
 	</article>
 </main>

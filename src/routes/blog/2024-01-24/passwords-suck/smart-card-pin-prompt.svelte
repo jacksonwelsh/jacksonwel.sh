@@ -8,7 +8,6 @@
 
 	let pin = '';
 	let errorMessage = '';
-	let pinInput: HTMLInputElement;
 
 	const handleSubmit = () => {
 		if (pin.length < 4) {
@@ -61,7 +60,7 @@
 					<form on:submit|preventDefault={handleSubmit}>
 						<div>
 							<div
-								class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200"
+								class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200 z-20"
 							>
 								<svg
 									xmlns="http://www.w3.org/2000/svg"
@@ -78,7 +77,7 @@
 									/>
 								</svg>
 							</div>
-							<div class="mt-3 text-center sm:mt-5">
+							<div class="mt-3 text-center sm:mt-5 relative z-0">
 								<h3
 									class="text-base font-semibold leading-6 text-gray-900 dark:text-gray-100"
 									id="modal-title"
@@ -92,7 +91,7 @@
 								</div>
 								{#if errorMessage !== ''}
 									<div
-										class="flex items-center rounded-md border dark:border-red-600 border-red-400 dark:bg-red-900/25 bg-red-100 dark:text-red-200 text-red-800 p-4 mb-4"
+										class="flex items-center rounded-md border dark:border-red-600 border-red-400 dark:bg-red-900/25 bg-red-100 dark:text-red-200 text-red-800 p-4 mb-4 z-50"
 									>
 										<div class="text-sm">{errorMessage}</div>
 									</div>

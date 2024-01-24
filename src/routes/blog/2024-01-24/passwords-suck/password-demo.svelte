@@ -30,20 +30,15 @@
 		return hashHex;
 	};
 
-	const handleSubmit = async (e: SubmitEvent) => {
-		e.preventDefault();
-
-		console.log('in handleSubmit');
-		if (password.length < 12) {
-			errorMessage = 'Your password must be at least 12 characters long.';
-			return false;
+	const handleSubmit = async () => {
+		if (password !== passwordRepeat) {
+			errorMessage = 'Passwords must match.';
+			return;
 		}
 
-		if (password === oldPassword || timesSubmitted == 0) {
-			timesSubmitted += 1;
-			errorMessage = 'Your password must be different from your last 5 passwords.';
-			oldPassword = password;
-			return false;
+		if (password.length < 12) {
+			errorMessage = 'Your password must be at least 12 characters long.';
+			return;
 		}
 
 		let passwordHash = await makeHash(password);
@@ -52,20 +47,25 @@
 			`https://api.pwnedpasswords.com/range/${passwordHash.slice(0, 5)}`
 		)
 			.then((res) => res.text())
-			.then((text) => text.split('\n'))
+			.then((text) => text.split('\r\n'))
 			.then((lines) => lines.map((line) => line.split(':')))
 			.then((lines) => lines.filter((line) => line[0] === passwordHash.slice(5).toUpperCase()));
 
-		console.log({ pwnedHash });
-
 		if (pwnedHash.length > 0) {
-			errorMessage =
-				'Your password has been pwned (no, really). Please choose a different password.';
-			return false;
+			console.log({ pwnedHash });
+			errorMessage = `Your password has been pwned ${pwnedHash[0][1]} times (no, really). Please choose a different password.`;
+			return;
+		}
+
+		if (password === oldPassword || timesSubmitted == 0) {
+			timesSubmitted += 1;
+			errorMessage = 'Your password must be different from your last 5 passwords.';
+			oldPassword = password;
+			return;
 		}
 
 		errorMessage = '';
-		return false;
+		return;
 	};
 </script>
 
@@ -88,7 +88,7 @@
 		</div>
 	{/if}
 
-	<form on:submit={handleSubmit}>
+	<form on:submit|preventDefault={handleSubmit}>
 		<ControlledInput bind:value={password} label="Enter new password" type="password" />
 		<ControlledInput
 			bind:value={passwordRepeat}

@@ -15,7 +15,7 @@
 	};
 </script>
 
-<div class="p-4 h-96 relative" style="contain: content">
+<div class="p-4 h-96 relative" style="contain: layout">
 	{#if !accessGranted}
 		<SmartCardPinPrompt
 			bind:show={showPinPrompt}

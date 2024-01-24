@@ -4,15 +4,14 @@
 	export let tags: string[] = [];
 
 	let hideClicked = false;
+	const formId = v4();
 
 	const hide = () => {
 		localStorage.setItem('hideMailingListCTA', 'true');
 		hideClicked = true;
 	};
 
-	$: shouldShow = typeof window !== 'undefined' && !localStorage.getItem('hideMailingListCTA');
-
-	const formId = v4();
+	let shouldShow = typeof window !== 'undefined' && !localStorage.getItem('hideMailingListCTA');
 </script>
 
 {#if shouldShow && !hideClicked}
