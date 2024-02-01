@@ -25,6 +25,9 @@ module.exports = {
 				'mono-semibold': '130',
 				'mono-bold': '140',
 				'mono-black': '150'
+			},
+			dropShadow: {
+				glow: ['0 0px 20px rgba(255,255, 255, 0.35)', '0 0px 65px rgba(255, 255,255, 0.2)']
 			}
 		}
 	},
