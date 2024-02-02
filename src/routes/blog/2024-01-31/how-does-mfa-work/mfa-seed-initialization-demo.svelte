@@ -2,10 +2,9 @@
 	export let mfaInitComplete = false;
 
 	import QRCode from 'qrcode';
-	import { counter, secret } from './store';
+	import { codes, secret } from './store';
 	import Button from '$lib/button.svelte';
 	import ControlledInput from '$lib/input.svelte';
-	import { DT, hmac } from './mfaUtils';
 	import { onMount } from 'svelte';
 
 	let errorMessage = '';
@@ -50,13 +49,8 @@
 	};
 
 	const validateCode = async () => {
-		const validityRange = 1;
-		const counterInt = parseInt($counter);
-
-		for (let i = counterInt - validityRange; i <= counterInt + validityRange; ++i) {
-			const code = DT((await hmac($secret, i.toString()))!);
-
-			if (code.toString().padStart(6, '0') === inputCode.trim()) {
+		for (let i = 1; i <= 3; ++i) {
+			if ($codes[i] === inputCode.trim()) {
 				errorMessage = '';
 				codeIsValid = true;
 				mfaInitComplete = true;

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import MailingListCta from '$lib/mailing-list-cta.svelte';
 	import MfaSeedInitializationDemo from './mfa-seed-initialization-demo.svelte';
-	import { initializeSecret, secret } from './store';
+	import { codes, initializeSecret, secret, secretBytes, timestamp } from './store';
 	import SecretDisplayEditor from './secret-display-editor.svelte';
 	import SecretUint8Display from './secret-uint8-display.svelte';
 	import SecretBinDisplay from './secret-bin-display.svelte';
@@ -128,16 +128,23 @@
 		</p>
 
 		<Portal label="uint8" class="cursor-cell">
-			<SecretUint8Display />
+			{#key $secret}
+				<SecretUint8Display />
+			{/key}
 		</Portal>
 
 		<p>
-			Unfortunately, converting these numbers to base32 is more involved than converting to hex. A
-			base32 character represents 5 bits of data, while each number is an unsigned 8-bit integer.
-			Let's convert these integers to binary to see what they represent in base32:
+			Unfortunately, converting these numbers to base32 is more involved than converting to hex{#if $secret.length % $secretBytes.length !== 0}
+				<!-- don't feel like doing math to prove myself as always correct but there might be some cursed combination where this isn't true -->
+				&nbsp;(note that the number of uints, {$secretBytes.length}, is not a multiple of the length
+				of the base32 string, {$secret.length}){/if}. A base32 character represents 5 bits of data,
+			while each number is an unsigned 8-bit integer. Let's convert these integers to binary to see
+			what they represent in base32:
 		</p>
 		<Portal class="!block cursor-cell" label="uint8 binary">
-			<SecretBinDisplay />
+			{#key $secret}
+				<SecretBinDisplay />
+			{/key}
 		</Portal>
 
 		<p>
@@ -146,7 +153,9 @@
 			switch from 8-bit to 5-bit.
 		</p>
 		<Portal class="!block cursor-cell" label="base32/binary">
-			<SecretCombinedDisplay />
+			{#key $secret}
+				<SecretCombinedDisplay />
+			{/key}
 		</Portal>
 
 		<p>
@@ -170,24 +179,6 @@
 				>{showAuthenticator ? 'Hide' : 'Show'} authenticator</Button
 			>
 		</div>
-
-		<!-- <div
-			class="relative p-4 rounded-md border-2 dark:border-gray-700 border-gray-300 mb-2 text-xs sm:text-sm md:text-base"
-		>
-			<div class="">
-				<span class="dark:text-red-200">otpauth://totp/</span><span class="dark:text-orange-200"
-					>JacksonWelsh</span
-				><span class="">:</span><span class="dark:text-yellow-200">user@example.com</span><span
-					class="">?secret=</span
-				><span class="dark:text-green-200">{$secret}</span><span class="">&issuer=</span><span
-					class="dark:text-blue-200">JacksonWelsh</span
-				><span class="">&algorithm=</span><span class="dark:text-indigo-200">SHA-1</span><span
-					class="">&digits=</span
-				><span class="dark:text-purple-200">6</span><span class="">&period=</span><span
-					class="text-pink-200">30</span
-				>
-			</div>
-		</div> -->
 
 		<Portal label="interactive">
 			<MfaSeedInitializationDemo bind:mfaInitComplete />
@@ -214,8 +205,101 @@
 			<WindowVisualizer />
 		</Portal>
 
-		<p />
+		<p>
+			As time progresses (every 30 seconds under this configuration), codes progress along the
+			lifecycle track. You can use the current valid code <span class="font-mono">{$codes[2]}</span
+			>, or you can use the just-expired code <span class="font-mono">{$codes[1]}</span>. You can
+			also use the upcoming code
+			<span class="font-mono">{$codes[3]}</span> in case your device's clock is running a little fast
+			compared to the server.
+		</p>
 
+		<p>
+			Now that we know how the secret key is generated, let's look at how this is turned into a
+			code. As noted above, this all depends on the current time–specifically the unix epoch
+			timestamp:
+		</p>
+
+		<div class="flex items-center justify-center text-xl font-mono">
+			{Math.floor($timestamp / 10)}
+		</div>
+
+		<p>
+			This timestamp represents the number of seconds elapsed since the beginning of time,
+			1970-01-01, in UTC. Since each code we generate is valid for 30 seconds, we can convert this
+			into a counter by dividing it by 30 and dropping the decimal:
+		</p>
+
+		<div class="flex items-center justify-center text-xl font-mono">
+			{Math.floor($timestamp / 300)}
+		</div>
+
+		<p>Alright, now we have the inputs we need. The HOTP algorithm is defined as:</p>
+
+		<div class="flex items-center justify-center text-lg font-mono">
+			HOTP(K,C) = Truncate(HMAC-SHA-1(K,C))
+		</div>
+
+		<p>
+			<em>HOTP? I thought we were talking about TOTP!</em>
+		</p>
+		<p class="-mt-4">
+			TOTP is an implementation of HOTP, which stands for "HMAC-based One Time Password." TOTP is
+			just a usage of HOTP, using the counter we created above as <code>C</code> and the secret key
+			as <code>K</code>.
+		</p>
+
+		<p>
+			First thing's first, we need to implement <code>HMAC-SHA-1</code>. To do this, we first need
+			to define some values:
+		</p>
+
+		<Portal label="javascript">
+			<div class="w-full mt-4 font-mono font-mono-normal overflow-x-scroll whitespace-nowrap">
+				<span class="text-gray-400 dark:text-gray-600"
+					>// B is the block size of our hash function, SHA-1</span
+				><br />
+				const B = 64;<br />
+				<span class="text-gray-400 dark:text-gray-600"
+					>// ipad is the byte 0x36 repeated B times</span
+				><br />
+				const HMAC_IPAD = [{new Array(64).fill(0x36)}];<br />
+				<span class="text-gray-400 dark:text-gray-600"
+					>// opad is the byte 0x5C repeated B times</span
+				><br />
+				const HMAC_OPAD = [{new Array(64).fill(0x5c)}];<br />
+			</div>
+		</Portal>
+
+		<p>Now we need to pad the key up to our block size <code>B</code>:</p>
+
+		<Portal label="javascript">
+			<div class="w-full mt-4 font-mono font-mono-normal overflow-x-scroll whitespace-nowrap">
+				const keyBytes = base32ToUint8(K);
+				<span class="text-gray-400 dark:text-gray-600"> // [{$secretBytes}]</span><br />
+				const paddedKey = new Uint8Array(B);
+				<span class="text-gray-400 dark:text-gray-600"> // [{new Array(64).fill(0x0)}]</span><br />
+				<br />
+				keyBytes.forEach((k, i) => paddedKey[i] = k);
+				<span class="text-gray-400 dark:text-gray-600">
+					// soon:tm: [{new Array(64).fill(0x0)}]</span
+				><br />
+			</div>
+		</Portal>
+
+		<p>Next, XOR <code>paddedKey</code> with <code>ipad</code>.</p>
+
+		<Portal label="javascript">
+			<div class="w-full mt-4 font-mono font-mono-normal overflow-x-scroll whitespace-nowrap">
+				const inner = new Uint8Array(B);<br />
+
+				for (let i = 0; i &lt; HMAC_BYTES; ++i) {'{'}<br />
+				&nbsp;&nbsp;inner[i] = paddedKey[i] ^ HMAC_IPAD[i];<br />
+				{'}'}<br />
+			</div>
+		</Portal>
+
+		<p>todo: get an actual js formatter lol</p>
 		<MailingListCta />
 
 		<sup>1</sup> Footnote here.

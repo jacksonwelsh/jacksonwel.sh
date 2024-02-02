@@ -1,9 +1,15 @@
 <script lang="ts">
 	import { alphabet, chunks, getByteColor, HIGHLIGHT_CLASS } from './mfaUtils';
-	import { clearHoverRange, hoverBinRange, secretBytes } from './store';
+	import { clearHoverRange, hoverBinRange, secret, secretBytes } from './store';
 
 	let charRefs: HTMLSpanElement[] = new Array($secretBytes.length * 8);
 	let secretBytesBinString = '';
+
+	$: {
+		if (charRefs.length !== $secret.length * 5) {
+			charRefs = new Array($secret.length * 5);
+		}
+	}
 
 	$: secretBytesBinString = $secretBytes.reduce((prev, byte) => {
 		prev += byte.toString(2).padStart(8, '0');
@@ -44,7 +50,8 @@
 		{#each line as chunk, chunkIdx}
 			<div
 				class="flex flex-wrap items-center justify-center text-center font-mono font-mono-normal w-[5ch]"
-				on:mouseenter={() => pushHoverRange(lineIdx, chunkIdx)}
+				style="-webkit-user-select: none"
+				on:pointerenter={() => pushHoverRange(lineIdx, chunkIdx)}
 				on:mouseleave={clearHoverRange}
 			>
 				<div class="text-center w-full">

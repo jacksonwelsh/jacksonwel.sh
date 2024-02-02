@@ -1,5 +1,5 @@
 import { derived, readable, writable } from 'svelte/store';
-import { base32ToUint8, uint8ToBase32 } from './mfaUtils';
+import { DT, base32ToUint8, hmac, uint8ToBase32 } from './mfaUtils';
 
 export const initializeSecret = (set: (val: string) => void) => {
 	if (typeof window !== 'undefined') {
@@ -36,3 +36,27 @@ export const timestamp = readable(Math.floor(Date.now() / 100), (set) => {
 });
 
 export const counter = derived(timestamp, ($timestamp) => Math.floor($timestamp / 300).toString());
+
+export const codes = derived(
+	[secret, counter],
+	([$secret, $counter], set) => {
+		const counterInt = parseInt($counter);
+
+		const ret = new Array(5);
+
+		const promises = new Array(5);
+
+		for (let i = 0; i < ret.length; ++i) {
+			promises[i] = hmac($secret, (counterInt + i - 2).toString());
+		}
+
+		Promise.all(promises)
+			.then((results) =>
+				results.forEach(
+					(result: ArrayBuffer, i) => (ret[i] = DT(result).toString().padStart(6, '0'))
+				)
+			)
+			.then(() => set(ret));
+	},
+	new Array<string>(5)
+);

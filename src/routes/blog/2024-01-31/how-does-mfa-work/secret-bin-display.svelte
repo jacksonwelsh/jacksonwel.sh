@@ -1,9 +1,17 @@
 <script lang="ts">
 	import { chunks, getByteColor, HIGHLIGHT_CLASS } from './mfaUtils';
 
-	import { clearHoverRange, hoverBinRange, secretBytes } from './store';
+	import { clearHoverRange, hoverBinRange, secret, secretBytes } from './store';
 
 	let bitRefs: HTMLSpanElement[] = new Array($secretBytes.length * 8);
+
+	$: {
+		console.count();
+		if (bitRefs.length !== $secret.length * 5) {
+			console.log(`bitrefs length mismatch! ${bitRefs.length} !== ${$secret.length * 5}`);
+			bitRefs = new Array($secret.length * 5);
+		}
+	}
 
 	const pushHoverRange = (chunkIndex: number, byteIndex: number) => {
 		const start = chunkIndex * 40 + byteIndex * 8;
@@ -38,9 +46,10 @@
 	<div class={`flex items-center justify-center gap-2 my-2 ${getByteColor(chunkIndex, 1)}`}>
 		{#each chunk as byte, byteIndex}
 			<span
-				on:mouseenter={() => pushHoverRange(chunkIndex, byteIndex)}
+				on:pointerenter={() => pushHoverRange(chunkIndex, byteIndex)}
 				on:mouseleave={() => clearHoverRange()}
 				class={`font-mono font-mono-normal`}
+				style="-webkit-user-select: none"
 				>{#each Array.from(byte.toString(2).padStart(8, '0')) as bit, bitIndex}
 					<span bind:this={bitRefs[chunkIndex * 40 + byteIndex * 8 + bitIndex]}>{bit}</span>
 				{/each}</span

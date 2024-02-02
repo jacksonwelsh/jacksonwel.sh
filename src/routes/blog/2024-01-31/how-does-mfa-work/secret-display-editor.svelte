@@ -9,7 +9,7 @@
 	let editableSecret = '';
 	let secretEditErrorMessage = '';
 
-	const charRefs: HTMLSpanElement[] = new Array($secretBytes.length);
+	let charRefs: HTMLSpanElement[] = new Array($secretBytes.length);
 
 	const startSecretEdit = () => {
 		editableSecret = $secret;
@@ -24,6 +24,8 @@
 			return;
 		}
 
+		charRefs = new Array($secretBytes.length);
+
 		secretEditErrorMessage = '';
 		$secret = transformed;
 		window.localStorage.setItem('how-does-mfa-work.b32secret', $secret);
@@ -37,24 +39,26 @@
 	};
 
 	$: {
-		// first clear any previously hovered items
-		charRefs
-			.filter(
-				(char, i) =>
-					char.classList.contains(HIGHLIGHT_CLASS) &&
-					!($hoverBinRange[0] <= i && i < $hoverBinRange[1])
-			)
-			.forEach((bit) => bit.classList.remove(HIGHLIGHT_CLASS));
+		if (!editingSecret) {
+			// first clear any previously hovered items
+			charRefs
+				.filter(
+					(char, i) =>
+						char.classList.contains(HIGHLIGHT_CLASS) &&
+						!($hoverBinRange[0] <= i && i < $hoverBinRange[1])
+				)
+				.forEach((bit) => bit.classList.remove(HIGHLIGHT_CLASS));
 
-		// then apply the class to newly hovered items
-		charRefs
-			.filter(
-				(char, i) =>
-					!char.classList.contains(HIGHLIGHT_CLASS) &&
-					Math.floor($hoverBinRange[0] / 5) * 5 <= i &&
-					i < $hoverBinRange[1]
-			)
-			.forEach((bit) => bit.classList.add(HIGHLIGHT_CLASS));
+			// then apply the class to newly hovered items
+			charRefs
+				.filter(
+					(char, i) =>
+						!char.classList.contains(HIGHLIGHT_CLASS) &&
+						Math.floor($hoverBinRange[0] / 5) * 5 <= i &&
+						i < $hoverBinRange[1]
+				)
+				.forEach((bit) => bit.classList.add(HIGHLIGHT_CLASS));
+		}
 	}
 </script>
 
@@ -62,8 +66,9 @@
 	<div class="select-all flex gap-2">
 		{#each $secret.match(/.{2,8}/g) ?? [] as chunk, chunkIdx}
 			<span
-				on:mouseenter={() => pushHoverRange(chunkIdx)}
+				on:pointerenter={() => pushHoverRange(chunkIdx)}
 				on:mouseleave={clearHoverRange}
+				style="-webkit-user-select: none"
 				class={`font-mono font-mono-normal ${getByteColor(chunkIdx, 1)}`}
 			>
 				{#each Array.from(chunk) as char, charIdx}
