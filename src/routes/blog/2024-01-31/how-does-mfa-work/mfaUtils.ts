@@ -17,7 +17,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-// Adapted from https://git.coolaj86.com/coolaj86/browser-authenticator.js/src/branch/gh-pages/demo/bower_components/unibabel/unibabel.base32.js
+// Some portions adapted from https://git.coolaj86.com/coolaj86/browser-authenticator.js/src/branch/gh-pages/demo/bower_components/unibabel/unibabel.base32.js
 
 export const HIGHLIGHT_CLASS = 'underline';
 export const alphabet = 'abcdefghijklmnopqrstuvwxyz234567';
@@ -141,9 +141,9 @@ export const getByteColor = (index: number, radix: number): string => {
 	return byteColorMap[idx];
 };
 
-const HMAC_BYTES = 64;
-const HMAC_IPAD = new Uint8Array(HMAC_BYTES).fill(0x36);
-const HMAC_OPAD = new Uint8Array(HMAC_BYTES).fill(0x5c);
+export const HMAC_BYTES = 64;
+export const HMAC_IPAD = new Uint8Array(HMAC_BYTES).fill(0x36);
+export const HMAC_OPAD = new Uint8Array(HMAC_BYTES).fill(0x5c);
 
 export const DT = (hmacBuffer: ArrayBuffer) => {
 	const hmacArray = new Uint8Array(hmacBuffer);
@@ -161,7 +161,7 @@ export const hmac = async (key: string, message: string): Promise<ArrayBuffer | 
 	const keyBytes = base32ToUint8(key);
 	console.log({ keyBytes, message });
 	const paddedKey = new Uint8Array(HMAC_BYTES);
-	keyBytes.forEach((b, i) => (paddedKey[i] = b));
+	paddedKey.set(keyBytes);
 
 	const messageBytes = numToUint8Array(parseInt(message));
 
@@ -188,7 +188,7 @@ export const hmac = async (key: string, message: string): Promise<ArrayBuffer | 
 	return await window.crypto.subtle.digest('SHA-1', outerWithHash);
 };
 
-const numToUint8Array = (num: number): Uint8Array => {
+export const numToUint8Array = (num: number): Uint8Array => {
 	const arr = new Uint8Array(8);
 
 	for (let i = 7; i >= 0; i--) {

@@ -11,6 +11,15 @@
 	import { onMount } from 'svelte';
 	import Portal from './portal.svelte';
 	import WindowVisualizer from './window-visualizer.svelte';
+	import VarDeclarations from './code-samples/01-var-declarations.svelte';
+	import PadKey from './code-samples/02-pad-key.svelte';
+	import XorWithIpad from './code-samples/03-xor-with-ipad.svelte';
+	import AppendCounterStream from './code-samples/04-append-counter-stream.svelte';
+	import HashInner from './code-samples/05-hash-inner.svelte';
+	import XorWithOpad from './code-samples/06-xor-with-opad.svelte';
+	import AppendHashToOpad from './code-samples/07-append-hash-to-opad.svelte';
+	import FinalHmacHash from './code-samples/08-final-hmac-hash.svelte';
+	import Truncation from './code-samples/09-truncation.svelte';
 
 	onMount(() => {
 		initializeSecret(secret.set);
@@ -185,9 +194,17 @@
 		</Portal>
 
 		<p>
-			The registration process really doesn't involve much more than generate the secret described
+			The registration process really doesn't involve much more than generating the secret described
 			above, at least for the server. The reason you have to enter a code from your authenticator is
 			to prove that your authenticator is set up correctly - nothing more.
+		</p>
+
+		<p>
+			The registration QR code uses an <code>otpauth://totp/</code> URI, including data like the secret,
+			domain name, friendly name of the website, and your username. All of the supporting data is optional,
+			but helps your authenticator display what the code is used for. It can also specify a number of
+			digits (default: 6) and duration (default: 30 seconds) for each code, but these properties may
+			not be supported by all authenticators so they're usually left as the default.
 		</p>
 
 		<p>
@@ -254,52 +271,71 @@
 			to define some values:
 		</p>
 
-		<Portal label="javascript">
-			<div class="w-full mt-4 font-mono font-mono-normal overflow-x-scroll whitespace-nowrap">
-				<span class="text-gray-400 dark:text-gray-600"
-					>// B is the block size of our hash function, SHA-1</span
-				><br />
-				const B = 64;<br />
-				<span class="text-gray-400 dark:text-gray-600"
-					>// ipad is the byte 0x36 repeated B times</span
-				><br />
-				const HMAC_IPAD = [{new Array(64).fill(0x36)}];<br />
-				<span class="text-gray-400 dark:text-gray-600"
-					>// opad is the byte 0x5C repeated B times</span
-				><br />
-				const HMAC_OPAD = [{new Array(64).fill(0x5c)}];<br />
-			</div>
+		<Portal label="typescript">
+			<VarDeclarations />
 		</Portal>
 
 		<p>Now we need to pad the key up to our block size <code>B</code>:</p>
 
-		<Portal label="javascript">
-			<div class="w-full mt-4 font-mono font-mono-normal overflow-x-scroll whitespace-nowrap">
-				const keyBytes = base32ToUint8(K);
-				<span class="text-gray-400 dark:text-gray-600"> // [{$secretBytes}]</span><br />
-				const paddedKey = new Uint8Array(B);
-				<span class="text-gray-400 dark:text-gray-600"> // [{new Array(64).fill(0x0)}]</span><br />
-				<br />
-				keyBytes.forEach((k, i) => paddedKey[i] = k);
-				<span class="text-gray-400 dark:text-gray-600">
-					// soon:tm: [{new Array(64).fill(0x0)}]</span
-				><br />
-			</div>
+		<Portal label="typescript">
+			<PadKey />
 		</Portal>
 
 		<p>Next, XOR <code>paddedKey</code> with <code>ipad</code>.</p>
 
-		<Portal label="javascript">
-			<div class="w-full mt-4 font-mono font-mono-normal overflow-x-scroll whitespace-nowrap">
-				const inner = new Uint8Array(B);<br />
-
-				for (let i = 0; i &lt; HMAC_BYTES; ++i) {'{'}<br />
-				&nbsp;&nbsp;inner[i] = paddedKey[i] ^ HMAC_IPAD[i];<br />
-				{'}'}<br />
-			</div>
+		<Portal label="typescript">
+			<XorWithIpad />
 		</Portal>
 
-		<p>todo: get an actual js formatter lol</p>
+		<p>
+			Now we append the stream of bytes representing our counter (generated in our definitions step)
+			to the result of the XOR step.
+		</p>
+
+		<Portal label="typescript">
+			<AppendCounterStream />
+		</Portal>
+
+		<p>Then we take a SHA-1 hash of those bytes.</p>
+
+		<Portal label="typescript">
+			<HashInner />
+		</Portal>
+
+		<p>Going back to HMAC_OPAD for a moment, we need to XOR the key with the OPAD.</p>
+
+		<Portal label="typescript">
+			<XorWithOpad />
+		</Portal>
+
+		<p>Then, append the innerHash to the XOR'd stream.</p>
+
+		<Portal label="typescript">
+			<AppendHashToOpad />
+		</Portal>
+
+		<p>Finally, take the SHA-1 hash of that stream and you have a SHA-1 HMAC.</p>
+
+		<Portal label="typescript">
+			<FinalHmacHash />
+		</Portal>
+
+		<p>
+			The HMAC is where most of the computations happen - truncation is really just to convert the
+			HMAC into something that's actually possible to quickly type into an authentication form.
+			Let's take a look at how the dynamic truncation algorithm is implemented:
+		</p>
+
+		<Portal label="typescript">
+			<Truncation />
+		</Portal>
+
+		<p>
+			And there it is! We just converted the current time and secret key into a valid MFA code by
+			hand! If the code generated isn't the correct number of digits, it gets padded with leading 0s
+			to fill the space properly.
+		</p>
+
 		<MailingListCta />
 
 		<sup>1</sup> Footnote here.

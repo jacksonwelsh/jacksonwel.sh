@@ -49,7 +49,7 @@
 	<div class={`flex items-center justify-center gap-2 my-2 ${getByteColor(lineIdx, 1)}`}>
 		{#each line as chunk, chunkIdx}
 			<div
-				class="flex flex-wrap items-center justify-center text-center font-mono font-mono-normal w-[5ch]"
+				class="flex flex-wrap items-center justify-center text-center font-mono font-mono-normal w-[5ch] text-xs sm:text-sm md:text-base"
 				style="-webkit-user-select: none"
 				on:pointerenter={() => pushHoverRange(lineIdx, chunkIdx)}
 				on:mouseleave={clearHoverRange}

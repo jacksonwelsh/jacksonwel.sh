@@ -37,7 +37,7 @@ export const timestamp = readable(Math.floor(Date.now() / 100), (set) => {
 
 export const counter = derived(timestamp, ($timestamp) => Math.floor($timestamp / 300).toString());
 
-export const codes = derived(
+export const hmacs = derived(
 	[secret, counter],
 	([$secret, $counter], set) => {
 		const counterInt = parseInt($counter);
@@ -51,12 +51,14 @@ export const codes = derived(
 		}
 
 		Promise.all(promises)
-			.then((results) =>
-				results.forEach(
-					(result: ArrayBuffer, i) => (ret[i] = DT(result).toString().padStart(6, '0'))
-				)
-			)
+			.then((results) => results.forEach((result: ArrayBuffer, i) => (ret[i] = result)))
 			.then(() => set(ret));
 	},
-	new Array<string>(5)
+	new Array<ArrayBuffer>(5)
+);
+
+export const codes = derived(
+	[hmacs],
+	([$hmacs]) => $hmacs.map((hmac) => DT(hmac).toString().padStart(6, '0')),
+	new Array<string>(5).fill('000000')
 );
