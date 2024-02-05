@@ -2,7 +2,7 @@
 	import { Passage, User } from '@passageidentity/passage-js';
 	import type { PageServerData } from './$types';
 	import { PUBLIC_PASSAGE_APP_ID } from '$env/static/public';
-	import { Locked } from 'carbon-icons-svelte';
+	import Locked from 'carbon-icons-svelte/lib/Locked.svelte';
 	import { onMount } from 'svelte';
 	import Button from '$lib/button.svelte';
 

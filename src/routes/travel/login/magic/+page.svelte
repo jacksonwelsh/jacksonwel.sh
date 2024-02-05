@@ -2,7 +2,7 @@
 	import { goto } from '$app/navigation';
 	import { PUBLIC_PASSAGE_APP_ID } from '$env/static/public';
 	import { Passage } from '@passageidentity/passage-js';
-	import { HardwareSecurityModule } from 'carbon-icons-svelte';
+	import HardwareSecurityModule from 'carbon-icons-svelte/lib/HardwareSecurityModule.svelte';
 
 	const urlParams = new URLSearchParams(window.location.search);
 	console.log({ urlParams });

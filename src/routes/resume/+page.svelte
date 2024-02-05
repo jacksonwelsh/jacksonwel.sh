@@ -2,7 +2,9 @@
 	import Divider from '$lib/divider.svelte';
 	import LogoCloud from '$lib/logocloud.svelte';
 	import ResumeHeader from '$lib/resumeHeader.svelte';
-	import { LogoGithub, LogoLinkedin, Launch } from 'carbon-icons-svelte';
+	import LogoGithub from 'carbon-icons-svelte/lib/LogoGithub.svelte';
+	import LogoLinkedin from 'carbon-icons-svelte/lib/LogoLinkedin.svelte';
+	import Launch from 'carbon-icons-svelte/lib/Launch.svelte';
 
 	type JobDates =
 		| {

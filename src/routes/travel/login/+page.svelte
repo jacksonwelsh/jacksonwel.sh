@@ -4,7 +4,7 @@
 	import { Passage, type PassageAppInfo } from '@passageidentity/passage-js';
 	import { PUBLIC_PASSAGE_APP_ID } from '$env/static/public';
 	import type { PageData } from './$types';
-	import { HardwareSecurityModule } from 'carbon-icons-svelte';
+	import HardwareSecurityModule from 'carbon-icons-svelte/lib/HardwareSecurityModule.svelte';
 	import { onMount } from 'svelte';
 
 	const passage = new Passage(PUBLIC_PASSAGE_APP_ID);

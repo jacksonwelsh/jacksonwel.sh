@@ -5,7 +5,7 @@
 	import QuoteBlock from '$lib/editor/quoteBlock.svelte';
 	import ListBlock from '$lib/editor/listBlock.svelte';
 	import type { PageData } from './$types';
-	import { ArrowLeft } from 'carbon-icons-svelte';
+	import ArrowLeft from 'carbon-icons-svelte/lib/ArrowLeft.svelte';
 
 	export let data: PageData;
 	console.log({ data });

@@ -1,12 +1,10 @@
 <script lang="ts">
-	import {
-		Play,
-		Pause,
-		Cafe,
-		Portfolio,
-		Notification as NotificationIcon,
-		NotificationOff
-	} from 'carbon-icons-svelte';
+	import Play from 'carbon-icons-svelte/lib/Play.svelte';
+	import Pause from 'carbon-icons-svelte/lib/Pause.svelte';
+	import Cafe from 'carbon-icons-svelte/lib/Cafe.svelte';
+	import Portfolio from 'carbon-icons-svelte/lib/Portfolio.svelte';
+	import NotificationIcon from 'carbon-icons-svelte/lib/Notification.svelte';
+	import NotificationOff from 'carbon-icons-svelte/lib/NotificationOff.svelte';
 
 	let timer = 0;
 	let intervalId: NodeJS.Timeout | null = null;
