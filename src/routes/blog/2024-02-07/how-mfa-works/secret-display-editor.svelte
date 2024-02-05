@@ -98,10 +98,13 @@
 					class="text-gray-600 dark:text-gray-400 hover:cursor-pointer"
 				/>
 			</div>
-			<div bind:this={newSecretButtonRef} class="transition-transform duration-500">
+			<div
+				on:click={onNewSecretClick}
+				bind:this={newSecretButtonRef}
+				class="transition-transform duration-500"
+			>
 				<Renew
 					size={20}
-					on:click={onNewSecretClick}
 					title="generate a new secret"
 					class="text-gray-600 dark:text-gray-400 hover:cursor-pointer"
 				/>
