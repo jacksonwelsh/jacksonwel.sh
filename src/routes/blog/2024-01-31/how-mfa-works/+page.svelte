@@ -78,9 +78,31 @@
 			class="flex items-center flex-wrap rounded-md border-2 bg-gradient-to-tr dark:border-green-600 border-green-400 dark:from-blue-900/25 dark:to-green-900/25 from-blue-100 to-green-100 text-green-800 dark:text-green-200 p-4 my-4"
 		>
 			<div class="text-sm w-full">
-				<strong>You found an unreleased blog post!</strong> All content here is tentative, and the final
-				blog may look significantly different from what you see today. Shoot me an email if you have
-				any comments.
+				<p>
+					<strong>You found an unreleased blog post!</strong> All content here is tentative, and the
+					final blog may look significantly different from what you see today. Shoot me an email if you
+					have any comments.
+				</p>
+
+				<p>Planned changes:</p>
+				<ul>
+					<li>rework closing statement a bit</li>
+					<li>
+						Keep poking the issue i'm having with the append counter stream step... let me know if
+						you see an array of [54, 54, 54, 54, ...] immediately after loading up the page (it'll
+						always correct itself after the counter increments). It seems to only happen on dev but
+						that makes it scary.
+					</li>
+					<li>
+						might elaborate a bit on the TOTP steps, lmk if anything is unclear rn and i'll expand
+						on them
+					</li>
+					<li>need to add output comments to some of the later code samples</li>
+					<li>
+						might allow users to specify a custom length and period since it's technically in the
+						spec
+					</li>
+				</ul>
 			</div>
 		</div>
 
