@@ -19,6 +19,8 @@
 
 	$: code = `// hmacBuffer represents the value returned by HMAC-SHA-1 since subtleCrypto.digest returns an ArrayBuffer
 const hmacArray = new Uint8Array(hmacBuffer);  // [${new Uint8Array($hmacs[2])}]
+
+// this is pulled straight from the RFC
 const offset = hmacArray[19] & 0x0f;  // ${new Uint8Array($hmacs[2])[19] & 0x0f}
 const binCode =
   ((hmacArray[offset] & 0x7f) << 24) |

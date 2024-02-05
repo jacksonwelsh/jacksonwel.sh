@@ -4,7 +4,7 @@
 	import { Passage, type PassageAppInfo } from '@passageidentity/passage-js';
 	import { PUBLIC_PASSAGE_APP_ID } from '$env/static/public';
 	import type { PageData } from './$types';
-	import HardwareSecurityModule32 from 'carbon-icons-svelte/lib/HardwareSecurityModule32';
+	import { HardwareSecurityModule } from 'carbon-icons-svelte';
 	import { onMount } from 'svelte';
 
 	const passage = new Passage(PUBLIC_PASSAGE_APP_ID);
@@ -114,7 +114,7 @@
 				<div
 					class="w-48 h-48 my-6 rounded-full border border-teal-600 dark:border-teal-400 mx-auto flex items-center justify-center"
 				>
-					<HardwareSecurityModule32 class="w-24 h-24 text-teal-600 dark:text-teal-400" />
+					<HardwareSecurityModule size={32} class="w-24 h-24 text-teal-600 dark:text-teal-400" />
 				</div>
 				<h2 class="text-lg font-bold text-center">Sign in with your passkey</h2>
 			{:then}
@@ -197,7 +197,7 @@
 				<div
 					class="w-48 h-48 my-6 rounded-full border border-teal-600 dark:border-teal-400 mx-auto flex items-center justify-center"
 				>
-					<HardwareSecurityModule32 class="w-24 h-24 text-teal-600 dark:text-teal-400" />
+					<HardwareSecurityModule size={32} class="w-24 h-24 text-teal-600 dark:text-teal-400" />
 				</div>
 				<h2 class="text-lg font-bold text-center">Sign up with your passkey</h2>
 			{:then}

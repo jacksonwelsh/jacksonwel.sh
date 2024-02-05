@@ -77,7 +77,7 @@
 		++t;
 	};
 
-	let scheduledGraphics: NodeJS.Timer;
+	let scheduledGraphics: NodeJS.Timeout;
 
 	onMount(() => {
 		const isReduced = matchMedia(`(prefers-reduced-motion: reduce)`).matches === true;
@@ -115,6 +115,10 @@
 		if (scheduledGraphics) clearInterval(scheduledGraphics);
 	});
 </script>
+
+<svelte:head>
+	<title>Jackson Welsh</title>
+</svelte:head>
 
 <main
 	class="container mx-auto h-screen flex content-center flex-wrap px-2 md:px-0 transition-all font-mono text-slate-100"

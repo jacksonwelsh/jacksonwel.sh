@@ -1,9 +1,8 @@
 <script lang="ts">
 	import CodeSample from './code-sample.svelte';
 	import { secretBytes, counter } from '../store';
-	import { HMAC_BYTES, HMAC_IPAD, base32ToUint8, numToUint8Array } from '../mfaUtils';
+	import { HMAC_BYTES, HMAC_IPAD, numToUint8Array } from '../mfaUtils';
 	import { derived } from 'svelte/store';
-	import { onMount } from 'svelte';
 
 	const buf2hex = (buffer: ArrayBuffer) => {
 		return [...new Uint8Array(buffer)].map((x) => x.toString(16).padStart(2, '0')).join('');
@@ -30,7 +29,9 @@
 	};
 
 	const innerHash = derived([secretBytes, counter], ([$secretBytes, $counter], set) => {
-		makeInnerHash($secretBytes, parseInt($counter)).then((result) => set(buf2hex(result)));
+		makeInnerHash($secretBytes, parseInt($counter)).then((result) =>
+			set(buf2hex(result as ArrayBuffer))
+		);
 	});
 
 	$: code = `const innerHash = new Uint8Array(await window.crypto.subtle.digest('SHA-1', innerWithCounter));

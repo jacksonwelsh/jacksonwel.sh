@@ -1,25 +1,34 @@
 import { derived, readable, writable } from 'svelte/store';
 import { DT, base32ToUint8, hmac, uint8ToBase32 } from './mfaUtils';
 
+export const LS_KEY = 'how-mfa-works.b32secret';
+
+export const genSecret = (): string => {
+	const randomBytes = new Uint8Array(20);
+	window.crypto.getRandomValues(randomBytes);
+	const asBase32 = uint8ToBase32(randomBytes).toLowerCase();
+
+	window.localStorage.setItem(LS_KEY, asBase32);
+	return asBase32;
+};
+
 export const initializeSecret = (set: (val: string) => void) => {
 	if (typeof window !== 'undefined') {
-		const preSavedSecret = window.localStorage.getItem('how-does-mfa-work.b32secret');
+		const preSavedSecret = window.localStorage.getItem(LS_KEY);
 		if (preSavedSecret != null) {
 			set(preSavedSecret);
 		} else {
-			const randomBytes = new Uint8Array(20);
-			window.crypto.getRandomValues(randomBytes);
-			const asBase32 = uint8ToBase32(randomBytes).toLowerCase();
-			set(asBase32);
-
-			window.localStorage.setItem('how-does-mfa-work.b32secret', asBase32);
+			set(genSecret());
 		}
 	}
 };
 
 export const secret = writable('', initializeSecret);
 
-export const secretBytes = derived(secret, ($secret) => base32ToUint8($secret));
+export const secretBytes = derived(secret, ($secret) => {
+	if (typeof window == 'undefined') return new Uint8Array(0);
+	return base32ToUint8($secret);
+});
 
 export const hoverBinRange = writable<[number, number]>([0, 0]);
 
@@ -35,7 +44,19 @@ export const timestamp = readable(Math.floor(Date.now() / 100), (set) => {
 	};
 });
 
-export const counter = derived(timestamp, ($timestamp) => Math.floor($timestamp / 300).toString());
+// the endless progression of time comes for us all, but for the purposes of this demo i think it's
+// acceptable to put it on hold for a moment.
+export const timeStopped = writable(false);
+export const timeStoppedAt = writable(0);
+
+export const counter = derived(
+	[timestamp, timeStopped, timeStoppedAt],
+	([$timestamp, $timeStopped, $timeStoppedAt]) => {
+		if ($timeStopped) return Math.floor($timeStoppedAt / 300).toString();
+
+		return Math.floor($timestamp / 300).toString();
+	}
+);
 
 export const hmacs = derived(
 	[secret, counter],

@@ -1,13 +1,15 @@
 <script lang="ts">
-	import Play24 from 'carbon-icons-svelte/lib/Play24';
-	import Pause24 from 'carbon-icons-svelte/lib/Pause24';
-	import Coffee24 from 'carbon-icons-svelte/lib/Cafe24';
-	import Briefcase24 from 'carbon-icons-svelte/lib/Portfolio24';
-	import Notification24 from 'carbon-icons-svelte/lib/Notification24';
-	import NotificationOff24 from 'carbon-icons-svelte/lib/NotificationOff24';
+	import {
+		Play,
+		Pause,
+		Cafe,
+		Portfolio,
+		Notification as NotificationIcon,
+		NotificationOff
+	} from 'carbon-icons-svelte';
 
 	let timer = 0;
-	let intervalId: NodeJS.Timer | null = null;
+	let intervalId: NodeJS.Timeout | null = null;
 	let work = true;
 	let notifications = false;
 
@@ -93,9 +95,9 @@
 		class="text-gray-400 hover:text-gray-100 transition"
 	>
 		{#if isRunning}
-			<Pause24 />
+			<Pause size={24} />
 		{:else}
-			<Play24 />
+			<Play size={24} />
 		{/if}
 	</button>
 	<button
@@ -103,9 +105,9 @@
 		class="text-gray-400 hover:text-gray-100 transition"
 	>
 		{#if work}
-			<Coffee24 />
+			<Cafe size={24} />
 		{:else}
-			<Briefcase24 />
+			<Portfolio size={24} />
 		{/if}
 	</button>
 	<button
@@ -113,9 +115,9 @@
 		class="text-gray-400 hover:text-gray-100 transition"
 	>
 		{#if notifications}
-			<NotificationOff24 />
+			<NotificationOff size={24} />
 		{:else}
-			<Notification24 />
+			<NotificationIcon size={24} />
 		{/if}
 	</button>
 </div>

@@ -1,3 +1,7 @@
+<svelte:head>
+	<title>Blog | Jackson Welsh</title>
+</svelte:head>
+
 <div class="container mx-auto">
 	<div class="text-left mt-3 text-slate-400 print:hidden flex">
 		<a href="/" class="text-blue-400 hover:underline">~</a>

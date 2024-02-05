@@ -15,6 +15,6 @@ paddedKey.set(keyBytes);  // [${filledArray}]
 `;
 </script>
 
-{#key $secretBytes}
+{#key secretBytes}
 	<CodeSample {code} />
 {/key}

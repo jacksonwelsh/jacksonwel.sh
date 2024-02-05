@@ -7,9 +7,7 @@
 	import RadialProgress from './radial-progress.svelte';
 	import { counter, timestamp } from './store';
 
-	import Minimize20 from 'carbon-icons-svelte/lib/Minimize20';
-	import Maximize20 from 'carbon-icons-svelte/lib/Maximize20';
-	import Close20 from 'carbon-icons-svelte/lib/Close20';
+	import { Minimize, Maximize, Close } from 'carbon-icons-svelte';
 	import { fly } from 'svelte/transition';
 
 	let authenticatorDiv: HTMLDivElement;
@@ -68,13 +66,14 @@
 					on:click={() => (minimize = !minimize)}
 				>
 					{#if minimize}
-						<Maximize20 class="p-0.5" />
+						<Maximize size={20} class="p-0.5" />
 					{:else}
-						<Minimize20 class="p-0.5" />
+						<Minimize size={20} class="p-0.5" />
 					{/if}
 				</button>
 				<button on:click={() => (show = false)} class="hover:cursor-pointer">
-					<Close20
+					<Close
+						size={20}
 						class="rounded-full hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors"
 					/>
 				</button>

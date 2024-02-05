@@ -2,9 +2,7 @@
 	import Divider from '$lib/divider.svelte';
 	import LogoCloud from '$lib/logocloud.svelte';
 	import ResumeHeader from '$lib/resumeHeader.svelte';
-	import LogoGithub16 from 'carbon-icons-svelte/lib/LogoGithub16';
-	import LogoLinkedin16 from 'carbon-icons-svelte/lib/LogoLinkedin16';
-	import Launch16 from 'carbon-icons-svelte/lib/Launch16';
+	import { LogoGithub, LogoLinkedin, Launch } from 'carbon-icons-svelte';
 
 	type JobDates =
 		| {
@@ -30,12 +28,12 @@
 	const socials = [
 		{
 			handle: '@jacksonwelsh',
-			logo: LogoGithub16,
+			logo: LogoGithub,
 			href: '//github.com/jacksonwelsh'
 		},
 		{
 			handle: '/in/jacksonwelsh',
-			logo: LogoLinkedin16,
+			logo: LogoLinkedin,
 			href: '//linkedin.com/in/jacksonwelsh'
 		}
 	];
@@ -129,6 +127,9 @@
 </script>
 
 <svelte:window on:beforeprint={updateEmail} />
+<svelte:head>
+	<title>Resume | Jackson Welsh</title>
+</svelte:head>
 
 <article class="container mx-auto sm:px-4 lg:max-w-5xl">
 	<div class="text-left mt-3 text-slate-400 print:hidden flex">
@@ -146,7 +147,7 @@
 		<h2 class="font-mono-thin font-mono text-teal-800 dark:text-teal-200 justify-start flex my-2">
 			{#each socials as { handle, logo, href }, idx}
 				<a class="flex items-center underline" {href} target="_blank"
-					><svelte:component this={logo} class="mr-2" />{handle}</a
+					><svelte:component this={logo} class="mr-2" size={20} />{handle}</a
 				>{#if idx !== socials.length - 1}<Divider class="mx-2" />{/if}
 			{/each}
 		</h2>
@@ -168,7 +169,8 @@
 				<div class="flex flex-wrap mb-2">
 					<strong class:underline={position.url} class="print:no-underline font-medium"
 						><a href={position.url} class="flex items-center"
-							>{position.title}{#if position.url}<Launch16
+							>{position.title}{#if position.url}<Launch
+									size={16}
 									class="underline ml-2 print:hidden"
 								/>{/if}</a
 						></strong
@@ -273,7 +275,7 @@
 					<strong class="font-medium">{position.title}</strong><Divider class="mx-2" />
 					<span class="font-light mx-1.5" class:underline={position.url}
 						><a href={position.url} class="flex items-center"
-							>{position.org}{#if position.url}<Launch16 class="underline ml-2" />{/if}</a
+							>{position.org}{#if position.url}<Launch size={16} class="underline ml-2" />{/if}</a
 						></span
 					><Divider class="mx-2" />{position.start} – {position.end ?? 'Present'}
 					<ul class="w-full list-dash list-inside ml-6 -indent-3">

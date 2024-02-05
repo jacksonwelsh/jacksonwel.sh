@@ -1,7 +1,15 @@
 <script lang="ts">
 	import MailingListCta from '$lib/mailing-list-cta.svelte';
 	import MfaSeedInitializationDemo from './mfa-seed-initialization-demo.svelte';
-	import { codes, initializeSecret, secret, secretBytes, timestamp } from './store';
+	import {
+		codes,
+		initializeSecret,
+		secret,
+		secretBytes,
+		timestamp,
+		timeStopped,
+		timeStoppedAt
+	} from './store';
 	import SecretDisplayEditor from './secret-display-editor.svelte';
 	import SecretUint8Display from './secret-uint8-display.svelte';
 	import SecretBinDisplay from './secret-bin-display.svelte';
@@ -27,13 +35,18 @@
 
 	let showAuthenticator = false;
 	let mfaInitComplete = false;
+
+	const stopTime = () => {
+		$timeStopped = true;
+		$timeStoppedAt = $timestamp;
+	};
 </script>
 
 <svelte:head>
 	<title>How does MFA work? | Jackson Welsh</title>
 	<meta property="og:type" content="article" />
 	<meta property="og:title" content="How does MFA work?" />
-	<meta property="og:url" content="https://jacksonwel.sh/blog/2024-01-31/how-does-mfa-work" />
+	<meta property="og:url" content="https://jacksonwel.sh/blog/2024-01-31/how-mfa-works" />
 	<meta property="og:site_name" content="Jackson Welsh" />
 	<meta
 		property="og:description"
@@ -53,7 +66,7 @@
 		<a href="/" class="text-blue-400 hover:underline">~</a>
 		/
 		<a href="/blog" class="text-blue-400 hover:underline">blog</a>
-		/how-does-mfa-work
+		/how-mfa-works
 	</div>
 </div>
 
@@ -97,27 +110,96 @@
 			authenticated.
 		</p>
 
-		<p>[things about how sms sucks here]</p>
+		<p>This system works well for the most part, but has some glaring issues:</p>
+
+		<ul>
+			<li>
+				Users traveling out of their home country can't access their accounts unless they have
+				international roaming enabled.
+			</li>
+			<li>
+				Users can't receive SMS messages in situations where internet is available, but mobile data
+				is not (like old buildings or airplanes).
+			</li>
+			<li>
+				SMS is often treated like a second authentication factor, but can be used in lieu of a
+				password:
+				<ul>
+					<li>
+						On many sites, you can set up multifactor authentication with SMS, but can also reset
+						your password with a text message.
+					</li>
+					<li>
+						If an attacker has control over your phone number, they can change your password with
+						it, then use your phone number as the second factor to sign in - really making it a
+						single authentication factor.
+					</li>
+				</ul>
+			</li>
+			<li>
+				SMS inherently relies on 3rd party infrastructure to deliver these authentication codes.
+				<ul>
+					<li>
+						There have been many notable cases of attackers using social engineering to gain control
+						over a target's phone number.
+					</li>
+					<li>
+						Since cell service providers have ultimate control over your phone number, there's not
+						much you can do as an individual to harden your phone number against compromise.
+					</li>
+				</ul>
+			</li>
+		</ul>
 
 		<h3 class="drop-shadow-glow">Email</h3>
 
-		<p>[details about email]</p>
+		<p>
+			Email MFA works rather similarly to SMS MFA: the authentication server generates a code, sends
+			it to the registered email on your account, and waits for you to enter the code (or perhaps
+			click a link) before granting access to your account.
+		</p>
+
+		<p>
+			Email is generally less flawed than SMS: users have the option to control their own email
+			infrastructure if they desire (and at the very least there are more public choices of email
+			providers than there are cell service providers). Typically, if you're trying to authenticate
+			against a web service, you'll also have access to email, and there's no geographic restriction
+			on email: no need for an expensive roaming plan while abroad.
+		</p>
+
+		<p>
+			I've also seen more clever anti-phishing measures in emails, such as requiring users to click
+			a link <em>on the device they're attempting to sign in from</em>. Systems like this may be
+			less convenient, but it reduces the risk of users sharing their 6-digit codes with someone
+			impersonating a service provider. You typically don't see schemes like this in SMS-based MFA
+			because any device with a web browser can access email, but not all devices can access text
+			messages.
+		</p>
+
+		<p>
+			Email does suffer the same problem as SMS when it comes to password reset attacks: nearly all
+			web services will allow you to reset your password using a link sent to your email, with
+			little extra verification beyond "does this user have access to the associated email account."
+			I consider this less of a problem than SMS as there are more security features available for
+			email accounts (like strong MFA with WebAuthn) and less possibility of social engineering
+			(have you ever tried to contact Google for support?).
+		</p>
 
 		<h3>Time-based One Time Password (TOTP)</h3>
 
 		<p>
-			TOTP builds on the solutions introduced above by using an open algorithm to generate codes for
-			you. Rather than receiving an email with a code for your account, you get a "seed" when
-			setting up MFA. This seed, when input into any TOTP app, will generate 6-digit codes based on
-			what time it is.
+			TOTP builds on the solutions introduced above by using an open algorithm<sup>0</sup> to generate
+			codes for you. Rather than receiving an email with a code for your account, you get a "seed" when
+			setting up MFA. This seed, when input into any TOTP app, will generate 6-digit codes based on what
+			time it is.
 		</p>
 
 		<p>
 			TOTP has many advantages: it works entirely offline (your authenticator could be a device
 			without internet access entirely), doesn't rely on vulnerable infrastructure, and is portable.
-			If you change your phone number or email address, you can't receive MFA codes anymore. If you
-			get a new phone or choose to use a new MFA app, you can simply export the seeds for your
-			accounts[0] and load them into your new app.
+			If you change your phone number or email address, you can't receive MFA codes send to them
+			anymore. If you get a new phone or choose to use a new MFA app, you can simply export the
+			seeds for your accounts<sup>1</sup> and load them into your new app.
 		</p>
 
 		<p>Let's take a closer look at how MFA works.</p>
@@ -137,7 +219,7 @@
 		</p>
 
 		<Portal label="uint8" class="cursor-cell">
-			{#key $secret}
+			{#key secret}
 				<SecretUint8Display />
 			{/key}
 		</Portal>
@@ -151,7 +233,7 @@
 			what they represent in base32:
 		</p>
 		<Portal class="!block cursor-cell" label="uint8 binary">
-			{#key $secret}
+			{#key secret}
 				<SecretBinDisplay />
 			{/key}
 		</Portal>
@@ -162,7 +244,7 @@
 			switch from 8-bit to 5-bit.
 		</p>
 		<Portal class="!block cursor-cell" label="base32/binary">
-			{#key $secret}
+			{#key secret}
 				<SecretCombinedDisplay />
 			{/key}
 		</Portal>
@@ -266,25 +348,65 @@
 			as <code>K</code>.
 		</p>
 
+		<div
+			class="flex items-center flex-wrap rounded-md border-2 bg-gradient-to-tr dark:border-yellow-600 border-yellow-400 dark:from-orange-900/25 dark:to-yellow-900/25 from-orange-100 to-yellow-100 text-yellow-800 dark:text-yellow-200 p-4 my-4"
+		>
+			<div class="text-sm w-full mb-2">
+				<strong>Heads up!</strong> The examples below update dynamically as your system clock changes,
+				which may be distracting. You can freeze the counter if you want the results to stay static.
+			</div>
+			{#if !$timeStopped}
+				<Button variant="danger" on:click={stopTime}>STOP TIME</Button>
+			{:else}
+				<div class="text-sm w-full mb-2">
+					heads up- there may be some unintentional jank on the interactive demos elsewhere on the
+					page while time is stopped.
+				</div>
+
+				<Button variant="secondary" on:click={() => ($timeStopped = false)}
+					>time marches on, unfeeling, into eternity</Button
+				>
+			{/if}
+		</div>
+
 		<p>
 			First thing's first, we need to implement <code>HMAC-SHA-1</code>. To do this, we first need
 			to define some values:
 		</p>
 
 		<Portal label="typescript">
-			<VarDeclarations />
+			{#key secret}
+				<VarDeclarations />
+			{/key}
 		</Portal>
 
-		<p>Now we need to pad the key up to our block size <code>B</code>:</p>
+		<p>
+			<code>ipad</code> and <code>opad</code> are constant values specified in the RFC for HOTP. By
+			XORing these values against the actual secretKey (which we do in the following steps), we are
+			deriving two separate keys to prevent hash collision attacks. The actual values of these
+			variables is mostly irrelevant–the important part is that they're different. More information
+			on this in the
+			<a
+				href="https://cseweb.ucsd.edu/~mihir/papers/kmd5.pdf"
+				target="_blank"
+				rel="nofollow noopener">security proof</a
+			> (pdf warning).
+		</p>
+
+		<p>Now we need to pad the key up to our block size <code>HMAC_BYTES</code>:</p>
 
 		<Portal label="typescript">
-			<PadKey />
+			{#key secretBytes}
+				<PadKey />
+			{/key}
 		</Portal>
 
 		<p>Next, XOR <code>paddedKey</code> with <code>ipad</code>.</p>
 
 		<Portal label="typescript">
-			<XorWithIpad />
+			{#key secretBytes}
+				<XorWithIpad />
+			{/key}
 		</Portal>
 
 		<p>
@@ -293,31 +415,41 @@
 		</p>
 
 		<Portal label="typescript">
-			<AppendCounterStream />
+			{#key secretBytes}
+				<AppendCounterStream />
+			{/key}
 		</Portal>
 
 		<p>Then we take a SHA-1 hash of those bytes.</p>
 
 		<Portal label="typescript">
-			<HashInner />
+			{#key secretBytes}
+				<HashInner />
+			{/key}
 		</Portal>
 
 		<p>Going back to HMAC_OPAD for a moment, we need to XOR the key with the OPAD.</p>
 
 		<Portal label="typescript">
-			<XorWithOpad />
+			{#key secretBytes}
+				<XorWithOpad />
+			{/key}
 		</Portal>
 
 		<p>Then, append the innerHash to the XOR'd stream.</p>
 
 		<Portal label="typescript">
-			<AppendHashToOpad />
+			{#key secretBytes}
+				<AppendHashToOpad />
+			{/key}
 		</Portal>
 
 		<p>Finally, take the SHA-1 hash of that stream and you have a SHA-1 HMAC.</p>
 
 		<Portal label="typescript">
-			<FinalHmacHash />
+			{#key secretBytes}
+				<FinalHmacHash />
+			{/key}
 		</Portal>
 
 		<p>
@@ -327,7 +459,9 @@
 		</p>
 
 		<Portal label="typescript">
-			<Truncation />
+			{#key secret}
+				<Truncation />
+			{/key}
 		</Portal>
 
 		<p>
@@ -336,8 +470,55 @@
 			to fill the space properly.
 		</p>
 
+		<h2>WebAuthn</h2>
+
+		<p>
+			WebAuthn (also known as Passkeys) is another form of MFA (or a replacement for passwords,
+			depending on implementation), and is more secure than any of the code-based solutions
+			discussed here. I won't dwell on this too much since I have <a
+				href="../2024-01-24/passwords-suck">another post</a
+			> about how this all works already–if you found this one interesting I'd recommend giving it a
+			look!
+		</p>
+
+		<h2>Closing thoughts</h2>
+
+		<p>
+			TOTP has long been one of those things that I vaguely understood the concept of, but never
+			really thought to dive into before writing this post. I find reading RFCs for concepts like
+			this to be enjoyable because they really show the collaborative nature of the internet: these
+			documents are a collaborative effort to develop and are freely available online for anyone to
+			read.
+		</p>
+
+		<p>
+			I definitely learned quite a bit from reading the related RFCs and implementing it myself on
+			this page. I definitely enjoyed building the interactive parts of this post–I think there's
+			something special about making a page that feels <em>alive</em> in a way.
+		</p>
+
 		<MailingListCta />
 
-		<sup>1</sup> Footnote here.
+		<div class="text-sm">
+			<p>
+				<sup>0</sup> Some SMS/Email MFA implementations actually use this algorithm under the hood–if
+				you configure your Amazon account for TOTP and SMS, the code texted to you will be the same as
+				the one appearing in your authenticator.
+			</p>
+			<p>
+				<sup>1</sup> Not all TOTP apps support this feature, and it's arguable that this decreases the
+				security since an attacker could export your data and compromise all of your accounts. I disagree,
+				and think this is a reasonable tradeoff between useability and security. Apps should check that
+				the user attempting to do an export is the device owner (using biometrics, a pin, or a custom
+				password for the app) first, but beyond that the user should be allowed to control their data
+				however they like.
+			</p>
+			<p>
+				Authy does not allow users to export MFA secrets, but does support multi-device e2ee sync.
+				Google Authenticator allows transferring between instances of the app with a QR code (but
+				you can decode this yourself to get the raw secret strings). 1Password allows you to view
+				your TOTP secrets directly in the app.
+			</p>
+		</div>
 	</article>
 </main>

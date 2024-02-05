@@ -5,7 +5,7 @@
 	import QuoteBlock from '$lib/editor/quoteBlock.svelte';
 	import ListBlock from '$lib/editor/listBlock.svelte';
 	import type { PageData } from './$types';
-	import ArrowLeft16 from 'carbon-icons-svelte/lib/ArrowLeft16';
+	import { ArrowLeft } from 'carbon-icons-svelte';
 
 	export let data: PageData;
 	console.log({ data });
@@ -27,7 +27,7 @@
 	{#if content}
 		<div class="my-12">
 			<a href="/travel" class="flex items-center mb-1 text-gray-600 dark:text-gray-400 text-sm">
-				<ArrowLeft16 class="inline-block mr-2 h-4 w-4" /> all posts
+				<ArrowLeft size={16} class="inline-block mr-2 h-4 w-4" /> all posts
 			</a>
 			<h1 class="text-4xl font-bold">{title}</h1>
 			<span class="text-sm text-gray-400 dark:text-gray-600">{toDateString(content.time)}</span>

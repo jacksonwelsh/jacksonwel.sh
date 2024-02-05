@@ -2,8 +2,7 @@
 	import { Passage, User } from '@passageidentity/passage-js';
 	import type { PageServerData } from './$types';
 	import { PUBLIC_PASSAGE_APP_ID } from '$env/static/public';
-	import Locked16 from 'carbon-icons-svelte/lib/Locked16';
-	import type { Block, GBlock, ParagraphData } from '$lib/types';
+	import { Locked } from 'carbon-icons-svelte';
 	import { onMount } from 'svelte';
 	import Button from '$lib/button.svelte';
 
@@ -55,6 +54,10 @@
 		if (!isSignedIn) user = null;
 	});
 </script>
+
+<svelte:head>
+	<title>Travel | Jackson Welsh</title>
+</svelte:head>
 
 <main class="container mx-auto sm:px-4 lg:max-w-5xl my-12">
 	<div class="mt-12 mb-6">
@@ -113,7 +116,7 @@
 						>
 							<div class="mb-2">
 								<h2 class="text-xl font-bold flex items-center gap-1">
-									<Locked16 class="h-5 w-5" />
+									<Locked size={16} class="h-5 w-5" />
 									{post.title}
 								</h2>
 								<span class="text-sm text-gray-400 dark:text-gray-600"

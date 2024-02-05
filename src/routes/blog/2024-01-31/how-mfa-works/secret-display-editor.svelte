@@ -1,13 +1,14 @@
 <script lang="ts">
-	import Edit20 from 'carbon-icons-svelte/lib/Edit20/Edit20.svelte';
+	import { Edit, Renew } from 'carbon-icons-svelte';
 	import ControlledInput from '$lib/input.svelte';
 	import Button from '$lib/button.svelte';
 	import { alphabet, getByteColor, HIGHLIGHT_CLASS } from './mfaUtils';
-	import { clearHoverRange, hoverBinRange, secret, secretBytes } from './store';
+	import { clearHoverRange, genSecret, hoverBinRange, LS_KEY, secret, secretBytes } from './store';
 
 	let editingSecret = false;
 	let editableSecret = '';
 	let secretEditErrorMessage = '';
+	let newSecretButtonRef: HTMLDivElement;
 
 	let charRefs: HTMLSpanElement[] = new Array($secretBytes.length);
 
@@ -28,7 +29,7 @@
 
 		secretEditErrorMessage = '';
 		$secret = transformed;
-		window.localStorage.setItem('how-does-mfa-work.b32secret', $secret);
+		window.localStorage.setItem(LS_KEY, $secret);
 		editingSecret = false;
 	};
 
@@ -36,6 +37,17 @@
 		const start = wordIndex * 40;
 		const end = (wordIndex + 1) * 40;
 		$hoverBinRange = [start, end];
+	};
+
+	const onNewSecretClick = () => {
+		console.log({ rt: newSecretButtonRef.style.transform });
+		const exr = /rotate\((-?\d+)deg\)/;
+		const justTheNumber = exr.exec(newSecretButtonRef.style.transform);
+		console.log({ rt: newSecretButtonRef.style.transform, justTheNumber });
+		const currRotation = parseInt(justTheNumber?.[1] ?? '0');
+		newSecretButtonRef.style.transform = `rotate(${currRotation - 180}deg)`;
+
+		$secret = genSecret();
 	};
 
 	$: {
@@ -66,6 +78,7 @@
 	<div class="select-all flex gap-2">
 		{#each $secret.match(/.{2,8}/g) ?? [] as chunk, chunkIdx}
 			<span
+				role="presentation"
 				on:pointerenter={() => pushHoverRange(chunkIdx)}
 				on:mouseleave={clearHoverRange}
 				style="-webkit-user-select: none"
@@ -76,13 +89,24 @@
 				{/each}
 			</span>
 		{/each}
-		<span>
-			<Edit20
-				on:click={startSecretEdit}
-				title="edit"
-				class="text-gray-600 dark:text-gray-400 hover:cursor-pointer"
-			/>
-		</span>
+		<div class="flex gap-4 ml-2 items-center">
+			<div>
+				<Edit
+					size={20}
+					on:click={startSecretEdit}
+					title="edit"
+					class="text-gray-600 dark:text-gray-400 hover:cursor-pointer"
+				/>
+			</div>
+			<div bind:this={newSecretButtonRef} class="transition-transform duration-500">
+				<Renew
+					size={20}
+					on:click={onNewSecretClick}
+					title="generate a new secret"
+					class="text-gray-600 dark:text-gray-400 hover:cursor-pointer"
+				/>
+			</div>
+		</div>
 	</div>
 {:else}
 	<div class="flex items-center justify-center flex-wrap w-full">

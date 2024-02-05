@@ -2,7 +2,7 @@
 	import { goto } from '$app/navigation';
 	import { PUBLIC_PASSAGE_APP_ID } from '$env/static/public';
 	import { Passage } from '@passageidentity/passage-js';
-	import HardwareSecurityModule32 from 'carbon-icons-svelte/lib/HardwareSecurityModule32';
+	import { HardwareSecurityModule } from 'carbon-icons-svelte';
 
 	const urlParams = new URLSearchParams(window.location.search);
 	console.log({ urlParams });
@@ -51,7 +51,7 @@
 
 	const addDeviceAndSignIn = () => {
 		pageState = 'addingDevice';
-		passage
+		(passage as any)
 			.magicLinkActivateWebAuthnNewDevice(magicLink)
 			.then(() => {
 				pageState = 'signInInterstitial';
@@ -59,7 +59,7 @@
 					goto('/travel');
 				}, 5000);
 			})
-			.catch((error) => {
+			.catch((error: any) => {
 				console.error(error);
 				pageState = 'magicLinkValidationError';
 			});
@@ -90,7 +90,7 @@
 			<div
 				class="w-48 h-48 my-6 rounded-full border border-teal-600 dark:border-teal-400 mx-auto flex items-center justify-center"
 			>
-				<HardwareSecurityModule32 class="w-24 h-24 text-teal-600 dark:text-teal-400" />
+				<HardwareSecurityModule size={32} class="w-24 h-24 text-teal-600 dark:text-teal-400" />
 			</div>
 			<h2 class="text-lg font-bold text-center">Register this device with a passkey</h2>
 		{:else if pageState === 'signInInterstitial'}
