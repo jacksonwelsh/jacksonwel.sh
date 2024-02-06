@@ -85,3 +85,7 @@
 .cdx-list__item {
 	@apply !leading-5 my-1;
 }
+
+.hljs {
+	@apply scrollbar scrollbar-thumb-gray-600 scrollbar-track-gray-200 dark:scrollbar-track-gray-800;
+}

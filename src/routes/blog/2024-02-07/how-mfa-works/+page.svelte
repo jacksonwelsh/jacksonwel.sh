@@ -87,17 +87,11 @@
 				<p>Planned changes:</p>
 				<ul>
 					<li>rework closing statement a bit</li>
-					<li>
-						Keep poking the issue i'm having with the append counter stream step... let me know if
-						you see an array of [54, 54, 54, 54, ...] immediately after loading up the page (it'll
-						always correct itself after the counter increments). It seems to only happen on dev but
-						that makes it scary.
-					</li>
+					<li>link footnote references to notes</li>
 					<li>
 						might elaborate a bit on the TOTP steps, lmk if anything is unclear rn and i'll expand
 						on them
 					</li>
-					<li>need to add output comments to some of the later code samples</li>
 					<li>
 						might allow users to specify a custom length and period since it's technically in the
 						spec
@@ -515,8 +509,8 @@
 
 		<p>
 			I definitely learned quite a bit from reading the related RFCs and implementing it myself on
-			this page. I definitely enjoyed building the interactive parts of this post–I think there's
-			something special about making a page that feels <em>alive</em> in a way.
+			this page. I enjoyed building the interactive parts of this post–I think there's something
+			special about making a page that feels <em>alive</em> in a way.
 		</p>
 
 		<MailingListCta />
