@@ -79,7 +79,8 @@
 		{#each $secret.match(/.{2,8}/g) ?? [] as chunk, chunkIdx}
 			<span
 				role="presentation"
-				on:pointerenter={() => pushHoverRange(chunkIdx)}
+				on:touchstart={() => pushHoverRange(chunkIdx)}
+				on:mouseenter={() => pushHoverRange(chunkIdx)}
 				on:mouseleave={clearHoverRange}
 				style="-webkit-user-select: none"
 				class={`font-mono font-mono-normal ${getByteColor(chunkIdx, 1)}`}
