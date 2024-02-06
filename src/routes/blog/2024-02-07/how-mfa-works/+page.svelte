@@ -28,6 +28,8 @@
 	import AppendHashToOpad from './code-samples/07-append-hash-to-opad.svelte';
 	import FinalHmacHash from './code-samples/08-final-hmac-hash.svelte';
 	import Truncation from './code-samples/09-truncation.svelte';
+	import Footnote from '$lib/footnote.svelte';
+	import FootnoteLink from '$lib/footnote-link.svelte';
 
 	onMount(() => {
 		initializeSecret(secret.set);
@@ -87,7 +89,6 @@
 				<p>Planned changes:</p>
 				<ul>
 					<li>rework closing statement a bit</li>
-					<li>link footnote references to notes</li>
 					<li>
 						might elaborate a bit on the TOTP steps, lmk if anything is unclear rn and i'll expand
 						on them
@@ -204,10 +205,11 @@
 		<h3>Time-based One Time Password (TOTP)</h3>
 
 		<p>
-			TOTP builds on the solutions introduced above by using an open algorithm<sup>0</sup> to generate
-			codes for you. Rather than receiving an email with a code for your account, you get a "seed" when
-			setting up MFA. This seed, when input into any TOTP app, will generate 6-digit codes based on what
-			time it is.
+			TOTP builds on the solutions introduced above by using an open algorithm<FootnoteLink
+				index={0}
+			/> to generate codes for you. Rather than receiving an email with a code for your account, you
+			get a "seed" when setting up MFA. This seed, when input into any TOTP app, will generate 6-digit
+			codes based on what time it is.
 		</p>
 
 		<p>
@@ -215,7 +217,7 @@
 			without internet access entirely), doesn't rely on vulnerable infrastructure, and is portable.
 			If you change your phone number or email address, you can't receive MFA codes send to them
 			anymore. If you get a new phone or choose to use a new MFA app, you can simply export the
-			seeds for your accounts<sup>1</sup> and load them into your new app.
+			seeds for your accounts<FootnoteLink index={1} /> and load them into your new app.
 		</p>
 
 		<p>Let's take a closer look at how MFA works.</p>
@@ -515,26 +517,30 @@
 
 		<MailingListCta />
 
-		<div class="text-sm">
-			<p>
-				<sup>0</sup> Some SMS/Email MFA implementations actually use this algorithm under the hood–if
-				you configure your Amazon account for TOTP and SMS, the code texted to you will be the same as
-				the one appearing in your authenticator.
-			</p>
-			<p>
-				<sup>1</sup> Not all TOTP apps support this feature, and it's arguable that this decreases the
-				security since an attacker could export your data and compromise all of your accounts. I disagree,
-				and think this is a reasonable tradeoff between useability and security. Apps should check that
-				the user attempting to do an export is the device owner (using biometrics, a pin, or a custom
-				password for the app) first, but beyond that the user should be allowed to control their data
-				however they like.
-			</p>
-			<p>
-				Authy does not allow users to export MFA secrets, but does support multi-device e2ee sync.
-				Google Authenticator allows transferring between instances of the app with a QR code (but
-				you can decode this yourself to get the raw secret strings). 1Password allows you to view
-				your TOTP secrets directly in the app.
-			</p>
+		<div>
+			<Footnote index={0}>
+				<p>
+					Some SMS/Email MFA implementations actually use this algorithm under the hood–if you
+					configure your Amazon account for TOTP and SMS, the code texted to you will be the same as
+					the one appearing in your authenticator.
+				</p>
+			</Footnote>
+			<Footnote index={1}>
+				<p>
+					Not all TOTP apps support this feature, and it's arguable that this decreases the security
+					since an attacker could export your data and compromise all of your accounts. I disagree,
+					and think this is a reasonable tradeoff between useability and security. Apps should check
+					that the user attempting to do an export is the device owner (using biometrics, a pin, or
+					a custom password for the app) first, but beyond that the user should be allowed to
+					control their data however they like.
+				</p>
+				<p>
+					Authy does not allow users to export MFA secrets, but does support multi-device e2ee sync.
+					Google Authenticator allows transferring between instances of the app with a QR code (but
+					you can decode this yourself to get the raw secret strings). 1Password allows you to view
+					your TOTP secrets directly in the app.
+				</p>
+			</Footnote>
 		</div>
 	</article>
 </main>
