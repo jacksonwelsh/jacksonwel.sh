@@ -5,9 +5,9 @@
 
 	$: code = `// HMAC_BYTES is the block size of our hash function, SHA-1
 const HMAC_BYTES = 64;
-// ipad is the byte 0x36 repeated B times
+// ipad is the byte 0x36 repeated HMAC_BYTES times
 const HMAC_IPAD = new Array(HMAC_BYTES).fill(0x36);
-// opad is the byte 0x5C repeated B times
+// opad is the byte 0x5C repeated HMAC_BYTES times
 const HMAC_OPAD = new Array(HMAC_BYTES).fill(0x5C);
 
 const secretKey = "${$secret}";

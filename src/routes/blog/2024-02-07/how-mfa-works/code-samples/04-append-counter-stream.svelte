@@ -37,7 +37,6 @@
 
 innerWithCounter.set(inner);
 innerWithCounter.set(counterBytes, inner.length);
-// TODO this doesn't work right on the first load but corrects itself when the counter updates
 // -> [${$appendedCounter}]
 `;
 </script>
