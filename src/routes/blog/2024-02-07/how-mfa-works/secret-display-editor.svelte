@@ -8,7 +8,7 @@
 	let editingSecret = false;
 	let editableSecret = '';
 	let secretEditErrorMessage = '';
-	let newSecretButtonRef: HTMLDivElement;
+	let newSecretButtonRef: HTMLButtonElement;
 
 	let charRefs: HTMLSpanElement[] = new Array($secretBytes.length);
 
@@ -90,15 +90,14 @@
 			</span>
 		{/each}
 		<div class="flex gap-4 ml-2 items-center">
-			<div>
+			<button on:click={startSecretEdit}>
 				<Edit
 					size={20}
-					on:click={startSecretEdit}
 					title="edit"
 					class="text-gray-600 dark:text-gray-400 hover:cursor-pointer"
 				/>
-			</div>
-			<div
+			</button>
+			<button
 				on:click={onNewSecretClick}
 				bind:this={newSecretButtonRef}
 				class="transition-transform duration-500"
@@ -108,7 +107,7 @@
 					title="generate a new secret"
 					class="text-gray-600 dark:text-gray-400 hover:cursor-pointer"
 				/>
-			</div>
+			</button>
 		</div>
 	</div>
 {:else}

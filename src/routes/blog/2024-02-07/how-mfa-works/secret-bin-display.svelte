@@ -46,8 +46,10 @@
 	<div class={`flex items-center justify-center gap-2 my-2 ${getByteColor(chunkIndex, 1)}`}>
 		{#each chunk as byte, byteIndex}
 			<span
-				on:pointerenter={() => pushHoverRange(chunkIndex, byteIndex)}
+				on:touchstart={() => pushHoverRange(chunkIndex, byteIndex)}
+				on:mouseenter={() => pushHoverRange(chunkIndex, byteIndex)}
 				on:mouseleave={() => clearHoverRange()}
+				role="presentation"
 				class={`font-mono font-mono-normal`}
 				style="-webkit-user-select: none"
 				>{#each Array.from(byte.toString(2).padStart(8, '0')) as bit, bitIndex}

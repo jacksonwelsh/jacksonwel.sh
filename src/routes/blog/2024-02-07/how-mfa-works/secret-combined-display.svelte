@@ -51,7 +51,9 @@
 			<div
 				class="flex flex-wrap items-center justify-center text-center font-mono font-mono-normal w-[5ch] text-xs sm:text-sm md:text-base"
 				style="-webkit-user-select: none"
-				on:pointerenter={() => pushHoverRange(lineIdx, chunkIdx)}
+				role="presentation"
+				on:touchstart={() => pushHoverRange(lineIdx, chunkIdx)}
+				on:mouseenter={() => pushHoverRange(lineIdx, chunkIdx)}
 				on:mouseleave={clearHoverRange}
 			>
 				<div class="text-center w-full">

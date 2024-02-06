@@ -43,12 +43,12 @@
 
 <div class="mx-auto grid grid-cols-5 text-center w-[40ch]">
 	{#each $secretBytes as byte, i}
-		<!-- this one specifically doesn't play nice with on:pointerenter alone, likely something to do with the grid layout-->
 		<span
 			on:mouseenter={() => pushHoverRange(i)}
-			on:pointerenter={() => pushHoverRange(i)}
+			on:touchstart={() => pushHoverRange(i)}
 			on:mouseleave={clearHoverRange}
 			bind:this={byteRefs[i]}
+			role="presentation"
 			style="-webkit-user-select: none"
 			class={`font-mono font-mono-normal ${getByteColor(i, 5)}`}>{byte}</span
 		>
