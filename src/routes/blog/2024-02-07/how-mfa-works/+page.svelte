@@ -49,17 +49,12 @@
 	<meta property="og:type" content="article" />
 	<meta property="og:title" content="How does MFA work?" />
 	<meta property="og:url" content="https://jacksonwel.sh/blog/2024-02-07/how-mfa-works" />
-	<meta
-		property="og:image"
-		content="https://content.jacksonwel.sh/blog/2024-02-07/social-img.png"
-	/>
 	<meta property="og:site_name" content="Jackson Welsh" />
-	<meta property="og:description" content="Exploring how those 6-digit codes get generated." />
+	<meta property="og:description" content="Exploring how these 6-digit codes are generated." />
 	<meta property="og:article:published_time" content="2024-02-07" />
 	<meta property="og:article:author" content="Jackson Welsh" />
 	<meta property="og:article:tag" content="security" />
 	<meta property="og:article:tag" content="authentication" />
-	<meta property="og:article:tag" content="totp" />
 	<meta property="og:article:tag" content="mfa" />
 </svelte:head>
 
