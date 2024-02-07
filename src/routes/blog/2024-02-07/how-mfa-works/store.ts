@@ -1,5 +1,5 @@
 import { derived, readable, writable } from 'svelte/store';
-import { DT, base32ToUint8, hmac, uint8ToBase32 } from './mfaUtils';
+import { DT, alphabet, base32ToUint8, hmac, uint8ToBase32 } from './mfaUtils';
 
 export const LS_KEY = 'how-mfa-works.b32secret';
 
@@ -14,8 +14,13 @@ export const genSecret = (): string => {
 
 export const initializeSecret = (set: (val: string) => void) => {
 	if (typeof window !== 'undefined') {
-		const preSavedSecret = window.localStorage.getItem(LS_KEY);
-		if (preSavedSecret != null) {
+		const preSavedSecret = window.localStorage.getItem(LS_KEY) ?? '';
+		const isValid =
+			Array.from(preSavedSecret).every((char) => alphabet.includes(char)) &&
+			preSavedSecret.length >= 8 &&
+			preSavedSecret.length <= 64;
+
+		if (isValid) {
 			set(preSavedSecret);
 		} else {
 			set(genSecret());

@@ -132,8 +132,10 @@
 				SMS inherently relies on 3rd party infrastructure to deliver these authentication codes.
 				<ul>
 					<li>
-						There have been many notable cases of attackers using social engineering to gain control
-						over a target's phone number.
+						There have been <a
+							href="https://www.nytimes.com/2019/09/05/technology/sim-swap-jack-dorsey-hack.html?unlocked_article_code=1.Tk0.q8G7.mZDcmNzr7AAO&bgrp=g&smid=url-share"
+							>many notable cases</a
+						> of attackers using social engineering to gain control over a target's phone number.
 					</li>
 					<li>
 						Since cell service providers have ultimate control over your phone number, there's not
@@ -212,7 +214,7 @@
 		</p>
 
 		<Portal label="uint8" class="cursor-cell">
-			{#key secret}
+			{#key $secret}
 				<SecretUint8Display />
 			{/key}
 		</Portal>
@@ -226,7 +228,7 @@
 			what they represent in base32:
 		</p>
 		<Portal class="!block cursor-cell" label="uint8 binary">
-			{#key secret}
+			{#key $secret}
 				<SecretBinDisplay />
 			{/key}
 		</Portal>
@@ -237,7 +239,7 @@
 			switch from 8-bit to 5-bit.
 		</p>
 		<Portal class="!block cursor-cell" label="base32/binary">
-			{#key secret}
+			{#key $secret}
 				<SecretCombinedDisplay />
 			{/key}
 		</Portal>

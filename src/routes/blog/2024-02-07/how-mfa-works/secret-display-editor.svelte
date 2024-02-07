@@ -25,6 +25,16 @@
 			return;
 		}
 
+		if (transformed.length > 64) {
+			secretEditErrorMessage = 'Maximum length: 64 characters';
+			return;
+		}
+
+		if (transformed.length < 8) {
+			secretEditErrorMessage = 'Minimum length: 8 characters';
+			return;
+		}
+
 		charRefs = new Array($secretBytes.length);
 
 		secretEditErrorMessage = '';
