@@ -60,7 +60,6 @@
 	<meta property="og:article:tag" content="security" />
 	<meta property="og:article:tag" content="authentication" />
 	<meta property="og:article:tag" content="totp" />
-	<meta property="og:article:tag" content="2fa" />
 	<meta property="og:article:tag" content="mfa" />
 </svelte:head>
 
