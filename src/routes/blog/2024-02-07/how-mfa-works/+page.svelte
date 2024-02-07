@@ -51,7 +51,7 @@
 	<meta property="og:url" content="https://jacksonwel.sh/blog/2024-02-07/how-mfa-works" />
 	<meta
 		property="og:image"
-		content="https://images.jacksonwel.sh/blog/2024-02-07/how-mfa-works.png"
+		content="https://images.jacksonwel.sh/blog/2024-02-07/how-mfa-works-centered.png"
 	/>
 	<meta property="og:site_name" content="Jackson Welsh" />
 	<meta property="og:description" content="Exploring how these 6-digit codes are generated." />
