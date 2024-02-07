@@ -49,10 +49,13 @@
 	<meta property="og:type" content="article" />
 	<meta property="og:title" content="How does MFA work?" />
 	<meta property="og:url" content="https://jacksonwel.sh/blog/2024-02-07/how-mfa-works" />
-	<meta property="og:image" content="https://jacksonwel.sh/blog/2024-02-07/social-img.png" />
+	<meta
+		property="og:image"
+		content="https://content.jacksonwel.sh/blog/2024-02-07/social-img.png"
+	/>
 	<meta property="og:site_name" content="Jackson Welsh" />
 	<meta property="og:description" content="Exploring how those 6-digit codes get generated." />
-	<meta property="og:article:published_time" content="2024-01-31" />
+	<meta property="og:article:published_time" content="2024-02-07" />
 	<meta property="og:article:author" content="Jackson Welsh" />
 	<meta property="og:article:tag" content="security" />
 	<meta property="og:article:tag" content="authentication" />
@@ -76,7 +79,7 @@
 	<article class="mx-auto prose dark:prose-invert">
 		<h1 class="font-mono mb-2">How does MFA work?</h1>
 		<div class="text-lg text-gray-600 dark:text-gray-400">SMS, TOTP, WebAuthn, oh my!</div>
-		<time class="text-sm text-gray-600 dark:text-gray-400" datetime="2024-01-31">31 Jan 2024</time>
+		<time class="text-sm text-gray-600 dark:text-gray-400" datetime="2024-02-07">07 Feb 2024</time>
 
 		<p>
 			Passwords aren't enough to keep your most important accounts secure. As I <a
