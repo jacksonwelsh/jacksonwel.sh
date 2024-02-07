@@ -48,19 +48,17 @@
 	<title>How does MFA work? | Jackson Welsh</title>
 	<meta property="og:type" content="article" />
 	<meta property="og:title" content="How does MFA work?" />
-	<meta property="og:url" content="https://jacksonwel.sh/blog/2024-01-31/how-mfa-works" />
+	<meta property="og:url" content="https://jacksonwel.sh/blog/2024-02-07/how-mfa-works" />
+	<meta property="og:image" content="https://jacksonwel.sh/blog/2024-02-07/social-img.png" />
 	<meta property="og:site_name" content="Jackson Welsh" />
-	<meta
-		property="og:description"
-		content="Lessons learned from building serverless applications on AWS."
-	/>
+	<meta property="og:description" content="Exploring how those 6-digit codes get generated." />
 	<meta property="og:article:published_time" content="2024-01-31" />
 	<meta property="og:article:author" content="Jackson Welsh" />
-	<meta property="og:article:tag" content="serverless" />
-	<meta property="og:article:tag" content="cloud" />
-	<meta property="og:article:tag" content="infrastructure" />
-	<meta property="og:article:tag" content="devops" />
-	<meta property="og:article:tag" content="aws" />
+	<meta property="og:article:tag" content="security" />
+	<meta property="og:article:tag" content="authentication" />
+	<meta property="og:article:tag" content="totp" />
+	<meta property="og:article:tag" content="2fa" />
+	<meta property="og:article:tag" content="mfa" />
 </svelte:head>
 
 <div class="container mx-auto">
@@ -76,31 +74,6 @@
 
 <main class="mx-auto my-16 p-2 md:p-0">
 	<article class="mx-auto prose dark:prose-invert">
-		<div
-			class="flex items-center flex-wrap rounded-md border-2 bg-gradient-to-tr dark:border-green-600 border-green-400 dark:from-blue-900/25 dark:to-green-900/25 from-blue-100 to-green-100 text-green-800 dark:text-green-200 p-4 my-4"
-		>
-			<div class="text-sm w-full">
-				<p>
-					<strong>You found an unreleased blog post!</strong> All content here is tentative, and the
-					final blog may look significantly different from what you see today. Shoot me an email if you
-					have any comments.
-				</p>
-
-				<p>Planned changes:</p>
-				<ul>
-					<li>rework closing statement a bit</li>
-					<li>
-						might elaborate a bit on the TOTP steps, lmk if anything is unclear rn and i'll expand
-						on them
-					</li>
-					<li>
-						might allow users to specify a custom length and period since it's technically in the
-						spec
-					</li>
-				</ul>
-			</div>
-		</div>
-
 		<h1 class="font-mono mb-2">How does MFA work?</h1>
 		<div class="text-lg text-gray-600 dark:text-gray-400">SMS, TOTP, WebAuthn, oh my!</div>
 		<time class="text-sm text-gray-600 dark:text-gray-400" datetime="2024-01-31">31 Jan 2024</time>
@@ -404,11 +377,8 @@
 			deriving two separate keys to prevent hash collision attacks. The actual values of these
 			variables is mostly irrelevant–the important part is that they're different. More information
 			on this in the
-			<a
-				href="https://cseweb.ucsd.edu/~mihir/papers/kmd5.pdf"
-				target="_blank"
-				rel="nofollow noopener">security proof</a
-			> (pdf warning).
+			<a href="https://cseweb.ucsd.edu/~mihir/papers/kmd5.pdf" target="_blank">security proof</a> (pdf
+			warning).
 		</p>
 
 		<p>Now we need to pad the key up to our block size <code>HMAC_BYTES</code>:</p>
@@ -510,10 +480,41 @@
 		</p>
 
 		<p>
-			I definitely learned quite a bit from reading the related RFCs and implementing it myself on
-			this page. I enjoyed building the interactive parts of this post–I think there's something
-			special about making a page that feels <em>alive</em> in a way.
+			I'd highly recommend reading the RFCs that went into this (and others!) – you can learn a lot
+			about how things work and even try implementing them yourself.
 		</p>
+
+		<p>
+			This post took a bit longer to make than I expected, but I'm glad I took the time. I feel like
+			this is my first post where the page really feels "alive," with interactive elements tying
+			everything together. I'm hoping to keep writing posts more similar to this one (maybe with a
+			couple acoustic text-only posts here and there) going forward.
+		</p>
+
+		<p>
+			Oh- and if you use SMS as your second authentication factor, you might want to switch to
+			something else :)
+		</p>
+
+		<h2>Further reading</h2>
+
+		<ul>
+			<li>
+				<a href="https://datatracker.ietf.org/doc/html/rfc6238" target="_blank"
+					>RFC 6238 - TOTP: Time-Based One-Time Password Algorithm</a
+				>
+			</li>
+			<li>
+				<a href="https://datatracker.ietf.org/doc/html/rfc4226" target="_blank"
+					>RFC 4226 - HOTP: An HMAC-Based One-Time Password Algorithm
+				</a>
+			</li>
+			<li>
+				<a href="https://datatracker.ietf.org/doc/html/rfc2104" target="_blank"
+					>RFC 2104 - HMAC: Keyed-Hashing for Message Authentication
+				</a>
+			</li>
+		</ul>
 
 		<MailingListCta />
 
