@@ -92,9 +92,10 @@
 		<p>
 			SMS is probably the most ubiquitous, while also being the most flawed MFA solution. The
 			application server generates a code (usually 6 digits) and sends a text to your registered
-			phone number. The user enters the code (maybe with the help of their operating system[link to
-			apple/google]), the site checks it against the code they generated, and the user is
-			authenticated.
+			phone number. The user enters the code (maybe with the <a
+				href="https://support.apple.com/en-gb/guide/iphone/iphc89a3a3af/ios"
+				target="_blank">help of their operating system</a
+			>), the site checks it against the code they generated, and the user is authenticated.
 		</p>
 
 		<p>This system works well for the most part, but has some glaring issues:</p>

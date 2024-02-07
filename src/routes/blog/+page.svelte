@@ -14,6 +14,13 @@
 	<ul class="my-4">
 		<li>
 			<div class="inline font-mono font-light mr-4">
+				2024-02-07
+				<a class="underline w-full mt-6" href="/blog/2024-02-07/how-mfa-works">how does mfa work?</a
+				>
+			</div>
+		</li>
+		<li>
+			<div class="inline font-mono font-light mr-4">
 				2024-01-24
 				<a class="underline w-full mt-6" href="/blog/2024-01-24/passwords-suck">passwords suck.</a>
 			</div>
