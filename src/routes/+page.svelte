@@ -50,13 +50,6 @@
 	let t = 0;
 
 	const backgroundGraphics = (noise3d: NoiseFunction3D, imageData: ImageData) => {
-		if (canvas == null) {
-			console.log('no canvas :(');
-			return;
-		} else {
-			console.log('canvas! :)');
-		}
-
 		if (ctx == null) {
 			return;
 		}
