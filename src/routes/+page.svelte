@@ -3,6 +3,7 @@
 	import Divider from '$lib/divider.svelte';
 	import { createNoise3D, type NoiseFunction3D } from 'simplex-noise';
 	import { onDestroy, onMount } from 'svelte';
+	import { isDarkTheme } from '../stores/theme';
 
 	let canvas: HTMLCanvasElement;
 	let ctx: CanvasRenderingContext2D | null;
@@ -33,16 +34,16 @@
 		{
 			name: 'blog',
 			href: '/blog',
-			class: 'text-green-300'
+			class: ''
 		},
 		{
 			name: 'history',
 			href: '/resume',
-			class: 'text-teal-300'
+			class: ''
 		},
 		{
 			name: 'social',
-			class: 'text-sky-300 cursor-pointer',
+			class: 'cursor-pointer',
 			onClick: () => (showSocial = !showSocial)
 		}
 	];
@@ -67,10 +68,17 @@
 
 				const basePos = widthMajor ? a + k * canvas.width : k + a * canvas.width;
 
-				imageData.data[basePos * 4 + 0] = ((r + b) * 255) / 4;
-				imageData.data[basePos * 4 + 1] = ((g + r) * 255) / 2;
-				imageData.data[basePos * 4 + 2] = ((b + r + g) * 255) / 3;
-				imageData.data[basePos * 4 + 3] = 255; //Math.random() * 5 + 250;
+				if ($isDarkTheme) {
+					imageData.data[basePos * 4 + 0] = ((r + b) * 255) / 4;
+					imageData.data[basePos * 4 + 1] = ((g + r) * 255) / 2;
+					imageData.data[basePos * 4 + 2] = ((b + r + g) * 255) / 3;
+					imageData.data[basePos * 4 + 3] = 255; //Math.random() * 5 + 250;
+				} else {
+					imageData.data[basePos * 4 + 0] = 255 - ((r + b) * 255) / 3;
+					imageData.data[basePos * 4 + 1] = 255 - ((g + r) * 255) / 2;
+					imageData.data[basePos * 4 + 2] = 255 - ((b + r + g) * 255) / 6;
+					imageData.data[basePos * 4 + 3] = 255; //Math.random() * 5 + 250;
+				}
 			}
 		}
 		ctx.putImageData(imageData, 0, 0);
@@ -121,7 +129,7 @@
 </svelte:head>
 
 <main
-	class="container mx-auto h-screen flex content-center flex-wrap px-2 md:px-0 transition-all font-mono text-slate-100"
+	class="container mx-auto h-screen flex content-center flex-wrap px-2 md:px-0 transition-all font-mono dark:text-slate-100"
 >
 	<canvas
 		bind:this={canvas}
@@ -129,15 +137,18 @@
 		class="absolute h-screen w-screen top-0 left-0 -z-40 overflow-hidden"
 		data-transition-in
 	/>
-	<div class="w-full transition-all h-32 sm:h-auto">
+	<div class="w-full transition-all sm:h-auto">
 		<h1
-			class="dark drop-shadow-lg text-6xl lg:text-6xl xl:text-8xl font-mono-medium text-slate-100"
+			class="dark drop-shadow-lg text-6xl lg:text-6xl xl:text-8xl font-mono-medium dark:text-slate-100"
 		>
 			{name}{#if cursorVisible}<span class="transition-all duration-75">_</span>{/if}
 		</h1>
 	</div>
 	{#if name === target}
-		<div in:fade class="dark drop-shadow-lg text-xl w-full transition-all font-mono-normal mt-4">
+		<div
+			in:fade
+			class="dark drop-shadow-lg text-xl w-full transition-all font-mono-normal mt-6 mb-2"
+		>
 			{#each links as { name, href, class: className, onClick }, idx}
 				{#if href}
 					<a
@@ -155,9 +166,9 @@
 
 		{#if showSocial}
 			<div class="text-xl font-mono-normal" transition:fade|local>
-				<a href="//linkedin.com/in/jacksonwelsh" target="_blank" class="text-blue-400">linkedin</a>
+				<a href="//linkedin.com/in/jacksonwelsh" target="_blank">linkedin</a>
 				<Divider />
-				<a href="//github.com/jacksonwelsh" target="_blank" class="text-gray-400">github</a>
+				<a href="//github.com/jacksonwelsh" target="_blank">github</a>
 				<Divider />
 				me@${'{'}window.location.host}
 			</div>
@@ -165,7 +176,7 @@
 			<div class="text-xl">&nbsp;</div>
 		{/if}
 	{:else}
-		<div class="text-xl w-full mt-4">&nbsp;</div>
+		<div class="text-xl w-full mt-6 mb-2">&nbsp;</div>
 		<div class="text-xl w-full">&nbsp;</div>
 	{/if}
 	<noscript>
@@ -179,9 +190,9 @@
 			{/each}
 		</div>
 		<div class="text-xl" transition:fade|local>
-			<a href="//linkedin.com/in/jacksonwelsh" target="_blank" class="text-blue-400">linkedin</a>
+			<a href="//linkedin.com/in/jacksonwelsh" target="_blank">linkedin</a>
 			<Divider />
-			<a href="//github.com/jacksonwelsh" target="_blank" class="text-gray-400">github</a>
+			<a href="//github.com/jacksonwelsh" target="_blank">github</a>
 			<Divider />
 			me@${'{'}window.location.host}
 		</div>
