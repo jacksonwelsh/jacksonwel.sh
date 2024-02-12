@@ -61,16 +61,23 @@
 			return;
 		}
 
-		for (let a = 0; a < canvas.width; a++) {
-			for (let k = 0; k < canvas.height; k++) {
+		const widthMajor = canvas.clientHeight < canvas.clientWidth;
+
+		const minorAxis = widthMajor ? canvas.height : canvas.width;
+		const majorAxis = widthMajor ? canvas.width : canvas.height;
+
+		for (let a = 0; a < majorAxis; a++) {
+			for (let k = 0; k < minorAxis; k++) {
 				const r = noise3d(a / 110, k / 300, t / 70 / 8);
 				const g = noise3d(a / 120, k / 315, t / 100 / 8);
 				const b = noise3d(a / 130, k / 330, t / 130 / 8);
 
-				imageData.data[(a + k * canvas.width) * 4 + 0] = ((r + b) * 255) / 4;
-				imageData.data[(a + k * canvas.width) * 4 + 1] = ((g + r) * 255) / 2;
-				imageData.data[(a + k * canvas.width) * 4 + 2] = ((b + r + g) * 255) / 3;
-				imageData.data[(a + k * canvas.width) * 4 + 3] = 255; //Math.random() * 5 + 250;
+				const basePos = widthMajor ? a + k * canvas.width : k + a * canvas.width;
+
+				imageData.data[basePos * 4 + 0] = ((r + b) * 255) / 4;
+				imageData.data[basePos * 4 + 1] = ((g + r) * 255) / 2;
+				imageData.data[basePos * 4 + 2] = ((b + r + g) * 255) / 3;
+				imageData.data[basePos * 4 + 3] = 255; //Math.random() * 5 + 250;
 			}
 		}
 		ctx.putImageData(imageData, 0, 0);
