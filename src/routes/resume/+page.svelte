@@ -72,7 +72,7 @@
 			]
 		},
 		{
-			title: 'Software Development Engineer Intern',
+			title: 'Software Engineer Intern',
 			org: 'Amazon Web Services',
 			start: 'May 2022',
 			end: 'Aug 2022',
@@ -157,11 +157,10 @@
 		<section>
 			<ResumeHeader>Profile</ResumeHeader>
 			<p>
-				Jackson Welsh is a cloud-native software engineer and Eagle Scout with excellent written and
+				Jackson Welsh is a cloud-native full-stack software engineer with excellent written and
 				verbal communications specializing in solution engineering to meet and exceed customer
-				requirements. Jackson's primary focus is in web development and is proficient in many modern
-				technologies such as Vue.js and React. Jackson has experience in both new product
-				development and maintenance of legacy applications.
+				requirements. Jackson has experience in both new product development and maintenance of
+				legacy applications.
 			</p>
 		</section>
 
