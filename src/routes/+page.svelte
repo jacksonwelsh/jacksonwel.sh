@@ -32,6 +32,11 @@
 
 	const links = [
 		{
+			name: 'popdle',
+			href: 'popdle',
+			class: ''
+		},
+		{
 			name: 'blog',
 			href: '/blog',
 			class: ''
