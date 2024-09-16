@@ -118,6 +118,7 @@
 	<meta property="og:site_name" content="Jackson Welsh" />
 	<meta property="og:title" content="Popdle" />
 	<meta name="description" content="Guess the population of the city." />
+	<meta name="og:description" content="Guess the population of the city." />
 </svelte:head>
 
 <div class="container mx-auto">
