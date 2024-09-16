@@ -47,8 +47,7 @@
 			{placeholder}
 			{disabled}
 			class={[
-				'w-full h-10 font-mono rounded-md p-2 focus:ring-teal-500 focus:ring-2 focus:outline-none border dark:border-slate-700',
-				disabled ? 'bg-slate-100 dark:bg-slate-800 cursor-not-allowed' : 'dark:bg-slate-900',
+				'w-full h-10 font-mono rounded-md p-2 focus:ring-teal-500 focus:ring-2 focus:outline-none border disabled:opacity-100 dark:border-slate-700 dark:bg-slate-900 dark:disabled:!bg-slate-800 disabled:bg-slate-100 disabled:cursor-not-allowed',
 				className
 			].join(' ')}
 		/>

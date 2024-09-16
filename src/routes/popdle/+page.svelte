@@ -123,7 +123,7 @@
 				<h1 class="relative text-3xl sm:text-5xl font-mono font-mono-bold text-teal-500 mb-2">
 					<span>Popdle</span>
 					<div
-						class="absolute -top-3 -right-12 h-6 font-sans font-medium rounded-full px-2 py-0.5 border border-teal-500 bg-teal-900/50 text-sm"
+						class="absolute -top-3 -right-12 h-6 flex items-center font-sans font-medium rounded-full px-2 py-0.5 border border-teal-500 bg-teal-900/50 text-sm"
 					>
 						beta
 					</div>

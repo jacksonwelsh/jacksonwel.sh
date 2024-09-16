@@ -33,7 +33,6 @@ export const load: ServerLoad = async (): Promise<{ puzzle: Puzzle }> => {
 
 	const population: Omit<Puzzle, 'index'> = populations[dateHash % populations.length];
 	const puzzle: Puzzle = { ...population, index };
-	console.log({ puzzle });
 
 	return { puzzle };
 };
