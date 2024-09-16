@@ -2,7 +2,7 @@ module.exports = {
 	content: ['./src/**/*.{html,js,svelte,ts}'],
 	theme: {
 		fontFamily: {
-			// sans: ['Rubik', 'Inter', 'system-ui', 'sans-serif'],
+			sans: ['Rubik', 'Inter', 'system-ui', 'sans-serif'],
 			mono: [
 				'Berkeley\\ MonoVF',
 				'JetBrains\\ Mono',
