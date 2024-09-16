@@ -114,6 +114,9 @@
 
 <svelte:head>
 	<title>Popdle</title>
+	<meta property="og:type" content="website" />
+	<meta property="og:site_name" content="Jackson Welsh" />
+	<meta property="og:title" content="Popdle" />
 	<meta name="description" content="Guess the population of the city." />
 </svelte:head>
 
