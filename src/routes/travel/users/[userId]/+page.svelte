@@ -6,7 +6,7 @@
 
 	const { user } = data;
 	const passage = new Passage(PUBLIC_PASSAGE_APP_ID);
-	const currentUser = passage.getCurrentUser();
+	const currentUser = passage.currentUser;
 
 	// stackoverflow my beloved
 	const prettyDate = (time: string) => {
@@ -41,7 +41,7 @@
 		<h2 class="font-mono text-3xl font-bold mt-4">Devices</h2>
 		<div class="flex gap-4 flex-wrap items-center">
 			<a href={`/travel/users/${user.id}/update`}>update</a>
-			<button on:click={() => passage.newLoginMagicLink(user.email)}>send a magic link</button>
+			<button on:click={() => passage.magicLink.login(user.email)}>send a magic link</button>
 		</div>
 	</div>
 	<div class="flow-root">

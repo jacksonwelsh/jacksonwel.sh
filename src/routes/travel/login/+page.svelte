@@ -28,7 +28,7 @@
 
 	const loginOrRegisterUser = () => {
 		pageState = 'nextClicked';
-		passage.identifierExists(email).then((exists) => {
+		passage.app.userExists(email).then((exists) => {
 			if (exists) {
 				pageState = 'doLoginPasskey';
 			} else {
@@ -45,7 +45,7 @@
 	let isFirefox = false;
 
 	onMount(() => {
-		const session = passage.getCurrentSession();
+		const session = passage.session;
 		session.authGuard().then((state) => {
 			isSignedIn = state;
 		});
@@ -56,12 +56,12 @@
 	});
 
 	const signOut = () => {
-		passage.getCurrentSession().signOut();
+		passage.session.signOut();
 		window.location.reload();
 	};
 
 	const sendMagicLink = () => {
-		passage.newLoginMagicLink(email).then(() => {
+		passage.magicLink.login(email).then(() => {
 			pageState = 'magicLinkSent';
 		});
 	};
@@ -110,7 +110,7 @@
 				</div>
 			</form>
 		{:else if pageState === 'doLoginPasskey'}
-			{#await passage.login(email)}
+			{#await passage.passkey.login(email)}
 				<div
 					class="w-48 h-48 my-6 rounded-full border border-teal-600 dark:border-teal-400 mx-auto flex items-center justify-center"
 				>
@@ -193,7 +193,7 @@
 				>
 			</div>
 		{:else if pageState === 'doRegisterPasskey'}
-			{#await passage.newRegisterMagicLink(email)}
+			{#await passage.passkey.register(email)}
 				<div
 					class="w-48 h-48 my-6 rounded-full border border-teal-600 dark:border-teal-400 mx-auto flex items-center justify-center"
 				>

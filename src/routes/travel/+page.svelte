@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Passage, User } from '@passageidentity/passage-js';
+	import { Passage, PassageCurrentUser } from '@passageidentity/passage-js';
 	import type { PageServerData } from './$types';
 	import { PUBLIC_PASSAGE_APP_ID } from '$env/static/public';
 	import Locked from 'carbon-icons-svelte/lib/Locked.svelte';
@@ -20,16 +20,16 @@
 	};
 
 	const passage = new Passage(PUBLIC_PASSAGE_APP_ID);
-	let user: User | null = passage.getCurrentUser();
+	let user: PassageCurrentUser | null = passage.currentUser;
 
 	const signOut = () => {
-		passage.getCurrentSession().signOut();
+		passage.session.signOut();
 		document.cookie = '';
 		window.location.reload();
 	};
 
 	const isAuthorized = async (time: number, forcePrivacy?: boolean): Promise<boolean> => {
-		const session = passage.getCurrentSession();
+		const session = passage.session;
 		const isSignedIn = await session.authGuard();
 		if (isSignedIn) return true;
 
@@ -48,7 +48,7 @@
 		if (domain !== 'jacksonwel.sh' && process.env.NODE_ENV === 'production')
 			window.location.replace(`https://jacksonwel.sh${window.location.pathname}`);
 
-		const session = passage.getCurrentSession();
+		const session = passage.session;
 
 		const isSignedIn = await session.authGuard();
 		if (!isSignedIn) user = null;
@@ -71,7 +71,7 @@
 	</div>
 	<div class="my-6 flex gap-2">
 		{#if user}
-			{#await user?.getMetadata()}
+			{#await user?.metadata()}
 				<p>thinking...</p>
 			{:then metadata}
 				{#if metadata && metadata.isjackson}
