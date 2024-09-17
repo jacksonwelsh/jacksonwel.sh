@@ -24,7 +24,7 @@
 	} & JobDates;
 
 	const addr =
-		'Ly9qYWNrc29ud2VsLnNoIDxzcGFuIGNsYXNzPSJ0ZXh0LWdyYXktNTAwIGRhcms6dGV4dC1ncmF5LTQwMCBwb2ludGVyLWV2ZW50cy1ub25lIj4vLzwvc3Bhbj4gbWVAamFja3NvbndlbC5zaCA=';
+		'Ly9qYWNrc29ud2VsLnNoIDxzcGFuIGNsYXNzPXRleHQtZ3JheS01MDAvMjUgZGFyazp0ZXh0LWdyYXktNDAwLzM1IGZvbnQtc2FucyBkcm9wLXNoYWRvdy14bCBwb2ludGVyLWV2ZW50cy1ub25lPi88L3NwYW4+IG1lQGphY2tzb253ZWwuc2gK';
 	let emailToShow = 'me@thisdomain';
 
 	const socials = [
@@ -46,7 +46,9 @@
 			org: 'Amazon Web Services',
 			start: 'Aug 2023',
 			responsibilities: [
-				'Engineer at EC2 VPC, building a programmable layer for packet processing.'
+				'Engineer at EC2 VPC, building a programmable middle-box for packet processing.',
+				"Built a workflow enabling operators to seamlessly migrate a customer's packet processing to a different cell with zero downtime, including automated integrity checking.",
+				'Served as on-call engineer, resolving customer-impacting issues at all hours.'
 			]
 		},
 		{
@@ -68,7 +70,7 @@
 			responsibilities: [
 				'Deployed serverless applications to Amazon Web Services using Docker and AWS Elastic Container Service.',
 				'Developed a new web mapping application to replace a legacy ArcGIS plugin for address management within local governments.',
-				'Built a novel spatial authentication system for the US Army Corps of Engineers, integrating with Login.gov and supporting PIV-based login.'
+				'Built a novel spatial authentication system for the US Army Corps of Engineers, integrating with Login.gov via OIDC and supporting PIV-based login.'
 			]
 		},
 		{
@@ -95,7 +97,7 @@
 			degree: 'B.S. Computer Science',
 			start: 'Aug 2020',
 			end: 'May 2023',
-			details: ['4.0 GPA – graduated <em>summa cum laude</em>']
+			details: ['4.0 GPA – graduated <em>summa cum laude</em>.']
 		}
 	];
 
@@ -118,9 +120,9 @@
 			title: 'Challenge Master, Appraiser & Tournament Volunteer',
 			start: 'Fall 2016',
 			responsibilities: [
-				'Volunteer at regional DI tournaments and team training events',
-				'Appraiser/Challenge Master at Instant Challenge, organizing the tournament and scoring teams on creative ability and teamwork',
-				'Teaching teams of elementary and middle school students on how to communicate with each other and solve problems together'
+				'Volunteer at regional DI tournaments and team training events.',
+				'Appraiser/Challenge Master at Instant Challenge, organizing the tournament and scoring teams on creative ability and teamwork.',
+				'Teaching teams of elementary and middle school students on how to communicate with each other and solve problems together.'
 			]
 		}
 	];
