@@ -27,7 +27,7 @@
 			ret += emojiMap[r];
 		}
 
-		ret += '\n\nhttps://jacksonwel.sh/popdle';
+		ret += '\n\n<https://jacksonwel.sh/popdle>';
 		return ret;
 	};
 
