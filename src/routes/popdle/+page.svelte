@@ -176,7 +176,7 @@
 						Guess
 					</Button>
 				{:else}
-					<Share results={hintStates} />
+					<Share results={hintStates} index={puzzle.index} />
 				{/if}
 			</form>
 		</main>

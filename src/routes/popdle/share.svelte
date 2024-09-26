@@ -1,5 +1,6 @@
 <script lang="ts">
 	export let results: HintState[] = [];
+	export let index: number;
 
 	import Button from '$lib/button.svelte';
 	import { HintState, getScore } from '.';
@@ -20,7 +21,7 @@
 		const score = getScore(results);
 		const scoreString = score === 0 ? 'X' : score.toString();
 
-		let ret = `Popdle #0 ${scoreString}/6\n\n`;
+		let ret = `Popdle #${index} ${scoreString}/6\n\n`;
 
 		for (let r of results) {
 			ret += emojiMap[r];

@@ -27,12 +27,11 @@ const oneDay = 1000 * 60 * 60 * 24; // One day in milliseconds
 
 export const load: ServerLoad = async (): Promise<{ puzzle: Puzzle }> => {
 	const date = new Date();
-	const index = Math.round((Number(date) - Number(popdleEpoch)) / oneDay);
+	const index = Math.floor((Number(date) - Number(popdleEpoch)) / oneDay);
 	// generate a hash of the current system date
 	const dateHash = xmur3(date.toDateString())();
 
-	const population: Omit<Puzzle, 'index'> = populations[dateHash % populations.length];
-	const puzzle: Puzzle = { ...population, index };
+	const puzzle: Puzzle = { ...populations[dateHash % populations.length], index };
 
 	return { puzzle };
 };
