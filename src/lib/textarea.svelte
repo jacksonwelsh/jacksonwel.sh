@@ -21,7 +21,7 @@
       id={labelId}
       bind:value
       on:focus={onFocus}
-      class="w-full rounded-md focus:ring-teal-500 focus:ring-2 focus:outline-none dark:border-slate-700 dark:bg-slate-900 p-2"
+      class="w-full rounded-md focus:ring-teal-500 focus:ring-2 focus:outline-hidden dark:border-slate-700 dark:bg-slate-900 p-2"
       {rows}
     />
   </label>

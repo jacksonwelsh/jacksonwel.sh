@@ -95,7 +95,7 @@
 		{:else if pageState === 'fresh'}
 			<form on:submit={loginOrRegisterUser}>
 				<input
-					class="my-4 dark:bg-gray-900 border dark:border-gray-800 h-12 w-full rounded-md p-2 focus:outline-none focus:ring focus:ring-teal-600/50 shadow-inner"
+					class="my-4 dark:bg-gray-900 border dark:border-gray-800 h-12 w-full rounded-md p-2 focus:outline-hidden focus:ring-3 focus:ring-teal-600/50 shadow-inner"
 					type="email"
 					placeholder="Email address"
 					required

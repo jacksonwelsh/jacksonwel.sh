@@ -14,7 +14,7 @@
 
 	$: {
 		if (!passwordsMatch && passwordRepeat.length > 0) {
-			repeatClassName = "ring !ring-red-500 after:content-['passwords_must_match']";
+			repeatClassName = "ring-3 ring-red-500! after:content-['passwords_must_match']";
 		} else {
 			repeatClassName = '';
 		}

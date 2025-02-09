@@ -44,7 +44,7 @@
 		<div
 			class="rounded-md dark:text-blue-100 text-blue-950 dark:bg-blue-900/25 bg-blue-100/25 border border-blue-600 my-8 p-5"
 		>
-			<p class="md:col-span-5 my-0">
+			<p class="md:col-span-5 my-0!">
 				This post focuses primarily on the experience of building serverless applications in AWS
 				since that's the cloud I've worked in the most. The lessons learned should be portable to
 				other public clouds, but the tools used will likely be different.

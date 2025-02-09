@@ -37,7 +37,7 @@
 				type="email"
 				name="email"
 				id={`${formId}bd-email`}
-				class="font-mono focus:ring-blue-600 focus:ring-2 font-mono-light dark:bg-gray-900 rounded-md dark:border-gray-700 border py-1 px-4 focus:outline-none"
+				class="font-mono focus:ring-blue-600 focus:ring-2 font-mono-light dark:bg-gray-900 rounded-md dark:border-gray-700 border py-1 px-4 focus:outline-hidden"
 			/>
 			{#if tags.length > 0}
 				<input type="hidden" name="tags" value={tags.join(',')} />

@@ -589,7 +589,7 @@
 				class="rounded-md border dark:border-gray-600 border-gray-400 dark:bg-gray-900/25 bg-gray-100 dark:text-gray-200 text-gray-800 p-4 mb-4 overflow-x-scroll"
 			>
 				{#if uintToHex(credential.id) === lastCredentialId}
-					<span class="rounded-sm bg-green-600 text-green-50 py-0.5 px-1 text-xs font-bold"
+					<span class="rounded-xs bg-green-600 text-green-50 py-0.5 px-1 text-xs font-bold"
 						>Just used</span
 					>
 				{/if}

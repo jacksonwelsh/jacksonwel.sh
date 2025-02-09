@@ -1,8 +1,9 @@
-@import url('https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700;800;900&display=swap')
+layer(base);
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
+
+@config '../tailwind.config.cjs';
 
 @font-face {
 	font-family: 'Berkeley MonoVF';
@@ -38,11 +39,11 @@
 }
 
 .image-tool--withBackground .image-tool__image {
-	@apply dark:!bg-gray-900;
+	@apply dark:bg-gray-900!;
 }
 
 .ce-inline-toolbar {
-	@apply dark:!bg-gray-900;
+	@apply dark:bg-gray-900!;
 }
 
 .ce-toolbar__plus,
@@ -59,11 +60,11 @@
 }
 
 .ce-inline-toolbar__dropdown:hover {
-	@apply dark:!bg-gray-800;
+	@apply dark:bg-gray-800!;
 }
 
 .ce-inline-tool:hover {
-	@apply dark:!bg-gray-800;
+	@apply dark:bg-gray-800!;
 }
 
 .ce-inline-tool-input--showed {
@@ -79,13 +80,19 @@
 }
 
 .ce-conversion-tool:hover {
-	@apply dark:!bg-gray-800;
+	@apply dark:bg-gray-800!;
 }
 
 .cdx-list__item {
-	@apply !leading-5 my-1;
+	@apply leading-5! my-1;
 }
 
-.hljs {
-	@apply scrollbar scrollbar-thumb-gray-600 scrollbar-track-gray-200 dark:scrollbar-track-gray-800;
+@layer base {
+	button:not(:disabled),
+	[role='button']:not(:disabled) {
+		cursor: pointer;
+	}
 }
+/* .hljs { */
+/* 	@apply scrollbar scrollbar-thumb-gray-600 scrollbar-track-gray-200 dark:scrollbar-track-gray-800; */
+/* } */

@@ -227,7 +227,7 @@
 			while each number is an unsigned 8-bit integer. Let's convert these integers to binary to see
 			what they represent in base32:
 		</p>
-		<Portal class="!block cursor-cell" label="uint8 binary">
+		<Portal class="block! cursor-cell" label="uint8 binary">
 			{#key $secret}
 				<SecretBinDisplay />
 			{/key}
@@ -238,7 +238,7 @@
 			when working with base32. Since each character in base32 represents a 5-bit chunk, let's
 			switch from 8-bit to 5-bit.
 		</p>
-		<Portal class="!block cursor-cell" label="base32/binary">
+		<Portal class="block! cursor-cell" label="base32/binary">
 			{#key $secret}
 				<SecretCombinedDisplay />
 			{/key}
@@ -344,7 +344,7 @@
 		</p>
 
 		<div
-			class="flex items-center flex-wrap rounded-md border-2 bg-gradient-to-tr dark:border-yellow-600 border-yellow-400 dark:from-orange-900/25 dark:to-yellow-900/25 from-orange-100 to-yellow-100 text-yellow-800 dark:text-yellow-200 p-4 my-4"
+			class="flex items-center flex-wrap rounded-md border-2 bg-linear-to-tr dark:border-yellow-600 border-yellow-400 dark:from-orange-900/25 dark:to-yellow-900/25 from-orange-100 to-yellow-100 text-yellow-800 dark:text-yellow-200 p-4 my-4"
 		>
 			<div class="text-sm w-full mb-2">
 				<strong>Heads up!</strong> The examples below update dynamically as your system clock changes,

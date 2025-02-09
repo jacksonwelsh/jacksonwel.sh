@@ -58,7 +58,7 @@
 			{inputmode}
 			{pattern}
 			class={[
-				'w-full h-10 font-mono rounded-md p-2 focus:ring-teal-500 focus:ring-2 focus:outline-none border disabled:opacity-100 dark:border-slate-700 dark:bg-slate-900 dark:disabled:!bg-slate-800 disabled:bg-slate-100 disabled:cursor-not-allowed',
+				'w-full h-10 font-mono rounded-md p-2 focus:ring-teal-500 focus:ring-2 focus:outline-hidden border disabled:opacity-100 dark:border-slate-700 dark:bg-slate-900 dark:disabled:bg-slate-800! disabled:bg-slate-100 disabled:cursor-not-allowed',
 				className
 			].join(' ')}
 		/>

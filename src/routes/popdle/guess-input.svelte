@@ -59,7 +59,7 @@
 	<Input
 		bind:this={inputComponent}
 		type="number"
-		className="!border-r-0 !ring-0 dark:border-gray-700 focus:border-2 focus:border-teal-500 rounded-r-none m-0 w-full h-10 font-mono-thin"
+		className="border-r-0! ring-0! dark:border-gray-700 focus:border-2 focus:border-teal-500 rounded-r-none m-0 w-full h-10 font-mono-thin"
 		pattern="[0-9]+"
 		bind:value
 		{disabled}

@@ -110,13 +110,13 @@
 						<div class="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
 							<button
 								type="submit"
-								class="inline-flex w-full justify-center rounded-md bg-teal-600 dark:bg-teal-800 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-teal-500 dark:hover:bg-teal-900 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-600 sm:col-start-2"
+								class="inline-flex w-full justify-center rounded-md bg-teal-600 dark:bg-teal-800 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-teal-500 dark:hover:bg-teal-900 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-600 sm:col-start-2"
 								>Sign in</button
 							>
 							<button
 								on:click={() => (show = false)}
 								type="button"
-								class="mt-3 inline-flex w-full justify-center rounded-md bg-white dark:bg-black dark:ring-gray-700 dark:hover:bg-gray-900 transition-colors dark:text-gray-100 px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:col-start-1 sm:mt-0"
+								class="mt-3 inline-flex w-full justify-center rounded-md bg-white dark:bg-black dark:ring-gray-700 dark:hover:bg-gray-900 transition-colors dark:text-gray-100 px-3 py-2 text-sm font-semibold text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:col-start-1 sm:mt-0"
 								>Cancel</button
 							>
 						</div>
