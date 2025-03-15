@@ -46,9 +46,9 @@
 			org: 'Amazon Web Services',
 			start: 'Aug 2023',
 			responsibilities: [
-				'Engineer at EC2 VPC, building a programmable middle-box for packet processing.',
-				"Built a workflow enabling operators to seamlessly migrate a customer's packet processing to a different cell with zero downtime, including automated integrity checking.",
-				'Served as on-call engineer, resolving customer-impacting issues at all hours.'
+				'Engineer at EC2 VPC, building the foundation for PrivateLink, NAT Gateway, Transit Gateway, and more.',
+				'Designed and implemented the control plane for Custom Exception Path, enabling vendors to reduce their fleet sizes by 80%.',
+				'Developed a system to migrate thousands of network interfaces across cells, reducing operational risks from hot-spotting.'
 			]
 		},
 		{
@@ -57,9 +57,10 @@
 			start: 'Sep 2022',
 			end: 'Jun 2023',
 			responsibilities: [
-				'Built an AI-based web scraper that uses natural language prompts to extract precise data from heterogenous websites.',
-				'Built an internal components library and website creation workflow to bring new site creation time from ~4 hours down to ~10 minutes.',
-				'Streamlined management of AWS accounts by enforcing consistent organization-level policies and migrating to temporary security credentials in a majority of our applications.'
+				'Developed an AI-based web scraper with that uses natural language prompts to extract precise data from heterogenous websites using GPT-4.',
+				'Built an internal components library and website creation workflow to bring new site creation time from 4 hours down to 10 minutes.',
+				'Streamlined management of over 50 AWS accounts by enforcing consistent organization-level policies.',
+				'Enhanced security by switching from manually-rotated static credentials to dynamic credentials that rotate as often as every 15 minutes.'
 			]
 		},
 		{
@@ -68,25 +69,28 @@
 			start: ['Sep 2020'],
 			end: ['Aug 2022'],
 			responsibilities: [
-				'Deployed serverless applications to Amazon Web Services using Docker and AWS Elastic Container Service.',
+				'Designed, built, and deployed serverless applications to Amazon Web Services using Docker and AWS Elastic Container Service.',
 				'Developed a new web mapping application to replace a legacy ArcGIS plugin for address management within local governments.',
-				'Built a novel spatial authentication system for the US Army Corps of Engineers, integrating with Login.gov via OIDC and supporting PIV-based login.'
+				'Designed and implemented a novel spatial authentication system for the US Army Corps of Engineers, integrating with Login.gov via OpenID Connect (OIDC) and supporting PIV-based login.'
 			]
 		},
-		{
-			title: 'Software Engineer Intern',
-			org: 'Amazon Web Services',
-			start: 'May 2022',
-			end: 'Aug 2022',
-			responsibilities: ['Developed a tool to detect anomalies in internal network configurations.']
-		},
+		// {
+		// 	title: 'Software Engineer Intern',
+		// 	org: 'Amazon Web Services',
+		// 	start: 'May 2022',
+		// 	end: 'Aug 2022',
+		// 	responsibilities: [
+		// 		"Developed a tool to detect referential integrity errors between my team's database and distribution plane."
+		// 	]
+		// },
 		{
 			title: 'Independent Tutor',
 			org: 'Wyzant',
 			start: 'Jan 2020',
 			end: 'Dec 2020',
 			responsibilities: [
-				'Taught Python, SQL, and Java to students ranging from middle school to university levels.'
+				'Taught Python, Java, and SQL to students ranging from middle school to university levels.',
+				'Provided over 250 hours of tutoring with an average rating of 4.99/5.'
 			]
 		}
 	];
@@ -95,20 +99,19 @@
 		{
 			institution: 'University of North Texas',
 			degree: 'B.S. Computer Science',
-			start: 'Aug 2020',
 			end: 'May 2023',
-			details: ['4.0 GPA – graduated <em>summa cum laude</em>.']
+			gpa: '4.0'
 		}
 	];
 
 	const skills = [
+		'Java',
 		'Python',
 		'JavaScript/TypeScript',
 		'PostgreSQL',
-		'Java',
 		'Vue.js',
 		'Cloud computing',
-		'C++',
+		'C',
 		'React',
 		'Serverless'
 	];
@@ -203,25 +206,15 @@
 			{#each education as school}
 				<div class="flex flex-wrap mb-2">
 					<strong class="font-medium">{school.institution}</strong><Divider class="mx-2" />
-					<span class="font-light">{school.degree}</span>
-					<Divider class="mx-2" />
-					{#if Array.isArray(school.start)}
-						{#each school.start as startDate, idx}
-							{startDate} – {school.end[idx] ?? 'Present'}{idx < school.start.length - 1
-								? ', '
-								: ''}
-						{/each}
-					{:else}
-						{school.start} – {school.end ?? 'Present'}
-					{/if}
-					<ul class="w-full list-dash list-inside ml-6 -indent-3">
-						{#each school.details as detail}<li>{@html detail}</li>{/each}
-					</ul>
+					<span class="font-light">{school.degree}</span><Divider class="mx-2" />
+					<span class="font-light">{school.gpa} GPA</span>
+					<!-- <Divider class="mx-2" />
+					{school.end ?? 'Present'} -->
 				</div>
 			{/each}
 		</section>
 
-		<section>
+		<section class="">
 			<ResumeHeader>Certifications</ResumeHeader>
 			<div class="flex flex-wrap print:hidden">
 				<!-- Credly AWS CDA Badge -->
