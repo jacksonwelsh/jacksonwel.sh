@@ -16,7 +16,7 @@
 	export let placeholder = '';
 	export let inputmode: 'text' | 'numeric' | 'decimal' | null = null;
 	export let disabled = false;
-	export let pattern = '';
+	export let pattern: string | null = null;
 
 	const dispatch = createEventDispatcher();
 	const onFocus = () => dispatch('focus');
