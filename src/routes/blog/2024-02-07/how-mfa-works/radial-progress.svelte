@@ -34,13 +34,15 @@
 		/>
 
 		<!-- Center text -->
-		<text
-			x="50"
-			y="60"
-			text-anchor="middle"
-			alignment-baseline="middle"
-			class="text-center font-mono fill-current text-4xl">{timeRemaining}</text
-		>
+		<!-- Center text with flexbox-like centering -->
+		<foreignObject x="0" y="0" width="100" height="100">
+			<div
+				xmlns="http://www.w3.org/1999/xhtml"
+                class="w-full h-full flex items-center justify-center"
+			>
+				<span class="font-mono text-4xl" style="line-height: 1;">{timeRemaining}</span>
+			</div>
+		</foreignObject>
 	</svg>
 </div>
 
