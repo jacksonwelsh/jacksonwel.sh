@@ -36,7 +36,7 @@
 		<!-- Center text -->
 		<text
 			x="50"
-			y="50"
+			y="60"
 			text-anchor="middle"
 			alignment-baseline="middle"
 			class="text-center font-mono fill-current text-4xl">{timeRemaining}</text
