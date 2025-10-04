@@ -214,10 +214,11 @@
 			{/each}
 		</section>
 
+<!--
 		<section class="">
 			<ResumeHeader>Certifications</ResumeHeader>
 			<div class="flex flex-wrap print:hidden">
-				<!-- Credly AWS CDA Badge -->
+				<!-- Credly AWS CDA Badge --
 				<div class="">
 					<a
 						href="https://www.credly.com/badges/d19cbb75-30f7-449e-8029-36bb73058eff/embedded"
@@ -230,8 +231,8 @@
 						/>
 					</a>
 				</div>
-				<!-- End Credly badge -->
-				<!-- Credly AWS CDA Badge -->
+				<!-- End Credly badge --
+				<!-- Credly AWS CDA Badge --
 				<div class="">
 					<a
 						href="https://www.credly.com/badges/73898499-b625-4ef0-bec7-3b8bba9ee93d/embedded"
@@ -244,7 +245,7 @@
 						/>
 					</a>
 				</div>
-				<!-- End Credly badge -->
+				<!-- End Credly badge --
 			</div>
 			<div class="hidden print:block">
 				<ul class="w-full list-dash ml-6">
@@ -253,6 +254,7 @@
 				</ul>
 			</div>
 		</section>
+-->
 
 		<ResumeHeader>Skills</ResumeHeader>
 		<div class="w-full xl:w-3/4 block print:hidden">
