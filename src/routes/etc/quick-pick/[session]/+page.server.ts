@@ -10,7 +10,7 @@ export const load: PageServerLoad = async ({ params, cookies }) => {
     let participantId = cookies.get('quick-pick.participantId');
     if (!participantId) {
         const { session, participantId } = await joinSession(sessionId);
-        cookies.set('quick-pick.participantId', participantId, { path: `/misc/quick-pick/${sessionId}` });
+        cookies.set('quick-pick.participantId', participantId, { path: `/etc/quick-pick/${sessionId}` });
         return { session, participantId };
     }
 

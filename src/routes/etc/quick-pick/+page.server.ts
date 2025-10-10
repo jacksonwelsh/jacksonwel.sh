@@ -10,14 +10,14 @@ export const actions = {
 
         cookies.set('quick-pick.hostKey',
             session.hostKey!,
-            { path: `/misc/quick-pick/${session.id}`, httpOnly: false }
+            { path: `/etc/quick-pick/${session.id}`, httpOnly: false }
         );
 
         cookies.set('quick-pick.participantId',
             hostId,
-            { path: `/misc/quick-pick/${session.id}`, httpOnly: false }
+            { path: `/etc/quick-pick/${session.id}`, httpOnly: false }
         );
 
-        return redirect(301, `/misc/quick-pick/${session.id}`);
+        return redirect(301, `/etc/quick-pick/${session.id}`);
     },
 } satisfies Actions;

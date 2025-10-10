@@ -45,6 +45,8 @@ const getRawSession = async (sessionId: string): Promise<Session> => {
         nominations: string;
     };
 
+    console.log({ result });
+
     return {
         id: result.id,
         hostKey: result.host_key,

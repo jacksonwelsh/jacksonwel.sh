@@ -44,13 +44,13 @@
 		(prev: Record<string, string>, curr: Nomination) => ({ ...prev, [curr.id]: curr.value }),
 		{}
 	);
-	$: votedUserCount = data.votedUsers.length;
+	$: votedUserCount = data.votedUsers?.length ?? 0;
 </script>
 
 <div class="container mx-auto">
 	<div class="text-left mt-3 text-slate-400 print:hidden flex">
 		<a href="/" class="text-blue-400 hover:underline">~</a>
-		<a href="/misc/quick-pick" class="text-blue-400 hover:underline">/quick-pick</a>
+		<a href="/etc/quick-pick" class="text-blue-400 hover:underline">/quick-pick</a>
 		/{session.id}
 	</div>
 </div>
