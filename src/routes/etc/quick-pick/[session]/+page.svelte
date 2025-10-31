@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import type { PageData } from './$types';
-	import { invalidateAll } from '$app/navigation';
 	import { enhance } from '$app/forms';
 	import Input from '$lib/input.svelte';
 	import Button from '$lib/button.svelte';
@@ -12,12 +11,23 @@
 
 	type Nomination = { id: string; value: string };
 
-	onMount(() => {
-		const interval = setInterval(() => {
-			invalidateAll(); // re-runs all load functions
-		}, 2500);
+	let session = data.session;
+    let votedUsers = data.votedUsers;
 
-		return () => clearInterval(interval);
+	onMount(() => {
+		const eventSource = new EventSource(`/etc/quick-pick/${session.id}/stream`);
+
+		eventSource.onmessage = (event) => {
+			const eventData = JSON.parse(event.data);
+            session = eventData.session;
+            votedUsers = eventData.votedUsers;
+		};
+
+		eventSource.onerror = () => {
+			eventSource.close();
+		};
+
+		return () => eventSource.close();
 	});
 
 	let votes: string[] = [];
@@ -34,17 +44,16 @@
 		}
 	};
 
-	$: session = data.session;
 	$: myNominations = data.myNominations ?? [];
 	$: myVotes = data.myVotes ?? [];
-	$: isClosed = data.session.closedAt != null;
-	$: nominations = data.session.nominations;
+	$: isClosed = session.closedAt != null;
+	$: nominations = session.nominations;
 	$: voteStr = votes.map((v) => v).join(' ');
-	$: nominationsMap = data.session.nominations.reduce(
+	$: nominationsMap = session.nominations.reduce(
 		(prev: Record<string, string>, curr: Nomination) => ({ ...prev, [curr.id]: curr.value }),
 		{}
 	);
-	$: votedUserCount = data.votedUsers?.length ?? 0;
+	$: votedUserCount = votedUsers?.length ?? 0;
 </script>
 
 <div class="container mx-auto">
@@ -63,15 +72,20 @@
 			{#if session.participants.length === 1}person is{:else}people are{/if} in the room.
 		</p>
 
-		{#if isClosed}
-			<p>
-				{votedUserCount}
-				{#if votedUserCount === 1}person has{:else}people have{/if} voted.
-			</p>
-		{/if}
-
 		{#if session.isHost}
 			<p>You're the host!</p>
+
+			{#if isClosed}
+				<p>
+					{votedUserCount}
+					{#if votedUserCount === 1}person has{:else}people have{/if} voted.
+				</p>
+			{:else}
+				<p>
+					{nominations.length}
+					{#if nominations.length === 1}nomination has{:else}nominations have{/if} been submtted.
+				</p>
+			{/if}
 
 			{#if !session.winner}
 				{#if isClosed}

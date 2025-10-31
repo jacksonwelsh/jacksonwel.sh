@@ -45,8 +45,6 @@ const getRawSession = async (sessionId: string): Promise<Session> => {
         nominations: string;
     };
 
-    console.log({ result });
-
     return {
         id: result.id,
         hostKey: result.host_key,
@@ -85,7 +83,7 @@ export const getMyVotes = (sessionId: string, participantId: string) => {
     return result;
 }
 
-export const getVotedUsers = (sessionId: string) => {
+export const getVotedUsers = (sessionId: string): string[] => {
     const result = db.prepare('SELECT DISTINCT participant FROM votes WHERE session = ?')
         .all(sessionId) as { participant: string }[];
 
@@ -106,7 +104,7 @@ export const makeSession = async () => {
         maxNominations: 1,
     };
 
-    console.log(await putSession(session));
+    await putSession(session);
     const hostId = (await joinSession(session.id)).participantId;
 
     return { session, hostId };
