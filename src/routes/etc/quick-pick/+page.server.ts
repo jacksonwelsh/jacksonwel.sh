@@ -3,7 +3,7 @@ import type { Actions } from './$types';
 import { makeSession } from './workers';
 
 export const actions = {
-    default: async ({ cookies }) => {
+    create: async ({ cookies }) => {
         // Create a new session
         const { session, hostId } = await makeSession();
         console.log({ session, hostId });
@@ -20,4 +20,9 @@ export const actions = {
 
         return redirect(301, `/etc/quick-pick/${session.id}`);
     },
+    join: async ({ request }) => {
+        // Join an existing session
+        const data = await request.formData();
+        return redirect(301, `/etc/quick-pick/${data.get('sid')}`);
+    }
 } satisfies Actions;
