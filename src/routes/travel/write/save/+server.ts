@@ -12,25 +12,25 @@ export const POST: RequestHandler = async ({ request, url, cookies }) => {
 	const title = body.title;
 
 	if (title == null) {
-		throw error(400, 'title not present in form data');
+		error(400, 'title not present in form data');
 	}
 	if (slug == null) {
-		throw error(400, 'slug not present in form data');
+		error(400, 'slug not present in form data');
 	}
 	if (postId == null) {
-		throw error(400, 'postId not present in form data');
+		error(400, 'postId not present in form data');
 	}
 	if (editorData == null) {
-		throw error(400, 'editorData not present in form data');
+		error(400, 'editorData not present in form data');
 	}
 
 	const user = await getUser(cookies);
 	if (!user) {
-		throw error(401, 'Not authenticated');
+		error(401, 'Not authenticated');
 	}
 
 	if (!isAdmin(user)) {
-		throw error(403, 'Not authorized');
+		error(403, 'Not authorized');
 	}
 
 	// save the editor data to workers KV

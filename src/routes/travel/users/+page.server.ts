@@ -8,11 +8,11 @@ export const load: ServerLoad = async ({ cookies }) => {
 
 	const user = await getUser(cookies);
 	if (!user) {
-		throw error(401, 'Authentication token supplied was invalid or expired');
+		error(401, 'Authentication token supplied was invalid or expired');
 	}
 
 	if (!isAdmin(user)) {
-		throw error(403, 'Not authorized to access this page');
+		error(403, 'Not authorized to access this page');
 	}
 
 	const users = await fetch(`https://api.passage.id/v1/apps/${PUBLIC_PASSAGE_APP_ID}/users`, {

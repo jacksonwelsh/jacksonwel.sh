@@ -7,10 +7,10 @@ export const ssr = false;
 export const load: PageServerLoad = async ({ cookies }) => {
 	const user = await getUser(cookies);
 	if (!user) {
-		throw error(401, 'Not authenticated');
+		error(401, 'Not authenticated');
 	}
 
 	if (!isAdmin(user)) {
-		throw error(403, 'Not authorized');
+		error(403, 'Not authorized');
 	}
 };

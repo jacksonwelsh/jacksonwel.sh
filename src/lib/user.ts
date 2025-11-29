@@ -6,7 +6,7 @@ import { error, type Cookies } from '@sveltejs/kit';
 export const getUser = async (cookies: Cookies) => {
 	const authToken = cookies.get('psg_auth_token');
 	if (!authToken) {
-		throw error(401, 'Not authenticated');
+		error(401, 'Not authenticated');
 	}
 
 	const passage = new Passage({

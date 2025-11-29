@@ -17,8 +17,8 @@ const client = new SESv2Client({
 export const actions = {
 	default: async ({ request, cookies }) => {
 		const requestingUser = await getUser(cookies);
-		if (!requestingUser) throw error(401, 'Not authenticated');
-		if (!requestingUser.user_metadata?.isjackson) throw error(403, 'Not authorized');
+		if (!requestingUser) error(401, 'Not authenticated');
+		if (!requestingUser.user_metadata?.isjackson) error(403, 'Not authorized');
 		// make a new user
 		const passage = new Passage({
 			appID: PUBLIC_PASSAGE_APP_ID,
@@ -33,7 +33,7 @@ export const actions = {
 		const payload: Partial<CreateUserPayload> = {};
 
 		if (typeof userEmail !== 'string') {
-			throw error(400, 'Email is a required entry in formData and must be a string');
+			error(400, 'Email is a required entry in formData and must be a string');
 		}
 
 		payload.email = userEmail;

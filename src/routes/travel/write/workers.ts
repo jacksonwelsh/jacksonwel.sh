@@ -117,9 +117,9 @@ export const putPost = async (
 		})
 	}).then((r) => {
 		if (r.ok) {
-			throw redirect(301, `/travel/${slug}`);
+			redirect(301, `/travel/${slug}`);
 		} else {
-			throw error(500);
+			error(500);
 		}
 	});
 };

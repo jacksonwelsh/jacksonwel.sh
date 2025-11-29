@@ -7,7 +7,7 @@ export const ssr = false;
 export const load: ServerLoad = async ({ params, cookies }) => {
 	const slug = params.slug;
 
-	if (!slug) throw redirect(300, '/travel');
+	if (!slug) redirect(300, '/travel');
 
 	const postDetails = await getPost(slug);
 
@@ -17,20 +17,20 @@ export const load: ServerLoad = async ({ params, cookies }) => {
 	const user = await getUser(cookies).catch(() => null);
 	console.log({ user });
 	if (!content) {
-		throw error(500, 'idk what happened here');
+		error(500, 'idk what happened here');
 	}
 	if (!user) {
 		const forcePrivacy = content?.forcePrivacy;
 		if (forcePrivacy != null) {
 			if (forcePrivacy) {
-				throw error(409, 'must be signed in to view recent posts for privacy');
+				error(409, 'must be signed in to view recent posts for privacy');
 			}
 			// if false, skip time check
 		} else {
 			const currentTime = new Date();
 			if (currentTime.getTime() < timestamp + 86400 * 5 * 1000) {
 				// 5 day holding period
-				throw error(409, 'must be signed in to view recent posts for privacy');
+				error(409, 'must be signed in to view recent posts for privacy');
 			}
 		}
 

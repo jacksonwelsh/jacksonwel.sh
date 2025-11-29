@@ -6,11 +6,11 @@ import { error, type ServerLoad } from '@sveltejs/kit';
 export const load: ServerLoad = async ({ cookies, params }) => {
 	const requestingUser = await getUser(cookies);
 	if (!requestingUser) {
-		throw error(401, 'Authentication token supplied was invalid or expired');
+		error(401, 'Authentication token supplied was invalid or expired');
 	}
 
 	if (!isAdmin(requestingUser)) {
-		throw error(403, 'Not authorized to access this page');
+		error(403, 'Not authorized to access this page');
 	}
 
 	const user = await fetch(

@@ -21,7 +21,7 @@ export const POST: RequestHandler = async ({ request }) => {
 		// first check if the file has a name
 		const image = formData.image as File;
 		if (!image.name || image.name === 'undefined') {
-			throw error(400, 'image name not found');
+			error(400, 'image name not found');
 		}
 		const imageToken = uuid4();
 		const postId = formData.postId;
@@ -67,8 +67,8 @@ export const POST: RequestHandler = async ({ request }) => {
 		});
 	} else if (formData.imageUrl) {
 		// fetch the image from the remote location and upload to R2
-		throw error(400, 'image url upload is not yet supported');
+		error(400, 'image url upload is not yet supported');
 	}
 
-	throw error(400, 'image must be present in `image` parameter of form data');
+	error(400, 'image must be present in `image` parameter of form data');
 };
