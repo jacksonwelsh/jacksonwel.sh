@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { Passage, PassageCurrentUser } from '@passageidentity/passage-js';
 	import type { PageServerData } from './$types';
 	import { PUBLIC_PASSAGE_APP_ID } from '$env/static/public';
 	import Locked from 'carbon-icons-svelte/lib/Locked.svelte';
@@ -12,6 +11,7 @@
 
 	let { data }: Props = $props();
 	const { listing } = data;
+    let user = null;
 
 	const toDateString = (timestamp: any): string => {
 		if (typeof timestamp === 'string') timestamp = parseInt(timestamp);
@@ -23,20 +23,7 @@
 		});
 	};
 
-	const passage = new Passage(PUBLIC_PASSAGE_APP_ID);
-	let user: PassageCurrentUser | null = $state(passage.currentUser);
-
-	const signOut = () => {
-		passage.session.signOut();
-		document.cookie = '';
-		window.location.reload();
-	};
-
 	const isAuthorized = async (time: number, forcePrivacy?: boolean): Promise<boolean> => {
-		const session = passage.session;
-		const isSignedIn = await session.authGuard();
-		if (isSignedIn) return true;
-
 		if (forcePrivacy != null) return !forcePrivacy;
 
 		if (!time) return false;
@@ -52,9 +39,7 @@
 		if (domain !== 'jacksonwel.sh' && process.env.NODE_ENV === 'production')
 			window.location.replace(`https://jacksonwel.sh${window.location.pathname}`);
 
-		const session = passage.session;
-
-		const isSignedIn = await session.authGuard();
+		const isSignedIn = false;
 		if (!isSignedIn) user = null;
 	});
 </script>

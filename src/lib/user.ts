@@ -1,6 +1,3 @@
-import { PASSAGE_API_KEY } from '$env/static/private';
-import { PUBLIC_PASSAGE_APP_ID } from '$env/static/public';
-import Passage, { type UserObject } from '@passageidentity/passage-node';
 import { error, type Cookies } from '@sveltejs/kit';
 
 export const getUser = async (cookies: Cookies) => {
@@ -9,19 +6,7 @@ export const getUser = async (cookies: Cookies) => {
 		error(401, 'Not authenticated');
 	}
 
-	const passage = new Passage({
-		appID: PUBLIC_PASSAGE_APP_ID,
-		apiKey: PASSAGE_API_KEY
-	});
-
-	const userId = await passage.validAuthToken(authToken);
-
-	if (!userId) {
-		return null;
-	}
-
-	const user = await passage.user.get(userId);
-	return user;
+    return null;
 };
 
 export const isAdmin = (user: UserObject): boolean => {
