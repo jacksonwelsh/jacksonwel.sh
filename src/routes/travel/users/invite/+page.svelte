@@ -2,12 +2,16 @@
 	import type { PageData, ActionData } from './$types';
 	import ControlledInput from '$lib/input.svelte';
 
-	export let data: PageData;
-	export let form: ActionData;
+	interface Props {
+		data: PageData;
+		form: ActionData;
+	}
+
+	let { data, form }: Props = $props();
 	const { verification } = data;
 
-	let email = '';
-	let name = '';
+	let email = $state('');
+	let name = $state('');
 </script>
 
 <main class="h-screen flex items-center justify-center">
@@ -29,7 +33,7 @@
 			</p>
 			<button
 				class="py-1.5 w-full bg-teal-500 hover:bg-teal-400 dark:bg-teal-400/10 dark:border-2 dark:border-teal-400/50 dark:hover:bg-teal-400/25 transition rounded-lg"
-				on:click={() => window.location.reload()}>go back</button
+				onclick={() => window.location.reload()}>go back</button
 			>
 		{:else if verification}
 			<h1 class="font-mono text-3xl font-bold">Welcome!</h1>

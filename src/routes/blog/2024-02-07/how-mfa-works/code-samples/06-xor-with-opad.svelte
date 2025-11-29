@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { run } from 'svelte/legacy';
+
 	import { writable } from 'svelte/store';
 	import { HMAC_BYTES, HMAC_OPAD } from '../mfaUtils';
 	import { secretBytes } from '../store';
@@ -23,14 +25,16 @@
 		$xored = xorWithOpad($secretBytes);
 	});
 
-	$: $xored = xorWithOpad($secretBytes);
+	run(() => {
+		$xored = xorWithOpad($secretBytes);
+	});
 
-	$: code = `const outer = new Uint8Array(HMAC_BYTES);
+	let code = $derived(`const outer = new Uint8Array(HMAC_BYTES);
 for (let i = 0; i < HMAC_BYTES; ++i) {
 	outer[i] = paddedKey[i] ^ HMAC_OPAD[i];
 }
 // -> [${$xored}]
-`;
+`);
 </script>
 
 <CodeSample {code} />

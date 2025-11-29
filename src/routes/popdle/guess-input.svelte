@@ -1,14 +1,20 @@
 <script lang="ts">
-	export let disabled = false;
-	export let value = '';
-	export let hintState: HintState = HintState.UNKNOWN;
+	import { run } from 'svelte/legacy';
+
 
 	import Input from '$lib/input.svelte';
 	import { HintState } from '.';
 	import popdleState from '../../stores/popdle';
 	import Hint from './hint.svelte';
+	interface Props {
+		disabled?: boolean;
+		value?: string;
+		hintState?: HintState;
+	}
 
-	let inputComponent: Input;
+	let { disabled = false, value = $bindable(''), hintState = $bindable(HintState.UNKNOWN) }: Props = $props();
+
+	let inputComponent: Input = $state();
 
 	const getHintState = (value: string, disabled: boolean): HintState => {
 		if (disabled && value === '') {
@@ -46,7 +52,9 @@
 		return HintState.VERY_LOW;
 	};
 
-	$: hintState = getHintState(value, disabled);
+	run(() => {
+		hintState = getHintState(value, disabled);
+	});
 
 	export const focusInput = () => {
 		inputComponent?.focus();

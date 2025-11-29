@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { preventDefault } from 'svelte/legacy';
+
 	import Button from '$lib/button.svelte';
 	import {
 		type DailyState,
@@ -13,17 +15,21 @@
 	import type { PageServerData } from './$types';
 	import { onMount } from 'svelte';
 
-	export let data: PageServerData;
+	interface Props {
+		data: PageServerData;
+	}
+
+	let { data }: Props = $props();
 	const { puzzle } = data;
 	$popdleState.population = puzzle.pop;
 
-	let guessIndex = 0;
-	let hasWon = false;
-	let gameOver = false;
+	let guessIndex = $state(0);
+	let hasWon = $state(false);
+	let gameOver = $state(false);
 
-	const guesses = new Array(6).fill('');
-	const hintStates: HintState[] = new Array(6).fill('UNKNOWN');
-	const inputComponents: GuessInput[] = new Array(6);
+	const guesses = $state(new Array(6).fill(''));
+	const hintStates: HintState[] = $state(new Array(6).fill('UNKNOWN'));
+	const inputComponents: GuessInput[] = $state(new Array(6));
 
 	onMount(() => loadDailyState());
 
@@ -140,7 +146,7 @@
 				<p class="text-gray-600 dark:text-gray-400 italic">Guess the population of the city!</p>
 			</div>
 
-			<form on:submit|preventDefault={() => handleSubmit()} id="game" class="w-full">
+			<form onsubmit={preventDefault(() => handleSubmit())} id="game" class="w-full">
 				<h2 class="text-2xl sm:text-3xl font-mono font-mono-semibold">
 					{puzzle.city}, {puzzle.state}
 				</h2>

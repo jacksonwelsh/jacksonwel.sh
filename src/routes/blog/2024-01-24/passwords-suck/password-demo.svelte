@@ -1,24 +1,26 @@
 <script lang="ts">
+	import { run, preventDefault } from 'svelte/legacy';
+
 	import Button from '$lib/button.svelte';
 	import ControlledInput from '$lib/input.svelte';
 
-	let password = '';
-	let passwordRepeat = '';
+	let password = $state('');
+	let passwordRepeat = $state('');
 	let timesSubmitted = 0;
-	let errorMessage = 'Your password has expired. Please select a new password.';
+	let errorMessage = $state('Your password has expired. Please select a new password.');
 	let oldPassword = '';
 
-	$: passwordsMatch = password === passwordRepeat || passwordRepeat.length === 0;
+	let passwordsMatch = $derived(password === passwordRepeat || passwordRepeat.length === 0);
 
-	let repeatClassName = '';
+	let repeatClassName = $state('');
 
-	$: {
+	run(() => {
 		if (!passwordsMatch && passwordRepeat.length > 0) {
 			repeatClassName = "ring-3 ring-red-500! after:content-['passwords_must_match']";
 		} else {
 			repeatClassName = '';
 		}
-	}
+	});
 
 	const makeHash = async (password: string): Promise<string> => {
 		if (typeof window === 'undefined') return '';
@@ -88,7 +90,7 @@
 		</div>
 	{/if}
 
-	<form on:submit|preventDefault={handleSubmit}>
+	<form onsubmit={preventDefault(handleSubmit)}>
 		<ControlledInput bind:value={password} label="Enter new password" type="password" />
 		<ControlledInput
 			bind:value={passwordRepeat}

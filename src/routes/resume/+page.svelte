@@ -25,7 +25,7 @@
 
 	const addr =
 		'Ly9qYWNrc29ud2VsLnNoIDxzcGFuIGNsYXNzPXRleHQtZ3JheS01MDAvMjUgZGFyazp0ZXh0LWdyYXktNDAwLzM1IGZvbnQtc2FucyBkcm9wLXNoYWRvdy14bCBwb2ludGVyLWV2ZW50cy1ub25lPi88L3NwYW4+IG1lQGphY2tzb253ZWwuc2gK';
-	let emailToShow = 'me@thisdomain';
+	let emailToShow = $state('me@thisdomain');
 
 	const socials = [
 		{
@@ -133,7 +133,7 @@
 	const updateEmail = () => (emailToShow = atob(addr));
 </script>
 
-<svelte:window on:beforeprint={updateEmail} />
+<svelte:window onbeforeprint={updateEmail} />
 <svelte:head>
 	<title>Resume | Jackson Welsh</title>
 </svelte:head>
@@ -153,8 +153,9 @@
 		<!-- display the socials all pretty-like -->
 		<h2 class="font-mono-thin font-mono text-teal-800 dark:text-teal-200 justify-start flex my-2">
 			{#each socials as { handle, logo, href }, idx}
+				{@const SvelteComponent = logo}
 				<a class="flex items-center underline" {href} target="_blank"
-					><svelte:component this={logo} class="mr-2" size={20} />{handle}</a
+					><SvelteComponent class="mr-2" size={20} />{handle}</a
 				>{#if idx !== socials.length - 1}<Divider class="mx-2" />{/if}
 			{/each}
 		</h2>

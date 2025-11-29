@@ -1,20 +1,24 @@
 <script lang="ts">
+	import { run } from 'svelte/legacy';
+
 	import { alphabet, chunks, getByteColor, HIGHLIGHT_CLASS } from './mfaUtils';
 	import { clearHoverRange, hoverBinRange, secret, secretBytes } from './store';
 
-	let charRefs: HTMLSpanElement[] = new Array($secretBytes.length * 8);
-	let secretBytesBinString = '';
+	let charRefs: HTMLSpanElement[] = $state(new Array($secretBytes.length * 8));
+	let secretBytesBinString = $state('');
 
-	$: {
+	run(() => {
 		if (charRefs.length !== $secret.length * 5) {
 			charRefs = new Array($secret.length * 5);
 		}
-	}
+	});
 
-	$: secretBytesBinString = $secretBytes.reduce((prev, byte) => {
-		prev += byte.toString(2).padStart(8, '0');
-		return prev;
-	}, '');
+	run(() => {
+		secretBytesBinString = $secretBytes.reduce((prev, byte) => {
+			prev += byte.toString(2).padStart(8, '0');
+			return prev;
+		}, '');
+	});
 
 	const pushHoverRange = (lineIdx: number, chunkIdx: number) => {
 		const start = lineIdx * 40 + chunkIdx * 5;
@@ -23,7 +27,7 @@
 		$hoverBinRange = [start, end];
 	};
 
-	$: {
+	run(() => {
 		// first clear any previously hovered items
 		charRefs
 			.filter(
@@ -42,7 +46,7 @@
 					i < $hoverBinRange[1]
 			)
 			.forEach((bit) => bit.classList.add(HIGHLIGHT_CLASS));
-	}
+	});
 </script>
 
 {#each chunks(chunks(Array.from(secretBytesBinString), 5), 8) as line, lineIdx}
@@ -52,9 +56,9 @@
 				class="flex flex-wrap items-center justify-center text-center font-mono font-mono-normal w-[5ch] text-xs sm:text-sm md:text-base"
 				style="-webkit-user-select: none"
 				role="presentation"
-				on:touchstart={() => pushHoverRange(lineIdx, chunkIdx)}
-				on:mouseenter={() => pushHoverRange(lineIdx, chunkIdx)}
-				on:mouseleave={clearHoverRange}
+				ontouchstart={() => pushHoverRange(lineIdx, chunkIdx)}
+				onmouseenter={() => pushHoverRange(lineIdx, chunkIdx)}
+				onmouseleave={clearHoverRange}
 			>
 				<div class="text-center w-full">
 					{alphabet.at(parseInt(chunk.join(''), 2))}

@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { run } from 'svelte/legacy';
+
 	import { writable } from 'svelte/store';
 	import { HMAC_BYTES, HMAC_IPAD, numToUint8Array } from '../mfaUtils';
 	import { counter, secretBytes } from '../store';
@@ -31,14 +33,16 @@
 		$appendedCounter = appendCounter($secretBytes, $counter);
 	});
 
-	$: $appendedCounter = appendCounter($secretBytes, $counter);
+	run(() => {
+		$appendedCounter = appendCounter($secretBytes, $counter);
+	});
 
-	$: code = `const innerWithCounter = new Uint8Array(HMAC_BYTES + counterBytes.length);
+	let code = $derived(`const innerWithCounter = new Uint8Array(HMAC_BYTES + counterBytes.length);
 
 innerWithCounter.set(inner);
 innerWithCounter.set(counterBytes, inner.length);
 // -> [${$appendedCounter}]
-`;
+`);
 </script>
 
 <CodeSample {code} />

@@ -1,8 +1,12 @@
 <script lang="ts">
 	import type { HeaderData } from '$lib/types';
 
-	export let id: string;
-	export let data: HeaderData;
+	interface Props {
+		id: string;
+		data: HeaderData;
+	}
+
+	let { id, data }: Props = $props();
 
 	const classes: Record<HeaderData['level'], string> = {
 		1: 'text-4xl font-bold my-12',

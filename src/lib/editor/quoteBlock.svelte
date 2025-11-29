@@ -1,8 +1,12 @@
 <script lang="ts">
 	import type { QuoteData } from '$lib/types';
 
-	export let id: string;
-	export let data: QuoteData;
+	interface Props {
+		id: string;
+		data: QuoteData;
+	}
+
+	let { id, data }: Props = $props();
 </script>
 
 <figure class="my-10 border-l border-emerald-600 pl-9" {id}>

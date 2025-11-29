@@ -6,9 +6,9 @@
 		return [...new Uint8Array(buffer)].map((x) => x.toString(16).padStart(2, '0')).join('');
 	};
 
-	$: code = `const hmac = await window.crypto.subtle.digest('SHA-1', outerWithHash);
+	let code = $derived(`const hmac = await window.crypto.subtle.digest('SHA-1', outerWithHash);
 // -> ${buf2hex($hmacs[2])} (converted to hex for readability)
-`;
+`);
 </script>
 
 <CodeSample {code} />

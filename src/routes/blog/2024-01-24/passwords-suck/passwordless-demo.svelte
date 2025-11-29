@@ -1,16 +1,18 @@
 <script lang="ts">
+	import { preventDefault } from 'svelte/legacy';
+
 	import Button from '$lib/button.svelte';
 	import ControlledInput from '$lib/input.svelte';
 	import { decode } from 'cbor-x';
 
 	const LOCAL_STORAGE_KEY = 'passwords-suck.saved-credentials';
-	let username = '';
-	let errorMessage = '';
-	let successMessage = '';
-	let lastCredentialId = '';
-	let isAddingNewCredential = false;
+	let username = $state('');
+	let errorMessage = $state('');
+	let successMessage = $state('');
+	let lastCredentialId = $state('');
+	let isAddingNewCredential = $state(false);
 
-	let pageState: 'select' | 'register' | 'login' | 'logged-in' = 'select';
+	let pageState: 'select' | 'register' | 'login' | 'logged-in' = $state('select');
 
 	const handleSubmit = () => {
 		if (username.length === 0) {
@@ -544,7 +546,7 @@
 		</div>
 	{/if}
 	{#if pageState === 'select'}
-		<form on:submit|preventDefault={handleSubmit}>
+		<form onsubmit={preventDefault(handleSubmit)}>
 			<ControlledInput bind:value={username} label="Username" type="text" autocomplete="username" />
 			<Button type="submit" size="lg">Next</Button>
 		</form>

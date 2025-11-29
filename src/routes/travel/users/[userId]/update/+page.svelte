@@ -3,10 +3,14 @@
 	import ControlledInput from '$lib/input.svelte';
 	import type { PageData } from './$types';
 
-	export let data: PageData;
+	interface Props {
+		data: PageData;
+	}
+
+	let { data }: Props = $props();
 	const { user } = data;
 
-	let name = user.user_metadata?.name ?? '';
+	let name = $state(user.user_metadata?.name ?? '');
 	console.log({ name });
 </script>
 

@@ -1,3 +1,7 @@
+<!-- @migration-task Error while migrating Svelte code: can't migrate `$: code = `const innerHash = new Uint8Array(await window.crypto.subtle.digest('SHA-1', innerWithCounter));
+// -> ${$innerHash} (converted to hex for readability)
+`;` to `$derived` because there's a variable named derived.
+     Rename the variable and try again or migrate by hand. -->
 <script lang="ts">
 	import CodeSample from './code-sample.svelte';
 	import { secretBytes, counter } from '../store';

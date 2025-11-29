@@ -70,13 +70,13 @@
 			});
 	};
 
-	let title = '';
-	let slug = '';
+	let title = $state('');
+	let slug = $state('');
 </script>
 
 <main class="container mx-auto my-16">
 	<button
-		on:click={save}
+		onclick={save}
 		disabled={title === '' || slug === ''}
 		class={`${
 			title === '' || slug === ''
@@ -93,7 +93,7 @@
 		<ControlledInput label="slug" bind:value={slug} className="min-w-[24rem]" />
 	</div>
 
-	<div id="editorjs" class="prose dark:prose-invert" />
+	<div id="editorjs" class="prose dark:prose-invert"></div>
 </main>
 
 <style>

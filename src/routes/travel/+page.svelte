@@ -6,7 +6,11 @@
 	import { onMount } from 'svelte';
 	import Button from '$lib/button.svelte';
 
-	export let data: PageServerData;
+	interface Props {
+		data: PageServerData;
+	}
+
+	let { data }: Props = $props();
 	const { listing } = data;
 
 	const toDateString = (timestamp: any): string => {
@@ -20,7 +24,7 @@
 	};
 
 	const passage = new Passage(PUBLIC_PASSAGE_APP_ID);
-	let user: PassageCurrentUser | null = passage.currentUser;
+	let user: PassageCurrentUser | null = $state(passage.currentUser);
 
 	const signOut = () => {
 		passage.session.signOut();

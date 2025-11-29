@@ -1,8 +1,12 @@
 <script lang="ts">
 	import type { ImageData } from '$lib/types';
 
-	export let id: string;
-	export let data: ImageData;
+	interface Props {
+		id: string;
+		data: ImageData;
+	}
+
+	let { id, data }: Props = $props();
 </script>
 
 <figure {id} class="my-8 w-full flex flex-wrap justify-center">

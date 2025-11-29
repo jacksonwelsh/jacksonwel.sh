@@ -1,8 +1,14 @@
 <script lang="ts">
-	export let index: number;
+	interface Props {
+		index: number;
+		children?: import('svelte').Snippet;
+		[key: string]: any
+	}
+
+	let { ...props }: Props = $props();
 
 	const scrollBack = () => {
-		const link = document.querySelector(`#footnoteLink${index}`);
+		const link = document.querySelector(`#footnoteLink${props.index}`);
 
 		if (!link) {
 			console.error('Failed to find footnote link');
@@ -18,9 +24,9 @@
 	};
 </script>
 
-<div id={`footnote${index}`} class={`relative mx-2 sm:mx-0 text-sm ${$$props.class}`}>
-	<button on:click={scrollBack} class="font-bold text-teal-600 dark:text-teal-500 absolute -left-2"
-		><sup>{index}</sup></button
+<div id={`footnote${props.index}`} class={`relative mx-2 sm:mx-0 text-sm ${props.class}`}>
+	<button onclick={scrollBack} class="font-bold text-teal-600 dark:text-teal-500 absolute -left-2"
+		><sup>{props.index}</sup></button
 	>
-	<slot />
+	{@render props.children?.()}
 </div>

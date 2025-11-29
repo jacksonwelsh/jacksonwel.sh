@@ -35,8 +35,8 @@
 		initializeSecret(secret.set);
 	});
 
-	let showAuthenticator = false;
-	let mfaInitComplete = false;
+	let showAuthenticator = $state(false);
+	let mfaInitComplete = $state(false);
 
 	const stopTime = () => {
 		$timeStopped = true;

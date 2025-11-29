@@ -1,9 +1,14 @@
 <script lang="ts">
 	import { v4 } from 'uuid';
-	export let title = 'Think this was interesting?';
-	export let tags: string[] = [];
+	interface Props {
+		title?: string;
+		tags?: string[];
+		children?: import('svelte').Snippet;
+	}
 
-	let hideClicked = false;
+	let { title = 'Think this was interesting?', tags = [], children }: Props = $props();
+
+	let hideClicked = $state(false);
 	const formId = v4();
 
 	const hide = () => {
@@ -19,16 +24,14 @@
 
 	<h2>{title}</h2>
 	<p>
-		<slot
-			>I have a mailing list that I send new blog posts out to. Drop your email in if you're
-			interested.</slot
-		>
+		{#if children}{@render children()}{:else}I have a mailing list that I send new blog posts out to. Drop your email in if you're
+			interested.{/if}
 	</p>
 	<form
 		action="https://buttondown.email/api/emails/embed-subscribe/jacksonwelsh"
 		method="post"
 		target="popupwindow"
-		on:submit={() => window.open('https://buttondown.email/jacksonwelsh', 'popupwindow')}
+		onsubmit={() => window.open('https://buttondown.email/jacksonwelsh', 'popupwindow')}
 		class="flex flex-col"
 	>
 		<div class="w-full flex flex-col">
@@ -49,7 +52,7 @@
 			/>
 		</div>
 	</form>
-	<button on:click={hide} class="mt-4 text-xs text-gray-600 dark:text-gray-400"
+	<button onclick={hide} class="mt-4 text-xs text-gray-600 dark:text-gray-400"
 		>[ don't show me this again ]</button
 	>
 	<hr />

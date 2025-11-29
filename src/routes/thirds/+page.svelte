@@ -6,19 +6,19 @@
 	import NotificationIcon from 'carbon-icons-svelte/lib/Notification.svelte';
 	import NotificationOff from 'carbon-icons-svelte/lib/NotificationOff.svelte';
 
-	let timer = 0;
-	let intervalId: NodeJS.Timeout | null = null;
-	let work = true;
-	let notifications = false;
+	let timer = $state(0);
+	let intervalId: NodeJS.Timeout | null = $state(null);
+	let work = $state(true);
+	let notifications = $state(false);
 
-	$: isRunning = intervalId !== null;
-	$: hours = Math.floor(timer / 3600);
-	$: minutes = Math.floor((timer / 60) % 60);
-	$: seconds = timer % 60;
+	let isRunning = $derived(intervalId !== null);
+	let hours = $derived(Math.floor(timer / 3600));
+	let minutes = $derived(Math.floor((timer / 60) % 60));
+	let seconds = $derived(timer % 60);
 
-	$: formattedHours = hours.toString().padStart(2, '0');
-	$: formattedMinutes = minutes.toString().padStart(2, '0');
-	$: formattedSeconds = seconds.toString().padStart(2, '0');
+	let formattedHours = $derived(hours.toString().padStart(2, '0'));
+	let formattedMinutes = $derived(minutes.toString().padStart(2, '0'));
+	let formattedSeconds = $derived(seconds.toString().padStart(2, '0'));
 
 	// $: notificationPermission = Notification.permission;
 
@@ -89,7 +89,7 @@
 	</div>
 
 	<button
-		on:click={() => (isRunning ? stop() : start())}
+		onclick={() => (isRunning ? stop() : start())}
 		class="text-gray-400 hover:text-gray-100 transition"
 	>
 		{#if isRunning}
@@ -99,7 +99,7 @@
 		{/if}
 	</button>
 	<button
-		on:click={() => (work ? startBreak() : startWork())}
+		onclick={() => (work ? startBreak() : startWork())}
 		class="text-gray-400 hover:text-gray-100 transition"
 	>
 		{#if work}
@@ -109,7 +109,7 @@
 		{/if}
 	</button>
 	<button
-		on:click={() => (notifications ? disableNotifications() : enableNotifications())}
+		onclick={() => (notifications ? disableNotifications() : enableNotifications())}
 		class="text-gray-400 hover:text-gray-100 transition"
 	>
 		{#if notifications}

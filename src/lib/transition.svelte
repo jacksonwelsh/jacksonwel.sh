@@ -25,7 +25,7 @@
 	<div
 		class="progress-sliver bg-linear-to-r dark:from-teal-900/50 dark:via-teal-800/50 dark:to-teal-300/50 from-teal-300/50 via-teal-400/50 to-teal-600/50 h-full"
 		style={`--width: ${$progress * 100}%`}
-	/>
+	></div>
 </div>
 
 <style>

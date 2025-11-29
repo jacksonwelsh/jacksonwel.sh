@@ -2,7 +2,7 @@
 	import { PUBLIC_PASSAGE_APP_ID } from '$env/static/public';
 	import { Passage } from '@passageidentity/passage-js';
 
-	export let data;
+	let { data } = $props();
 
 	const { user } = data;
 	const passage = new Passage(PUBLIC_PASSAGE_APP_ID);
@@ -41,7 +41,7 @@
 		<h2 class="font-mono text-3xl font-bold mt-4">Devices</h2>
 		<div class="flex gap-4 flex-wrap items-center">
 			<a href={`/travel/users/${user.id}/update`}>update</a>
-			<button on:click={() => passage.magicLink.login(user.email)}>send a magic link</button>
+			<button onclick={() => passage.magicLink.login(user.email)}>send a magic link</button>
 		</div>
 	</div>
 	<div class="flow-root">

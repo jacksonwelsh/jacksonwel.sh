@@ -6,14 +6,18 @@
 	import Button from '$lib/button.svelte';
 	import VotingCard from './voting-card.svelte';
 
-	export let form: FormData;
-	export let data: PageData;
+	interface Props {
+		form: FormData;
+		data: PageData;
+	}
+
+	let { form, data }: Props = $props();
 
 	type Nomination = { id: string; value: string };
 
-	let session = data.session;
-    let votedUsers = data.votedUsers;
-    let connected = false;
+	let session = $state(data.session);
+    let votedUsers = $state(data.votedUsers);
+    let connected = $state(false);
     let eventSource: EventSource;
     let reconnectAttempts = 0;
 
@@ -53,7 +57,7 @@
         }
 	});
 
-	let votes: string[] = [];
+	let votes: string[] = $state([]);
 	const vote = (nomination: string) => {
 		console.log(`voted for ${nomination}`);
 		console.log({ votes });
@@ -67,16 +71,16 @@
 		}
 	};
 
-	$: myNominations = data.myNominations ?? [];
-	$: myVotes = data.myVotes ?? [];
-	$: isClosed = session.closedAt != null;
-	$: nominations = session.nominations;
-	$: voteStr = votes.map((v) => v).join(' ');
-	$: nominationsMap = session.nominations.reduce(
+	let myNominations = $derived(data.myNominations ?? []);
+	let myVotes = $derived(data.myVotes ?? []);
+	let isClosed = $derived(session.closedAt != null);
+	let nominations = $derived(session.nominations);
+	let voteStr = $derived(votes.map((v) => v).join(' '));
+	let nominationsMap = $derived(session.nominations.reduce(
 		(prev: Record<string, string>, curr: Nomination) => ({ ...prev, [curr.id]: curr.value }),
 		{}
-	);
-	$: votedUserCount = votedUsers?.length ?? 0;
+	));
+	let votedUserCount = $derived(votedUsers?.length ?? 0);
 </script>
 
 <div class="fixed top-0 right-0 m-2 px-2 py-1 transition-all bg-gray-200 dark:bg-gray-800 rounded-md flex items-center gap-2">
@@ -84,7 +88,7 @@
         <div class="w-2 h-2 rounded-full bg-green-500">&nbsp;</div>
         connected
     {:else}
-        <span class="w-2 h-2 rounded-full bg-red-500 mr-2" />
+        <span class="w-2 h-2 rounded-full bg-red-500 mr-2"></span>
         disconnected
     {/if}
 </div>

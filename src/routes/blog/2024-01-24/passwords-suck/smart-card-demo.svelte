@@ -2,8 +2,8 @@
 	import Button from '$lib/button.svelte';
 	import SmartCardPinPrompt from './smart-card-pin-prompt.svelte';
 
-	let showPinPrompt = false;
-	let accessGranted = false;
+	let showPinPrompt = $state(false);
+	let accessGranted = $state(false);
 	const handleSignInClick = () => {
 		console.log('clicky click');
 		showPinPrompt = true;

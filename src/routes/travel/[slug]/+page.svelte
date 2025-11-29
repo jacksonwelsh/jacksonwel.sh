@@ -7,7 +7,11 @@
 	import type { PageData } from './$types';
 	import ArrowLeft from 'carbon-icons-svelte/lib/ArrowLeft.svelte';
 
-	export let data: PageData;
+	interface Props {
+		data: PageData;
+	}
+
+	let { data }: Props = $props();
 	console.log({ data });
 	const { title, slug, content, postId } = data;
 

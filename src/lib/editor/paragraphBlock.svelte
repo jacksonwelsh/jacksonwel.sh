@@ -1,8 +1,12 @@
 <script lang="ts">
 	import type { ParagraphData } from '$lib/types';
 
-	export let id: string;
-	export let data: ParagraphData;
+	interface Props {
+		id: string;
+		data: ParagraphData;
+	}
+
+	let { id, data }: Props = $props();
 </script>
 
 <p {id} class="raw-text my-4">

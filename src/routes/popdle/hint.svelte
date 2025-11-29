@@ -1,7 +1,14 @@
 <script lang="ts">
+	import { createBubbler } from 'svelte/legacy';
+
+	const bubble = createBubbler();
 	import { HintState } from '.';
 
-	export let state: HintState = HintState.DISABLED;
+	interface Props {
+		state?: HintState;
+	}
+
+	let { state = HintState.DISABLED }: Props = $props();
 
 	const stateStyles = {
 		[HintState.DISABLED]: 'dark:bg-slate-800 bg-slate-100 cursor-not-allowed dark:border-gray-700',
@@ -39,9 +46,9 @@
 	};
 </script>
 
-<!-- svelte-ignore a11y-no-static-element-interactions -->
+<!-- svelte-ignore a11y_no_static_element_interactions -->
 <div
-	on:mousedown
+	onmousedown={bubble('mousedown')}
 	class={[
 		'border group-focus-within:border-2 group-focus-within:border-l-0 border-l-0 border-gray-200 group-focus-within:border-teal-500 rounded-r-md w-24 font-mono font-mono-bold flex items-center justify-center text-xl h-full',
 		stateStyles[state]

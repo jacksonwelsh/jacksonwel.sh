@@ -1,16 +1,18 @@
 <script lang="ts">
+	import { run, preventDefault } from 'svelte/legacy';
+
 	import { Edit, Renew } from 'carbon-icons-svelte';
 	import ControlledInput from '$lib/input.svelte';
 	import Button from '$lib/button.svelte';
 	import { alphabet, getByteColor, HIGHLIGHT_CLASS } from './mfaUtils';
 	import { clearHoverRange, genSecret, hoverBinRange, LS_KEY, secret, secretBytes } from './store';
 
-	let editingSecret = false;
-	let editableSecret = '';
-	let secretEditErrorMessage = '';
-	let newSecretButtonRef: HTMLButtonElement;
+	let editingSecret = $state(false);
+	let editableSecret = $state('');
+	let secretEditErrorMessage = $state('');
+	let newSecretButtonRef: HTMLButtonElement = $state();
 
-	let charRefs: HTMLSpanElement[] = new Array($secretBytes.length);
+	let charRefs: HTMLSpanElement[] = $state(new Array($secretBytes.length));
 
 	const startSecretEdit = () => {
 		editableSecret = $secret;
@@ -60,7 +62,7 @@
 		$secret = genSecret();
 	};
 
-	$: {
+	run(() => {
 		if (!editingSecret) {
 			// first clear any previously hovered items
 			charRefs
@@ -81,7 +83,7 @@
 				)
 				.forEach((bit) => bit.classList.add(HIGHLIGHT_CLASS));
 		}
-	}
+	});
 </script>
 
 {#if !editingSecret}
@@ -89,9 +91,9 @@
 		{#each $secret.match(/.{2,8}/g) ?? [] as chunk, chunkIdx}
 			<span
 				role="presentation"
-				on:touchstart={() => pushHoverRange(chunkIdx)}
-				on:mouseenter={() => pushHoverRange(chunkIdx)}
-				on:mouseleave={clearHoverRange}
+				ontouchstart={() => pushHoverRange(chunkIdx)}
+				onmouseenter={() => pushHoverRange(chunkIdx)}
+				onmouseleave={clearHoverRange}
 				style="-webkit-user-select: none"
 				class={`font-mono font-mono-normal ${getByteColor(chunkIdx, 1)}`}
 			>
@@ -101,7 +103,7 @@
 			</span>
 		{/each}
 		<div class="flex gap-4 ml-2 items-center">
-			<button on:click={startSecretEdit}>
+			<button onclick={startSecretEdit}>
 				<Edit
 					size={20}
 					title="edit"
@@ -109,7 +111,7 @@
 				/>
 			</button>
 			<button
-				on:click={onNewSecretClick}
+				onclick={onNewSecretClick}
 				bind:this={newSecretButtonRef}
 				class="transition-transform duration-500"
 			>
@@ -127,7 +129,7 @@
 			<div class="text-red-500 w-full">{secretEditErrorMessage}</div>
 		{/if}
 		<form
-			on:submit|preventDefault={saveSecret}
+			onsubmit={preventDefault(saveSecret)}
 			class="flex items-center justify-center flex-wrap w-full"
 		>
 			<ControlledInput bind:value={editableSecret} />

@@ -5,12 +5,12 @@
 	import { onDestroy, onMount } from 'svelte';
 	import { isDarkTheme } from '../stores/theme';
 
-	let canvas: HTMLCanvasElement;
+	let canvas: HTMLCanvasElement = $state();
 	let ctx: CanvasRenderingContext2D | null;
 
-	let name = '';
-	let cursorVisible = true;
-	let showSocial = false;
+	let name = $state('');
+	let cursorVisible = $state(true);
+	let showSocial = $state(false);
 
 	let acclSpeed = 150;
 
@@ -136,7 +136,7 @@
 		id="gradient-canvas"
 		class="absolute h-screen w-screen top-0 left-0 -z-40 overflow-hidden"
 		data-transition-in
-	/>
+	></canvas>
 	<div class="w-full transition-all sm:h-auto">
 		<h1
 			class="dark drop-shadow-lg text-6xl lg:text-6xl xl:text-8xl font-mono-medium dark:text-slate-100"
@@ -154,11 +154,11 @@
 					<a
 						{href}
 						class={className}
-						on:click={onClick}
+						onclick={onClick}
 						target={href.startsWith('//') ? '_blank' : ''}>{name}</a
 					>
 				{:else}
-					<button class={className} on:click={onClick}>{name}</button>
+					<button class={className} onclick={onClick}>{name}</button>
 				{/if}
 				{#if idx !== links.length - 1}<Divider />&nbsp;{/if}
 			{/each}

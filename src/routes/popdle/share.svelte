@@ -1,11 +1,15 @@
 <script lang="ts">
-	export let results: HintState[] = [];
-	export let index: number;
 
 	import Button from '$lib/button.svelte';
 	import { HintState, getScore } from '.';
+	interface Props {
+		results?: HintState[];
+		index: number;
+	}
 
-	let clicked = false;
+	let { results = [], index }: Props = $props();
+
+	let clicked = $state(false);
 
 	const emojiMap = {
 		[HintState.VERY_LOW]: '🟪',
@@ -39,7 +43,7 @@
 		setTimeout(() => (clicked = false), 2500);
 	};
 
-	$: buttonText = clicked ? 'Copied!' : 'Share results';
+	let buttonText = $derived(clicked ? 'Copied!' : 'Share results');
 </script>
 
 <Button

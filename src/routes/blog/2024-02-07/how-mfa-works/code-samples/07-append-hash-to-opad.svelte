@@ -1,3 +1,9 @@
+<!-- @migration-task Error while migrating Svelte code: can't migrate `$: code = `const outerWithHash = new Uint8Array(HMAC_BYTES + innerHash.length);
+outerWithHash.set(outer);
+outerWithHash.set(innerHash, outer.length);
+// -> [${$outerWithHash}]
+`;` to `$derived` because there's a variable named derived.
+     Rename the variable and try again or migrate by hand. -->
 <script lang="ts">
 	import { derived, writable } from 'svelte/store';
 	import CodeSample from './code-sample.svelte';

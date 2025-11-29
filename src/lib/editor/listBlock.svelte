@@ -1,8 +1,12 @@
 <script lang="ts">
 	import type { ListData } from '$lib/types';
 
-	export let id: string;
-	export let data: ListData;
+	interface Props {
+		id: string;
+		data: ListData;
+	}
+
+	let { id, data }: Props = $props();
 </script>
 
 {#if data.style === 'unordered'}

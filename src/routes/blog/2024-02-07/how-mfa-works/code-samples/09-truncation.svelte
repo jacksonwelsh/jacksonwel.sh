@@ -17,7 +17,7 @@
 		);
 	};
 
-	$: code = `// hmacBuffer represents the value returned by HMAC-SHA-1 since subtleCrypto.digest returns an ArrayBuffer
+	let code = $derived(`// hmacBuffer represents the value returned by HMAC-SHA-1 since subtleCrypto.digest returns an ArrayBuffer
 const hmacArray = new Uint8Array(hmacBuffer);  // [${new Uint8Array($hmacs[2])}]
 
 // this is pulled straight from the RFC
@@ -30,7 +30,7 @@ const binCode =
 
 // Codes can be 6-8 digits; replace 6 with the desired length.
 return binCode % Math.pow(10, 6);  // ${getBinCode($hmacs[2]) % Math.pow(10, 6)}
-`;
+`);
 </script>
 
 <CodeSample {code} />

@@ -1,13 +1,17 @@
 <script lang="ts">
-	export let code: string;
 
 	import { Highlight } from 'svelte-highlight';
 	import { typescript } from 'svelte-highlight/languages';
 	import github from 'svelte-highlight/styles/github';
 	import githubDark from 'svelte-highlight/styles/github-dark';
 	import { isDarkTheme } from '../../../../../stores/theme';
+	interface Props {
+		code: string;
+	}
 
-	$: activeTheme = $isDarkTheme ? githubDark : github;
+	let { code }: Props = $props();
+
+	let activeTheme = $derived($isDarkTheme ? githubDark : github);
 </script>
 
 <svelte:head>

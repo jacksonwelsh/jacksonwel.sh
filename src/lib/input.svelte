@@ -1,22 +1,39 @@
-<svelte:options accessors />
+<svelte:options />
 
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
 
 	import { v4 as uuid } from 'uuid';
 
-	export let label = '';
-	export let name = '';
-	export let hint = '';
-	export let value = '';
-	export let type = 'text';
-	export let autocomplete = 'none';
-	export let required = false;
-	export let className = '';
-	export let placeholder = '';
-	export let inputmode: 'text' | 'numeric' | 'decimal' | null = null;
-	export let disabled = false;
-	export let pattern: string | null = null;
+	interface Props {
+		label?: string;
+		name?: string;
+		hint?: string;
+		value?: string;
+		type?: string;
+		autocomplete?: string;
+		required?: boolean;
+		className?: string;
+		placeholder?: string;
+		inputmode?: 'text' | 'numeric' | 'decimal' | null;
+		disabled?: boolean;
+		pattern?: string | null;
+	}
+
+	let {
+		label = '',
+		name = '',
+		hint = '',
+		value = $bindable(''),
+		type = 'text',
+		autocomplete = 'none',
+		required = false,
+		className = '',
+		placeholder = '',
+		inputmode = null,
+		disabled = false,
+		pattern = null
+	}: Props = $props();
 
 	const dispatch = createEventDispatcher();
 	const onFocus = () => dispatch('focus');
@@ -26,7 +43,7 @@
 
 	const labelId = uuid();
 
-	let inputElement: HTMLInputElement;
+	let inputElement: HTMLInputElement = $state();
 
 	export const focus = () => {
 		setTimeout(() => {
@@ -38,6 +55,21 @@
 		}
 		inputElement?.focus();
 	};
+
+	export {
+		label,
+		name,
+		hint,
+		value,
+		type,
+		autocomplete,
+		required,
+		className,
+		placeholder,
+		inputmode,
+		disabled,
+		pattern,
+	}
 </script>
 
 <div class="my-2 w-full">
@@ -46,8 +78,8 @@
 		<input
 			bind:this={inputElement}
 			id={labelId}
-			on:input={handleInput}
-			on:focus={onFocus}
+			oninput={handleInput}
+			onfocus={onFocus}
 			{type}
 			{autocomplete}
 			{name}

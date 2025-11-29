@@ -1,5 +1,6 @@
 <script lang="ts">
-	export let show = false;
+	import { run, preventDefault } from 'svelte/legacy';
+
 
 	import Button from '$lib/button.svelte';
 	import ControlledInput from '$lib/input.svelte';
@@ -9,14 +10,19 @@
 
 	import { Minimize, Maximize, Close } from 'carbon-icons-svelte';
 	import { fly } from 'svelte/transition';
+	interface Props {
+		show?: boolean;
+	}
 
-	let authenticatorDiv: HTMLDivElement;
-	let minimize = false;
+	let { show = $bindable(false) }: Props = $props();
 
-	let authenticatorSecret = '';
-	let errorMessage = '';
-	let code = '000000';
-	let showInput = true;
+	let authenticatorDiv: HTMLDivElement = $state();
+	let minimize = $state(false);
+
+	let authenticatorSecret = $state('');
+	let errorMessage = $state('');
+	let code = $state('000000');
+	let showInput = $state(true);
 
 	const saveSecret = () => {
 		const formatted = authenticatorSecret.replace(/[ =]/g, '').toLowerCase();
@@ -32,22 +38,24 @@
 		authenticatorSecret = formatted;
 	};
 
-	$: hmac(authenticatorSecret, $counter).then((result) => {
-		if (result != null) {
-			code = DT(result).toString().padStart(6, '0');
-		}
-		return '';
+	run(() => {
+		hmac(authenticatorSecret, $counter).then((result) => {
+			if (result != null) {
+				code = DT(result).toString().padStart(6, '0');
+			}
+			return '';
+		});
 	});
 
-	let minimizeTranslationAmount = 0;
+	let minimizeTranslationAmount = $state(0);
 
-	$: {
+	run(() => {
 		if (minimize) {
 			minimizeTranslationAmount = authenticatorDiv.clientHeight;
 		} else {
 			minimizeTranslationAmount = 0;
 		}
-	}
+	});
 </script>
 
 {#if show}
@@ -63,7 +71,7 @@
 			<div class="absolute right-0.5 top-0 flex gap-2 p-0.5">
 				<button
 					class="rounded-full hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors hover:cursor-pointer"
-					on:click={() => (minimize = !minimize)}
+					onclick={() => (minimize = !minimize)}
 				>
 					{#if minimize}
 						<Maximize size={20} class="p-0.5" />
@@ -71,7 +79,7 @@
 						<Minimize size={20} class="p-0.5" />
 					{/if}
 				</button>
-				<button on:click={() => (show = false)} class="hover:cursor-pointer">
+				<button onclick={() => (show = false)} class="hover:cursor-pointer">
 					<Close
 						size={20}
 						class="rounded-full hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors"
@@ -81,7 +89,7 @@
 		</div>
 		<div class="p-4" bind:this={authenticatorDiv}>
 			{#if showInput}
-				<form on:submit|preventDefault={saveSecret}>
+				<form onsubmit={preventDefault(saveSecret)}>
 					{#if errorMessage !== ''}
 						<div class="text-red-500">{errorMessage}</div>
 					{/if}

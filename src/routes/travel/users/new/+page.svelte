@@ -2,7 +2,7 @@
 	import { enhance } from '$app/forms';
 	import ControlledInput from '$lib/input.svelte';
 
-	let email = '';
+	let email = $state('');
 </script>
 
 <main class="container mx-auto my-16">

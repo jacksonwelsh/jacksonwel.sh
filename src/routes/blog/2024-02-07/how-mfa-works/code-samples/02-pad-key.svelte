@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { run } from 'svelte/legacy';
+
 	import { onMount } from 'svelte';
 	import { HMAC_BYTES } from '../mfaUtils';
 	import { secretBytes } from '../store';
@@ -10,12 +12,14 @@
 		$secretBytes.forEach((byte, i) => ($filledArray[i] = byte));
 	});
 
-	$: $secretBytes.forEach((byte, i) => ($filledArray[i] = byte));
+	run(() => {
+		$secretBytes.forEach((byte, i) => ($filledArray[i] = byte));
+	});
 
-	$: code = `const keyBytes = base32ToUint8(secretKey);  // [${$secretBytes}]
+	let code = $derived(`const keyBytes = base32ToUint8(secretKey);  // [${$secretBytes}]
 const paddedKey = new Uint8Array(HMAC_BYTES);  // [${new Uint8Array(HMAC_BYTES)}]
 paddedKey.set(keyBytes);  // [${$filledArray}]
-`;
+`);
 </script>
 
 {#key secretBytes}
