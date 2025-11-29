@@ -13,21 +13,44 @@
 
 	let session = data.session;
     let votedUsers = data.votedUsers;
+    let connected = false;
+    let eventSource: EventSource;
+    let reconnectAttempts = 0;
 
-	onMount(() => {
-		const eventSource = new EventSource(`/etc/quick-pick/${session.id}/stream`);
+    const debounce = (func: Function) => {
+        const delay = Math.min(2 ** reconnectAttempts / 2, 64);
+        console.log(`waiting ${delay} seconds before reconnecting`);
+        reconnectAttempts += 1;
 
-		eventSource.onmessage = (event) => {
-			const eventData = JSON.parse(event.data);
+        setTimeout(func, delay * 1000);
+    }
+
+    const connect = () => {
+        eventSource = new EventSource(`/etc/quick-pick/${session.id}/stream`);
+
+        eventSource.onmessage = (event) => {
+            const eventData = JSON.parse(event.data);
             session = eventData.session;
             votedUsers = eventData.votedUsers;
-		};
+            connected = true;
+            reconnectAttempts = 0;
+        };
 
-		eventSource.onerror = () => {
-			eventSource.close();
-		};
+        eventSource.onerror = () => {
+            eventSource.close();
+            connected = false;
+            debounce(connect);
+        };
+    }
 
-		return () => eventSource.close();
+	onMount(() => {
+        connect();
+		return () => {
+            if (eventSource.readyState == EventSource.OPEN) {
+                eventSource.close();
+            }
+            connected = false;
+        }
 	});
 
 	let votes: string[] = [];
@@ -55,6 +78,16 @@
 	);
 	$: votedUserCount = votedUsers?.length ?? 0;
 </script>
+
+<div class="fixed top-0 right-0 m-2 px-2 py-1 transition-all bg-gray-200 dark:bg-gray-800 rounded-md flex items-center gap-2">
+    {#if connected}
+        <div class="w-2 h-2 rounded-full bg-green-500">&nbsp;</div>
+        connected
+    {:else}
+        <span class="w-2 h-2 rounded-full bg-red-500 mr-2" />
+        disconnected
+    {/if}
+</div>
 
 <div class="container mx-auto">
 	<div class="text-left mt-3 text-slate-400 print:hidden flex">
