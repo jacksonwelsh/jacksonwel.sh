@@ -170,7 +170,7 @@
 				<Divider />
 				<a href="//github.com/jacksonwelsh" target="_blank">github</a>
 				<Divider />
-				me@${'{'}window.location.host}
+				hello@jacksonwel.sh
 			</div>
 		{:else}
 			<div class="text-xl">&nbsp;</div>
@@ -194,7 +194,7 @@
 			<Divider />
 			<a href="//github.com/jacksonwelsh" target="_blank">github</a>
 			<Divider />
-			me@${'{'}window.location.host}
+			hello@jacksonwel.sh
 		</div>
 	</noscript>
 </main>

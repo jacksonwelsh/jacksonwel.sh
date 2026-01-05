@@ -23,10 +23,6 @@
 		responsibilities: string[];
 	} & JobDates;
 
-	const addr =
-		'Ly9qYWNrc29ud2VsLnNoIDxzcGFuIGNsYXNzPXRleHQtZ3JheS01MDAvMjUgZGFyazp0ZXh0LWdyYXktNDAwLzM1IGZvbnQtc2FucyBkcm9wLXNoYWRvdy14bCBwb2ludGVyLWV2ZW50cy1ub25lPi88L3NwYW4+IG1lQGphY2tzb253ZWwuc2gK';
-	let emailToShow = $state('me@thisdomain');
-
 	const socials = [
 		{
 			handle: '@jacksonwelsh',
@@ -46,9 +42,10 @@
 			org: 'Amazon Web Services',
 			start: 'Aug 2023',
 			responsibilities: [
-				'Engineer at EC2 VPC, building the foundation for PrivateLink, NAT Gateway, Transit Gateway, and more.',
-				'Designed and implemented the control plane for Custom Exception Path, enabling vendors to reduce their fleet sizes by 80%.',
-				'Developed a system to migrate thousands of network interfaces across cells, reducing operational risks from hot-spotting.'
+				"Own the control plane that powers AWS's core networking primitives.",
+				'Designed and implemented control plane for Custom Exception Path, a dataplane optimization that reduces network hops. Enabled vendors to cut EC2 costs by 60% and p99 latency by 70%.',
+				'Built internal management APIs enabling instant API reconfiguration during cell builds, down from weeks of sequential deployments.',
+				'Member of team on-call rotation, resolving operational issues to prevent customer impact.'
 			]
 		},
 		{
@@ -57,7 +54,7 @@
 			start: 'Sep 2022',
 			end: 'Jun 2023',
 			responsibilities: [
-				'Developed an AI-based web scraper with that uses natural language prompts to extract precise data from heterogenous websites using GPT-4.',
+				'Developed an AI-based web scraper that uses natural language prompts to extract precise data from heterogenous websites using GPT-4.',
 				'Built an internal components library and website creation workflow to bring new site creation time from 4 hours down to 10 minutes.',
 				'Streamlined management of over 50 AWS accounts by enforcing consistent organization-level policies.',
 				'Enhanced security by switching from manually-rotated static credentials to dynamic credentials that rotate as often as every 15 minutes.'
@@ -69,28 +66,8 @@
 			start: ['Sep 2020'],
 			end: ['Aug 2022'],
 			responsibilities: [
-				'Designed, built, and deployed serverless applications to Amazon Web Services using Docker and AWS Elastic Container Service.',
 				'Developed a new web mapping application to replace a legacy ArcGIS plugin for address management within local governments.',
 				'Designed and implemented a novel spatial authentication system for the US Army Corps of Engineers, integrating with Login.gov via OpenID Connect (OIDC) and supporting PIV-based login.'
-			]
-		},
-		// {
-		// 	title: 'Software Engineer Intern',
-		// 	org: 'Amazon Web Services',
-		// 	start: 'May 2022',
-		// 	end: 'Aug 2022',
-		// 	responsibilities: [
-		// 		"Developed a tool to detect referential integrity errors between my team's database and distribution plane."
-		// 	]
-		// },
-		{
-			title: 'Independent Tutor',
-			org: 'Wyzant',
-			start: 'Jan 2020',
-			end: 'Dec 2020',
-			responsibilities: [
-				'Taught Python, Java, and SQL to students ranging from middle school to university levels.',
-				'Provided over 250 hours of tutoring with an average rating of 4.99/5.'
 			]
 		}
 	];
@@ -108,12 +85,12 @@
 		'Java',
 		'Python',
 		'JavaScript/TypeScript',
-		'PostgreSQL',
-		'Vue.js',
-		'Cloud computing',
-		'C',
-		'React',
-		'Serverless'
+		'Terraform/CDK',
+		'NoSQL',
+		'Distributed systems',
+		'Rust',
+		'System design',
+		'Software-defined networking'
 	];
 
 	const volunteering: Job[] = [
@@ -129,11 +106,8 @@
 			]
 		}
 	];
-
-	const updateEmail = () => (emailToShow = atob(addr));
 </script>
 
-<svelte:window onbeforeprint={updateEmail} />
 <svelte:head>
 	<title>Resume | Jackson Welsh</title>
 </svelte:head>
@@ -145,8 +119,12 @@
 	</div>
 	<main class="container mx-auto px-2 md:px-0 print:text-sm">
 		<h1 class="text-6xl font-mono-bold mt-6 print:mt-0 mb-2 font-mono text-left">Jackson Welsh</h1>
-		<h2 class="font-mono-light font-mono text-teal-800 dark:text-teal-200 text-left my-2">
-			{@html emailToShow}
+		<h2
+			class="font-mono-light font-mono text-teal-800 dark:text-teal-200 text-left my-2 flex gap-2"
+		>
+			<a class="hidden print:flex" href="//jacksonwel.sh">//jacksonwel.sh</a>
+			<Divider class="hidden print:flex" />
+			hello@jacksonwel.sh
 			<Divider /> Seattle, WA
 		</h2>
 
@@ -163,10 +141,10 @@
 		<section>
 			<ResumeHeader>Profile</ResumeHeader>
 			<p>
-				Jackson Welsh is a cloud-native full-stack software engineer with excellent written and
-				verbal communications specializing in solution engineering to meet and exceed customer
-				requirements. Jackson has experience in both new product development and maintenance of
-				legacy applications.
+				Software engineer specializing in distributed systems and control plane design. Currently
+				building the foundational networking layer that powers AWS services like PrivateLink, NAT
+				Gateway, and Transit Gateway. Experienced in designing APIs, improving operational tooling,
+				and operating high-availability systems at scale.
 			</p>
 		</section>
 
@@ -207,15 +185,16 @@
 			{#each education as school}
 				<div class="flex flex-wrap mb-2">
 					<strong class="font-medium">{school.institution}</strong><Divider class="mx-2" />
-					<span class="font-light">{school.degree}</span><Divider class="mx-2" />
-					<span class="font-light">{school.gpa} GPA</span>
+					<span class="font-light">{school.degree}</span>
+					<!-- <Divider class="mx-2" />
+					<span class="font-light">{school.gpa} GPA</span> -->
 					<!-- <Divider class="mx-2" />
 					{school.end ?? 'Present'} -->
 				</div>
 			{/each}
 		</section>
 
-<!--
+		<!--
 		<section class="">
 			<ResumeHeader>Certifications</ResumeHeader>
 			<div class="flex flex-wrap print:hidden">
@@ -258,10 +237,10 @@
 -->
 
 		<ResumeHeader>Skills</ResumeHeader>
-		<div class="w-full xl:w-3/4 block print:hidden">
+		<!-- <div class="w-full xl:w-3/4 block print:hidden">
 			<LogoCloud />
-		</div>
-		<div class="grid-cols-3 text-sm w-5/6 hidden print:grid">
+		</div> -->
+		<div class="grid-cols-3 print:text-sm w-5/6 grid">
 			{#each skills as skill}
 				<span>- {skill}</span>
 			{/each}
