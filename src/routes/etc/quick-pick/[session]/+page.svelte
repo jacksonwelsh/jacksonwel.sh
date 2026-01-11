@@ -5,15 +5,17 @@
 	import Input from '$lib/input.svelte';
 	import Button from '$lib/button.svelte';
 	import VotingCard from './voting-card.svelte';
+	import MovieAutocomplete from './movie-autocomplete.svelte';
+	import type { MovieMetadata, Nomination } from '../workers';
 
 	interface Props {
-		form: FormData;
+		form: { success?: boolean } | null;
 		data: PageData;
 	}
 
 	let { form, data }: Props = $props();
 
-	type Nomination = { id: string; value: string };
+	let selectedMovie = $state<MovieMetadata | null>(null);
 
 	let session = $state(data.session);
     let votedUsers = $state(data.votedUsers);
@@ -80,6 +82,7 @@
 		(prev: Record<string, string>, curr: Nomination) => ({ ...prev, [curr.id]: curr.value }),
 		{}
 	));
+	let winnerNomination = $derived(session.winner ? session.nominations.find(n => n.id === session.winner) : null);
 	let votedUserCount = $derived(votedUsers?.length ?? 0);
 </script>
 
@@ -143,8 +146,15 @@
 		{#if myNominations.length < session.maxNominations}
 			{#if !isClosed && !form?.success}
 				<form method="POST" action={`${session.id}/?/nominate`} use:enhance>
-					<Input label="nomination" name="nomination" type="text" required={true} />
-					<Button type="submit">submit</Button>
+					{#if session.mode === 'movie'}
+						<MovieAutocomplete onSelect={(movie) => { selectedMovie = movie; }} />
+						<input type="hidden" name="nomination" value={selectedMovie?.title ?? ''} />
+						<input type="hidden" name="metadata" value={selectedMovie ? JSON.stringify(selectedMovie) : ''} />
+						<Button type="submit" disabled={!selectedMovie}>submit</Button>
+					{:else}
+						<Input label="nomination" name="nomination" type="text" required={true} />
+						<Button type="submit">submit</Button>
+					{/if}
 				</form>
 			{/if}
 		{/if}
@@ -163,7 +173,8 @@
 						text={nomination.value}
 						vote={votes.indexOf(nomination.id)}
 						totalNominations={nominations.length}
-						on:click={() => vote(nomination.id)}
+						metadata={nomination.metadata}
+						onclick={() => vote(nomination.id)}
 					/>
 				{/each}
 
@@ -174,8 +185,28 @@
 			{:else}
 				<p>Your votes were submitted. Wait for the host to finalize.</p>
 			{/if}
-		{:else if session.winner}
-			<p>The winner is <strong>{nominationsMap[session.winner]}</strong>!</p>
+		{:else if session.winner && winnerNomination}
+			<div class="mt-4 p-4 bg-cyan-50 dark:bg-cyan-900/20 rounded-lg">
+				<p class="text-lg">The winner is <strong>{winnerNomination.value}</strong>!</p>
+				{#if winnerNomination.metadata}
+					<p class="text-sm text-gray-600 dark:text-gray-400 mt-1">
+						{#if winnerNomination.metadata.year}
+							{winnerNomination.metadata.year}
+						{/if}
+						{#if winnerNomination.metadata.genres && winnerNomination.metadata.genres.length > 0}
+							&middot; {winnerNomination.metadata.genres.join(', ')}
+						{/if}
+						{#if winnerNomination.metadata.director}
+							&middot; Dir. {winnerNomination.metadata.director}
+						{/if}
+					</p>
+					{#if winnerNomination.metadata.tagline}
+						<p class="text-sm italic text-gray-500 dark:text-gray-400 mt-2">
+							"{winnerNomination.metadata.tagline}"
+						</p>
+					{/if}
+				{/if}
+			</div>
 		{/if}
 	</div>
 </section>

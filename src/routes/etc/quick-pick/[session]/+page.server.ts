@@ -1,7 +1,6 @@
-import { getSession, joinSession, closeSession, openSession, getMyNominations, getMyVotes, finalize, getVotedUsers } from "../workers";
+import { getSession, joinSession, closeSession, openSession, getMyNominations, getMyVotes, finalize, getVotedUsers, nominate, vote, type MovieMetadata } from "../workers";
 import { fail } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
-import { nominate, vote } from '../workers';
 
 export const load: PageServerLoad = async ({ params, cookies }) => {
     const sessionId = params.session;
@@ -25,7 +24,6 @@ export const load: PageServerLoad = async ({ params, cookies }) => {
 
 export const actions = {
     nominate: async ({ cookies, request, params }) => {
-        // Create a new session
         const data = await request.formData();
         const nomination = data.get('nomination');
         if (!nomination) {
@@ -37,7 +35,20 @@ export const actions = {
         }
         const sessionId = params.session;
 
-        nominate(sessionId, participantId, nomination.toString().toLowerCase());
+        const metadataStr = data.get('metadata');
+        let metadata: MovieMetadata | undefined;
+        if (metadataStr && typeof metadataStr === 'string' && metadataStr.length > 0) {
+            try {
+                metadata = JSON.parse(metadataStr);
+            } catch {
+                // Ignore invalid JSON
+            }
+        }
+
+        // Use proper casing from TMDB for movie mode, lowercase for default mode
+        const nominationValue = metadata?.title ?? nomination.toString().toLowerCase();
+
+        nominate(sessionId, participantId, nominationValue, metadata);
 
         return { success: true };
     },

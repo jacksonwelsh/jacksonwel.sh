@@ -1,11 +1,13 @@
 import { redirect } from '@sveltejs/kit';
 import type { Actions } from './$types';
-import { makeSession } from './workers';
+import { makeSession, type SessionMode } from './workers';
 
 export const actions = {
-    create: async ({ cookies }) => {
-        // Create a new session
-        const { session, hostId } = await makeSession();
+    create: async ({ cookies, request }) => {
+        const data = await request.formData();
+        const mode = (data.get('mode') as SessionMode) || 'default';
+
+        const { session, hostId } = await makeSession(mode);
         console.log({ session, hostId });
 
         cookies.set('quick-pick.hostKey',

@@ -1,21 +1,48 @@
 import db from './db';
 
+// Run migrations on startup (ignore errors if columns already exist)
+try { db.exec(`ALTER TABLE sessions ADD COLUMN mode TEXT DEFAULT 'default'`); } catch {}
+try { db.exec(`ALTER TABLE nominations ADD COLUMN metadata TEXT`); } catch {}
+
+export type SessionMode = 'default' | 'movie';
+
+export type MovieMetadata = {
+    tmdbId: number;
+    title: string;
+    year: number;
+    genres: string[];
+    posterPath?: string | null;
+    overview?: string;
+    tagline?: string;
+    director?: string;
+};
+
+export type NominationMetadata = MovieMetadata | null;
+
 type SessionDbRecord = {
     id: string;
     hostKey: string;
     closedAt?: number;
     maxNominations: number;
+    mode: SessionMode;
 }
+
+export type Nomination = {
+    id: string;
+    value: string;
+    metadata?: NominationMetadata;
+};
 
 export type Session = {
     id: string;
     hostKey?: string; // Only present in remote instances
     participants: string[];
     isHost?: boolean; // Only present in local instances
-    nominations: { id: string; value: string }[];
+    nominations: Nomination[];
     closedAt?: number;
     maxNominations: number;
     winner: string | null;
+    mode: SessionMode;
 }
 
 const getRawSession = async (sessionId: string): Promise<Session> => {
@@ -26,11 +53,12 @@ const getRawSession = async (sessionId: string): Promise<Session> => {
             s.closed_at,
             s.max_nominations,
             s.winner,
-            (SELECT json_group_array(p.id) 
-             FROM participants p 
+            s.mode,
+            (SELECT json_group_array(p.id)
+             FROM participants p
              WHERE p.session = s.id) as participants,
-            (SELECT json_group_array(json_object('id', n.id, 'value', n.value))
-             FROM nominations n 
+            (SELECT json_group_array(json_object('id', n.id, 'value', n.value, 'metadata', n.metadata))
+             FROM nominations n
              WHERE n.session = s.id) as nominations
         FROM sessions s
         WHERE s.id = ?
@@ -41,9 +69,15 @@ const getRawSession = async (sessionId: string): Promise<Session> => {
         closed_at: number;
         max_nominations: number;
         winner: string | null;
+        mode: SessionMode;
         participants: string;
         nominations: string;
     };
+
+    const nominations = JSON.parse(result.nominations).map((n: { id: string; value: string; metadata: string | null }) => ({
+        ...n,
+        metadata: n.metadata ? JSON.parse(n.metadata) : null
+    }));
 
     return {
         id: result.id,
@@ -51,8 +85,9 @@ const getRawSession = async (sessionId: string): Promise<Session> => {
         closedAt: result.closed_at,
         maxNominations: result.max_nominations,
         winner: result.winner,
+        mode: result.mode ?? 'default',
         participants: JSON.parse(result.participants),
-        nominations: JSON.parse(result.nominations),
+        nominations,
     }
 }
 
@@ -90,7 +125,7 @@ export const getVotedUsers = (sessionId: string): string[] => {
     return result.map(v => v.participant);
 }
 
-export const makeSession = async () => {
+export const makeSession = async (mode: SessionMode = 'default') => {
     const sessionId = makeSessionId(4);
     console.log(`Session ID: ${sessionId}`);
 
@@ -102,6 +137,7 @@ export const makeSession = async () => {
         id: sessionId,
         hostKey,
         maxNominations: 1,
+        mode,
     };
 
     await putSession(session);
@@ -111,7 +147,7 @@ export const makeSession = async () => {
 }
 
 const putSession = async (session: SessionDbRecord) => {
-    db.prepare('INSERT INTO sessions (id, host_key) VALUES (?, ?)').run(session.id, session.hostKey);
+    db.prepare('INSERT INTO sessions (id, host_key, mode) VALUES (?, ?, ?)').run(session.id, session.hostKey, session.mode);
 }
 
 export const joinSession = async (sessionId: string) => {
@@ -124,10 +160,10 @@ export const joinSession = async (sessionId: string) => {
     return { session: sanitizeSession(session), participantId };
 }
 
-export const nominate = async (sessionId: string, participantId: string, nomination: string) => {
+export const nominate = async (sessionId: string, participantId: string, nomination: string, metadata?: NominationMetadata) => {
     console.log(`${participantId} has nominated ${nomination} in ${sessionId}`);
-    db.prepare('INSERT INTO nominations (id, session, owner, value) VALUES (?, ?, ?, ?)')
-        .run(crypto.randomUUID(), sessionId, participantId, nomination);
+    db.prepare('INSERT INTO nominations (id, session, owner, value, metadata) VALUES (?, ?, ?, ?, ?)')
+        .run(crypto.randomUUID(), sessionId, participantId, nomination, metadata ? JSON.stringify(metadata) : null);
 }
 
 export const closeSession = async (sessionId: string, hostKey: string) => {
