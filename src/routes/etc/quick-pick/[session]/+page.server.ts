@@ -1,5 +1,5 @@
 import { getSession, joinSession, closeSession, openSession, getMyNominations, getMyVotes, finalize, getVotedUsers, nominate, vote, type MovieMetadata } from "../workers";
-import { fail } from '@sveltejs/kit';
+import { error, fail } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ params, cookies }) => {
@@ -8,12 +8,19 @@ export const load: PageServerLoad = async ({ params, cookies }) => {
 
     let participantId = cookies.get('quick-pick.participantId');
     if (!participantId) {
-        const { session, participantId } = await joinSession(sessionId);
+        const result = await joinSession(sessionId);
+        if (!result) {
+            error(404, { message: 'Session not found' });
+        }
+        const { session, participantId } = result;
         cookies.set('quick-pick.participantId', participantId, { path: `/etc/quick-pick/${sessionId}` });
         return { session, participantId };
     }
 
     const session = await getSession(sessionId, hostKey);
+    if (!session) {
+        error(404, { message: 'Session not found' });
+    }
     const myNominations = getMyNominations(sessionId, participantId);
     const myVotes = getMyVotes(sessionId, participantId);
     const votedUsers = getVotedUsers(sessionId);

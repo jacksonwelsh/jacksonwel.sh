@@ -3,6 +3,7 @@ import db from './db';
 // Run migrations on startup (ignore errors if columns already exist)
 try { db.exec(`ALTER TABLE sessions ADD COLUMN mode TEXT DEFAULT 'default'`); } catch {}
 try { db.exec(`ALTER TABLE nominations ADD COLUMN metadata TEXT`); } catch {}
+try { db.exec(`ALTER TABLE sessions ADD COLUMN rankings TEXT`); } catch {}
 
 export type SessionMode = 'default' | 'movie';
 
@@ -42,10 +43,11 @@ export type Session = {
     closedAt?: number;
     maxNominations: number;
     winner: string | null;
+    rankings: string[] | null; // Ordered list of nomination IDs from 1st to last place
     mode: SessionMode;
 }
 
-const getRawSession = async (sessionId: string): Promise<Session> => {
+const getRawSession = async (sessionId: string): Promise<Session | null> => {
     const result = db.prepare(`
         SELECT
             s.id,
@@ -53,6 +55,7 @@ const getRawSession = async (sessionId: string): Promise<Session> => {
             s.closed_at,
             s.max_nominations,
             s.winner,
+            s.rankings,
             s.mode,
             (SELECT json_group_array(p.id)
              FROM participants p
@@ -69,10 +72,15 @@ const getRawSession = async (sessionId: string): Promise<Session> => {
         closed_at: number;
         max_nominations: number;
         winner: string | null;
+        rankings: string | null;
         mode: SessionMode;
         participants: string;
         nominations: string;
-    };
+    } | undefined;
+
+    if (!result) {
+        return null;
+    }
 
     const nominations = JSON.parse(result.nominations).map((n: { id: string; value: string; metadata: string | null }) => ({
         ...n,
@@ -85,6 +93,7 @@ const getRawSession = async (sessionId: string): Promise<Session> => {
         closedAt: result.closed_at,
         maxNominations: result.max_nominations,
         winner: result.winner,
+        rankings: result.rankings ? JSON.parse(result.rankings) : null,
         mode: result.mode ?? 'default',
         participants: JSON.parse(result.participants),
         nominations,
@@ -97,8 +106,11 @@ const sanitizeSession = (session: Session, hostKey?: string): Session => ({
     isHost: hostKey === session.hostKey
 });
 
-export const getSession = async (sessionId: string, hostKey?: string) => {
+export const getSession = async (sessionId: string, hostKey?: string): Promise<Session | null> => {
     const session = await getRawSession(sessionId);
+    if (!session) {
+        return null;
+    }
 
     return sanitizeSession(session, hostKey);
 };
@@ -141,7 +153,9 @@ export const makeSession = async (mode: SessionMode = 'default') => {
     };
 
     await putSession(session);
-    const hostId = (await joinSession(session.id)).participantId;
+    const joinResult = await joinSession(session.id);
+    // Session was just created, so joinSession should never return null
+    const hostId = joinResult!.participantId;
 
     return { session, hostId };
 }
@@ -151,10 +165,13 @@ const putSession = async (session: SessionDbRecord) => {
 }
 
 export const joinSession = async (sessionId: string) => {
+    const session = await getRawSession(sessionId);
+    if (!session) {
+        return null;
+    }
+
     const participantId = crypto.randomUUID();
     console.log(`Participant ID: ${participantId}`);
-
-    const session = await getRawSession(sessionId);
 
     db.prepare('INSERT INTO participants (id, session) VALUES (?, ?)').run(participantId, session.id);
     return { session: sanitizeSession(session), participantId };
@@ -222,23 +239,25 @@ export const finalize = async (sessionId: string, hostKey: string) => {
         }[]
     }[];
 
-    const winner = rankedChoice(votes);
+    const rankings = rankedChoice(votes);
+    const winner = rankings[0];
 
-    db.prepare("UPDATE sessions SET winner = ? WHERE id = ? AND host_key = ?")
-        .run(winner, sessionId, hostKey);
+    db.prepare("UPDATE sessions SET winner = ?, rankings = ? WHERE id = ? AND host_key = ?")
+        .run(winner, JSON.stringify(rankings), sessionId, hostKey);
 
-    return { winner };
+    return { winner, rankings };
 }
 
 const rankedChoice = (votes: {
     participant: string,
     votes: { id: string; value: string; rank: number; }[]
-}[]) => {
+}[]): string[] => {
     // Get all nomination IDs
     const allNominations = new Set<string>();
     votes.forEach(v => v.votes.forEach(vote => allNominations.add(vote.id)));
 
     let remainingNominations = new Set(allNominations);
+    const eliminationOrder: string[] = []; // Track eliminations (last eliminated = 2nd place)
 
     while (remainingNominations.size > 1) {
         // Count first-choice votes for remaining nominations
@@ -263,7 +282,21 @@ const rankedChoice = (votes: {
 
         for (const [nomination, count] of voteCounts) {
             if (count > majority) {
-                return nomination; // Winner found
+                // Winner found - build final rankings
+                const rankings = [nomination];
+
+                // Add remaining non-winner nominations sorted by vote count (descending)
+                const remaining = Array.from(voteCounts.entries())
+                    .filter(([nom]) => nom !== nomination)
+                    .sort((a, b) => b[1] - a[1])
+                    .map(([nom]) => nom);
+                rankings.push(...remaining);
+
+                // Add eliminated nominations in reverse order (last eliminated comes after remaining)
+                for (let i = eliminationOrder.length - 1; i >= 0; i--) {
+                    rankings.push(eliminationOrder[i]);
+                }
+                return rankings;
             }
         }
 
@@ -279,11 +312,17 @@ const rankedChoice = (votes: {
         }
 
         console.log(`Eliminating ${toEliminate}`);
+        eliminationOrder.push(toEliminate);
         remainingNominations.delete(toEliminate);
     }
 
-    // Return last remaining nomination
-    return remainingNominations.values().next().value;
+    // Build final rankings: winner + eliminated in reverse order
+    const winner = remainingNominations.values().next().value as string;
+    const rankings: string[] = [winner];
+    for (let i = eliminationOrder.length - 1; i >= 0; i--) {
+        rankings.push(eliminationOrder[i]);
+    }
+    return rankings;
 }
 
 const makeSessionId = (len: number) => {

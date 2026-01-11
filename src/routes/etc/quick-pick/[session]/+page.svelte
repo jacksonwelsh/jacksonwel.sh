@@ -99,7 +99,8 @@
 <div class="container mx-auto">
 	<div class="text-left mt-3 text-slate-400 print:hidden flex">
 		<a href="/" class="text-blue-400 hover:underline">~</a>
-		<a href="/etc/quick-pick" class="text-blue-400 hover:underline">/quick-pick</a>
+        /
+		<a href="/etc/quick-pick" class="text-blue-400 hover:underline">etc/quick-pick</a>
 		/{session.id}
 	</div>
 </div>
@@ -207,6 +208,47 @@
 					{/if}
 				{/if}
 			</div>
+
+			{#if session.rankings && session.rankings.length > 1}
+				<div class="mt-6">
+					<h2 class="text-xl font-semibold mb-3">Full Rankings</h2>
+					<ol class="space-y-2">
+						{#each session.rankings as nominationId, index}
+							{@const nomination = session.nominations.find(n => n.id === nominationId)}
+							{#if nomination}
+								<li class="flex items-start gap-3 p-3 rounded-md {index === 0 ? 'bg-yellow-50 dark:bg-yellow-900/20 ring-1 ring-yellow-200 dark:ring-yellow-700' : 'bg-gray-50 dark:bg-gray-800/50'}">
+									<span class="font-mono font-bold text-xl w-8 text-center flex-shrink-0 {index === 0 ? 'text-yellow-600 dark:text-yellow-400' : index === 1 ? 'text-gray-400' : index === 2 ? 'text-amber-700 dark:text-amber-500' : 'text-gray-400'}">
+										{index + 1}
+									</span>
+									<div class="flex-1 min-w-0">
+										<span class="font-medium text-lg">{nomination.value}</span>
+										{#if nomination.metadata}
+											<div class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+												{#if nomination.metadata.year}
+													<span>{nomination.metadata.year}</span>
+												{/if}
+												{#if nomination.metadata.genres && nomination.metadata.genres.length > 0}
+													<span class="mx-1">&middot;</span>
+													<span>{nomination.metadata.genres.slice(0, 3).join(', ')}</span>
+												{/if}
+												{#if nomination.metadata.director}
+													<span class="mx-1">&middot;</span>
+													<span>Dir. {nomination.metadata.director}</span>
+												{/if}
+											</div>
+											{#if nomination.metadata.tagline}
+												<div class="text-sm italic text-gray-400 dark:text-gray-500 mt-1">
+													"{nomination.metadata.tagline}"
+												</div>
+											{/if}
+										{/if}
+									</div>
+								</li>
+							{/if}
+						{/each}
+					</ol>
+				</div>
+			{/if}
 		{/if}
 	</div>
 </section>

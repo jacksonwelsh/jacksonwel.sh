@@ -30,6 +30,11 @@ export const GET: RequestHandler = ({ params, cookies }) => {
             // Poll KV and send updates
             const interval = setInterval(async () => {
                 const session = await getSession(sessionId, cookies.get('quick-pick.hostKey'));
+                if (!session) {
+                    clearInterval(interval);
+                    controller.close();
+                    return;
+                }
                 let votedUsers: string[] = [];
                 if (session.isHost) {
                     votedUsers = getVotedUsers(sessionId);
