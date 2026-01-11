@@ -240,7 +240,7 @@
 		<!-- <div class="w-full xl:w-3/4 block print:hidden">
 			<LogoCloud />
 		</div> -->
-		<div class="grid-cols-3 print:text-sm w-5/6 grid">
+		<div class="grid-cols-1 md:grid-cols-3 print:text-sm w-5/6 grid">
 			{#each skills as skill}
 				<span>- {skill}</span>
 			{/each}
