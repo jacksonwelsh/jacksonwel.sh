@@ -239,7 +239,7 @@ export const finalize = async (sessionId: string, hostKey: string) => {
         }[]
     }[];
 
-    const rankings = rankedChoice(votes);
+    const rankings = bordaCount(votes);
     const winner = rankings[0];
 
     db.prepare("UPDATE sessions SET winner = ?, rankings = ? WHERE id = ? AND host_key = ?")
@@ -248,80 +248,26 @@ export const finalize = async (sessionId: string, hostKey: string) => {
     return { winner, rankings };
 }
 
-const rankedChoice = (votes: {
+const bordaCount = (votes: {
     participant: string,
     votes: { id: string; value: string; rank: number; }[]
 }[]): string[] => {
-    // Get all nomination IDs
-    const allNominations = new Set<string>();
-    votes.forEach(v => v.votes.forEach(vote => allNominations.add(vote.id)));
+    // Sum up Borda points for each nomination
+    // Higher rank = more points (already stored this way from vote() function)
+    const pointTotals = new Map<string, number>();
 
-    let remainingNominations = new Set(allNominations);
-    const eliminationOrder: string[] = []; // Track eliminations (last eliminated = 2nd place)
-
-    while (remainingNominations.size > 1) {
-        // Count first-choice votes for remaining nominations
-        const voteCounts = new Map<string, number>();
-        remainingNominations.forEach(nom => voteCounts.set(nom, 0));
-
-        for (const voter of votes) {
-            // Get voter's highest-ranked remaining nomination
-            const validVotes = voter.votes
-                .filter(v => remainingNominations.has(v.id))
-                .sort((a, b) => b.rank - a.rank); // highest rank first
-
-            if (validVotes.length > 0) {
-                const topChoice = validVotes[0].id;
-                voteCounts.set(topChoice, voteCounts.get(topChoice)! + 1);
-            }
+    for (const voter of votes) {
+        for (const vote of voter.votes) {
+            const currentPoints = pointTotals.get(vote.id) ?? 0;
+            pointTotals.set(vote.id, currentPoints + vote.rank);
         }
-
-        // Check if anyone has majority
-        const totalVotes = votes.length;
-        const majority = totalVotes / 2;
-
-        for (const [nomination, count] of voteCounts) {
-            if (count > majority) {
-                // Winner found - build final rankings
-                const rankings = [nomination];
-
-                // Add remaining non-winner nominations sorted by vote count (descending)
-                const remaining = Array.from(voteCounts.entries())
-                    .filter(([nom]) => nom !== nomination)
-                    .sort((a, b) => b[1] - a[1])
-                    .map(([nom]) => nom);
-                rankings.push(...remaining);
-
-                // Add eliminated nominations in reverse order (last eliminated comes after remaining)
-                for (let i = eliminationOrder.length - 1; i >= 0; i--) {
-                    rankings.push(eliminationOrder[i]);
-                }
-                return rankings;
-            }
-        }
-
-        // Eliminate nomination with fewest votes
-        let minVotes = Infinity;
-        let toEliminate = '';
-
-        for (const [nomination, count] of voteCounts) {
-            if (count < minVotes) {
-                minVotes = count;
-                toEliminate = nomination;
-            }
-        }
-
-        console.log(`Eliminating ${toEliminate}`);
-        eliminationOrder.push(toEliminate);
-        remainingNominations.delete(toEliminate);
     }
 
-    // Build final rankings: winner + eliminated in reverse order
-    const winner = remainingNominations.values().next().value as string;
-    const rankings: string[] = [winner];
-    for (let i = eliminationOrder.length - 1; i >= 0; i--) {
-        rankings.push(eliminationOrder[i]);
-    }
+    // Sort by total points (descending) to get rankings
+    const rankings = Array.from(pointTotals.entries())
+        .sort((a, b) => b[1] - a[1])
+        .map(([nominationId]) => nominationId);
+
     return rankings;
 }
 
