@@ -25,24 +25,24 @@
 		<section class="mb-16">
 			<h2 class="text-2xl font-mono font-mono-semibold mb-4">What is it?</h2>
 			<p class="text-lg leading-relaxed max-w-prose">
-				ZoneBuddy lets you build custom Power Zone workouts and ride them on your Peloton bike in
-				Just Ride mode. Set your zones, arrange your intervals, and let the app guide you through
+				ZoneBuddy lets you build custom Power Zone workouts for your stationary bike.
+				Set your zones, arrange your intervals, and let the app guide you through
 				each one with audio cues and a live timer.
 			</p>
 		</section>
 
 		<!-- Screenshot showcase -->
 		<section class="mb-16 grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-			<div
+			<img
+                src="https://content.jacksonwel.sh/zonebuddy/screenshot-2.webp"
+                alt="Screenshot of workout builder view"
 				class="aspect-[9/19.5] bg-slate-100 dark:bg-slate-800 rounded-2xl flex items-center justify-center border border-slate-200 dark:border-slate-700"
-			>
-				<span class="text-slate-400 dark:text-slate-500 text-sm font-mono">screenshot</span>
-			</div>
-			<div
+			/>
+			<img
+                src="https://content.jacksonwel.sh/zonebuddy/screenshot-3.webp"
+                alt="Screenshot of workout environment"
 				class="aspect-[9/19.5] bg-slate-100 dark:bg-slate-800 rounded-2xl flex items-center justify-center border border-slate-200 dark:border-slate-700"
-			>
-				<span class="text-slate-400 dark:text-slate-500 text-sm font-mono">screenshot</span>
-			</div>
+			/>
 		</section>
 
 		<section class="mb-16">
@@ -52,6 +52,7 @@
 				<li>Audio cues announce zone changes so you can stay focused on the ride</li>
 				<li>Syncs across your devices with iCloud</li>
 				<li>Share workouts with friends</li>
+				<li>Live Activity support allows you to stay in the zone while using other apps</li>
 				<li>Designed for iOS 26 with Liquid Glass</li>
 			</ul>
 		</section>
