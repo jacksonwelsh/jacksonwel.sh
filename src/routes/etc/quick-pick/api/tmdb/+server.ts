@@ -10,6 +10,7 @@ type TMDBSearchResult = {
     genre_ids: number[];
     poster_path: string | null;
     overview: string;
+    origin_country: string[];
 };
 
 type TMDBSearchResponse = {
@@ -71,6 +72,7 @@ export const GET: RequestHandler = async ({ url }) => {
         genres: movie.genre_ids.map((id) => GENRE_MAP[id] || 'Unknown').filter(Boolean),
         posterPath: movie.poster_path,
         overview: movie.overview,
+        originCountry: movie.origin_country?.[0],
     }));
 
     return json({ results });

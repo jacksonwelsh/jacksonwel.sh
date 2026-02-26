@@ -1,5 +1,6 @@
 <script lang="ts">
     import type { MovieMetadata } from '../workers';
+    import { countryCodeToFlag } from '../workers';
 
     interface Props {
         onSelect: (movie: MovieMetadata) => void;
@@ -105,7 +106,9 @@
                         <div class="flex-1 min-w-0">
                             <div class="font-medium truncate">{movie.title}</div>
                             <div class="text-sm text-gray-500 dark:text-gray-400">
-                                {movie.year || 'Unknown year'}
+                                {#if movie.originCountry}
+                                    {countryCodeToFlag(movie.originCountry)}&nbsp;
+                                {/if}{movie.year || 'Unknown year'}
                                 {#if movie.genres.length > 0}
                                     &middot; {movie.genres.slice(0, 2).join(', ')}
                                 {/if}

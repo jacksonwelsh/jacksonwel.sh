@@ -7,6 +7,7 @@
 	import VotingCard from './voting-card.svelte';
 	import MovieAutocomplete from './movie-autocomplete.svelte';
 	import type { MovieMetadata, Nomination } from '../workers';
+	import { countryCodeToFlag } from '../workers';
 
 	interface Props {
 		form: { success?: boolean } | null;
@@ -191,6 +192,9 @@
 				<p class="text-lg">The winner is <strong>{winnerNomination.value}</strong>!</p>
 				{#if winnerNomination.metadata}
 					<p class="text-sm text-gray-600 dark:text-gray-400 mt-1">
+						{#if winnerNomination.metadata.originCountry}
+							{countryCodeToFlag(winnerNomination.metadata.originCountry)}
+						{/if}
 						{#if winnerNomination.metadata.year}
 							{winnerNomination.metadata.year}
 						{/if}
@@ -224,6 +228,9 @@
 										<span class="font-medium text-lg">{nomination.value}</span>
 										{#if nomination.metadata}
 											<div class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+												{#if nomination.metadata.originCountry}
+													<span>{countryCodeToFlag(nomination.metadata.originCountry)}</span>
+												{/if}
 												{#if nomination.metadata.year}
 													<span>{nomination.metadata.year}</span>
 												{/if}

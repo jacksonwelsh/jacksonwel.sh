@@ -11,6 +11,7 @@ type TMDBMovieDetails = {
     poster_path: string | null;
     overview: string;
     tagline: string;
+    origin_country: string[];
 };
 
 type TMDBCredits = {
@@ -48,6 +49,7 @@ export const GET: RequestHandler = async ({ params }) => {
         overview: details.overview,
         tagline: details.tagline || undefined,
         director: director,
+        originCountry: details.origin_country?.[0],
     };
 
     return json({ movie });
