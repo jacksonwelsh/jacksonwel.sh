@@ -66,14 +66,30 @@ export const GET: RequestHandler = async ({ url }) => {
 
     const data: TMDBSearchResponse = await response.json();
 
-    const results: MovieMetadata[] = data.results.slice(0, 10).map((movie) => ({
+    const searchResults = data.results.slice(0, 10);
+
+    // TMDB's search endpoint doesn't include origin_country, so fetch it in parallel
+    const originCountries = await Promise.all(
+        searchResults.map(async (movie) => {
+            try {
+                const r = await fetch(`https://api.themoviedb.org/3/movie/${movie.id}?api_key=${TMDB_API_KEY}`);
+                if (!r.ok) return undefined;
+                const details: { origin_country?: string[] } = await r.json();
+                return details.origin_country?.[0];
+            } catch {
+                return undefined;
+            }
+        })
+    );
+
+    const results: MovieMetadata[] = searchResults.map((movie, i) => ({
         tmdbId: movie.id,
         title: movie.title,
         year: movie.release_date ? parseInt(movie.release_date.split('-')[0], 10) : 0,
         genres: movie.genre_ids.map((id) => GENRE_MAP[id] || 'Unknown').filter(Boolean),
         posterPath: movie.poster_path,
         overview: movie.overview,
-        originCountry: movie.origin_country?.[0],
+        originCountry: originCountries[i],
         originalLanguage: movie.original_language,
     }));
 
