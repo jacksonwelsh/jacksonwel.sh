@@ -11,6 +11,7 @@ type TMDBSearchResult = {
     poster_path: string | null;
     overview: string;
     origin_country: string[];
+    original_language: string;
 };
 
 type TMDBSearchResponse = {
@@ -73,6 +74,7 @@ export const GET: RequestHandler = async ({ url }) => {
         posterPath: movie.poster_path,
         overview: movie.overview,
         originCountry: movie.origin_country?.[0],
+        originalLanguage: movie.original_language,
     }));
 
     return json({ results });
