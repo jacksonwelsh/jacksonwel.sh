@@ -7,7 +7,7 @@
 	import VotingCard from './voting-card.svelte';
 	import MovieAutocomplete from './movie-autocomplete.svelte';
 	import type { MovieMetadata, Nomination } from '../workers';
-	import { countryCodeToFlag } from '../workers';
+	import { countryCodeToFlag } from '../utils';
 
 	interface Props {
 		form: { success?: boolean } | null;

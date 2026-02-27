@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { NominationMetadata } from '../workers';
-	import { countryCodeToFlag } from '../workers';
+	import { countryCodeToFlag } from '../utils';
 
 	interface Props {
 		id: string;

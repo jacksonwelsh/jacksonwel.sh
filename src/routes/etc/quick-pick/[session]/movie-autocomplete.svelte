@@ -1,6 +1,6 @@
 <script lang="ts">
     import type { MovieMetadata } from '../workers';
-    import { countryCodeToFlag } from '../workers';
+    import { countryCodeToFlag } from '../utils';
 
     interface Props {
         onSelect: (movie: MovieMetadata) => void;
