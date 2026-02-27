@@ -1,5 +1,6 @@
 <script lang="ts">
     import type { MovieMetadata } from '../workers';
+    import { countryCodeToFlag, languageCodeToFlag } from '../utils';
 
     interface Props {
         onSelect: (movie: MovieMetadata) => void;
@@ -87,6 +88,7 @@
     {#if showDropdown && results.length > 0}
         <ul class="absolute z-10 w-full mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md shadow-lg max-h-60 overflow-auto">
             {#each results as movie}
+                {@const flag = movie.originCountry ? countryCodeToFlag(movie.originCountry) : (movie.originalLanguage ? languageCodeToFlag(movie.originalLanguage) : undefined)}
                 <li>
                     <button
                         type="button"
@@ -105,7 +107,7 @@
                         <div class="flex-1 min-w-0">
                             <div class="font-medium truncate">{movie.title}</div>
                             <div class="text-sm text-gray-500 dark:text-gray-400">
-                                {movie.year || 'Unknown year'}
+                                {#if flag}{flag}&nbsp;{/if}{movie.year || 'Unknown year'}
                                 {#if movie.genres.length > 0}
                                     &middot; {movie.genres.slice(0, 2).join(', ')}
                                 {/if}

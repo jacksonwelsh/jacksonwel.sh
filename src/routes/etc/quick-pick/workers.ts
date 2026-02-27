@@ -16,6 +16,8 @@ export type MovieMetadata = {
     overview?: string;
     tagline?: string;
     director?: string;
+    originCountry?: string;
+    originalLanguage?: string;
 };
 
 export type NominationMetadata = MovieMetadata | null;

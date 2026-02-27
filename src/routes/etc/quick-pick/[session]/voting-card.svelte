@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { NominationMetadata } from '../workers';
+	import { countryCodeToFlag } from '../utils';
 
 	interface Props {
 		id: string;
@@ -28,6 +29,9 @@
 		<span class="font-medium">{text}</span>
 		{#if metadata}
 			<div class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+				{#if metadata.originCountry}
+					<span>{countryCodeToFlag(metadata.originCountry)}</span>
+				{/if}
 				{#if metadata.year}
 					<span>{metadata.year}</span>
 				{/if}
