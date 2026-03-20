@@ -7,7 +7,7 @@
 	import VotingCard from './voting-card.svelte';
 	import MovieAutocomplete from './movie-autocomplete.svelte';
 	import type { MovieMetadata, Nomination } from '../workers';
-	import { countryCodeToFlag, formatRuntime } from '../utils';
+	import { countryCodeToFlag, formatRuntime, seededShuffle } from '../utils';
 
 	interface Props {
 		form: { success?: boolean } | null;
@@ -86,19 +86,7 @@
 	let winnerNomination = $derived(session.winner ? session.nominations.find(n => n.id === session.winner) : null);
 	let votedUserCount = $derived(votedUsers?.length ?? 0);
 
-	// Deterministic shuffle so all devices see the same voting order
-	const sessionSeed = (id: string) => id.split('').reduce((s, c) => Math.imul(s, 31) + c.charCodeAt(0) | 0, 0);
-	const seededShuffle = <T>(arr: T[], seed: number): T[] => {
-		const out = [...arr];
-		let s = seed;
-		for (let i = out.length - 1; i > 0; i--) {
-			s = Math.imul(s, 1664525) + 1013904223 | 0;
-			const j = Math.abs(s) % (i + 1);
-			[out[i], out[j]] = [out[j], out[i]];
-		}
-		return out;
-	};
-	let shuffledNominations = $derived(seededShuffle(nominations, sessionSeed(session.id)));
+	let shuffledNominations = $derived(seededShuffle(nominations, session.id));
 </script>
 
 <div class="fixed top-0 right-0 m-2 px-2 py-1 transition-all bg-gray-200 dark:bg-gray-800 rounded-md flex items-center gap-2">

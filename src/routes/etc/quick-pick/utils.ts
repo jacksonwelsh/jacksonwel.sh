@@ -21,3 +21,15 @@ export const formatRuntime = (minutes: number): string => {
     const m = minutes % 60;
     return m === 0 ? `${h}h` : `${h}h${m}m`;
 };
+
+// Deterministic Fisher-Yates shuffle seeded from a string (e.g. session ID)
+export const seededShuffle = <T>(arr: T[], seed: string): T[] => {
+    const out = [...arr];
+    let s = seed.split('').reduce((acc, c) => Math.imul(acc, 31) + c.charCodeAt(0) | 0, 0);
+    for (let i = out.length - 1; i > 0; i--) {
+        s = Math.imul(s, 1664525) + 1013904223 | 0;
+        const j = Math.abs(s) % (i + 1);
+        [out[i], out[j]] = [out[j], out[i]];
+    }
+    return out;
+};
