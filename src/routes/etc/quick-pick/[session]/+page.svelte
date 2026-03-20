@@ -7,7 +7,7 @@
 	import VotingCard from './voting-card.svelte';
 	import MovieAutocomplete from './movie-autocomplete.svelte';
 	import type { MovieMetadata, Nomination } from '../workers';
-	import { countryCodeToFlag } from '../utils';
+	import { countryCodeToFlag, formatRuntime, seededShuffle } from '../utils';
 
 	interface Props {
 		form: { success?: boolean } | null;
@@ -77,7 +77,7 @@
 	let myNominations = $derived(data.myNominations ?? []);
 	let myVotes = $derived(data.myVotes ?? []);
 	let isClosed = $derived(session.closedAt != null);
-	let nominations = $derived(session.nominations);
+	let nominations = $derived(seededShuffle(session.nominations, session.id));
 	let voteStr = $derived(votes.map((v) => v).join(' '));
 	let nominationsMap = $derived(session.nominations.reduce(
 		(prev: Record<string, string>, curr: Nomination) => ({ ...prev, [curr.id]: curr.value }),
@@ -204,6 +204,9 @@
 						{#if winnerNomination.metadata.director}
 							&middot; Dir. {winnerNomination.metadata.director}
 						{/if}
+						{#if winnerNomination.metadata.runtime}
+							&middot; {formatRuntime(winnerNomination.metadata.runtime)}
+						{/if}
 					</p>
 					{#if winnerNomination.metadata.tagline}
 						<p class="text-sm italic text-gray-500 dark:text-gray-400 mt-2">
@@ -241,6 +244,10 @@
 												{#if nomination.metadata.director}
 													<span class="mx-1">&middot;</span>
 													<span>Dir. {nomination.metadata.director}</span>
+												{/if}
+												{#if nomination.metadata.runtime}
+													<span class="mx-1">&middot;</span>
+													<span>{formatRuntime(nomination.metadata.runtime)}</span>
 												{/if}
 											</div>
 											{#if nomination.metadata.tagline}
