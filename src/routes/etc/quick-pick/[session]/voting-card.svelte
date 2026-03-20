@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { NominationMetadata } from '../workers';
-	import { countryCodeToFlag } from '../utils';
+	import { countryCodeToFlag, formatRuntime } from '../utils';
 
 	interface Props {
 		id: string;
@@ -34,6 +34,10 @@
 				{/if}
 				{#if metadata.year}
 					<span>{metadata.year}</span>
+				{/if}
+				{#if metadata.runtime}
+					<span class="mx-1">&middot;</span>
+					<span>{formatRuntime(metadata.runtime)}</span>
 				{/if}
 				{#if metadata.genres && metadata.genres.length > 0}
 					<span class="mx-1">&middot;</span>
