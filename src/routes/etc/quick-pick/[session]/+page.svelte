@@ -7,7 +7,7 @@
 	import VotingCard from './voting-card.svelte';
 	import MovieAutocomplete from './movie-autocomplete.svelte';
 	import type { MovieMetadata, Nomination } from '../workers';
-	import { countryCodeToFlag, formatRuntime, seededShuffle } from '../utils';
+	import { countryCodeToFlag, seededShuffle } from '../utils';
 
 	interface Props {
 		form: { success?: boolean } | null;
@@ -204,9 +204,6 @@
 						{#if winnerNomination.metadata.director}
 							&middot; Dir. {winnerNomination.metadata.director}
 						{/if}
-						{#if winnerNomination.metadata.runtime}
-							&middot; {formatRuntime(winnerNomination.metadata.runtime)}
-						{/if}
 					</p>
 					{#if winnerNomination.metadata.tagline}
 						<p class="text-sm italic text-gray-500 dark:text-gray-400 mt-2">
@@ -220,8 +217,8 @@
 				<div class="mt-6">
 					<h2 class="text-xl font-semibold mb-3">Full Rankings</h2>
 					<ol class="space-y-2">
-						{#each session.rankings as nominationId, index}
-							{@const nomination = session.nominations.find(n => n.id === nominationId)}
+						{#each session.rankings as ranking, index}
+							{@const nomination = session.nominations.find(n => n.id === ranking.id)}
 							{#if nomination}
 								<li class="flex items-start gap-3 p-3 rounded-md {index === 0 ? 'bg-yellow-50 dark:bg-yellow-900/20 ring-1 ring-yellow-200 dark:ring-yellow-700' : 'bg-gray-50 dark:bg-gray-800/50'}">
 									<span class="font-mono font-bold text-xl w-8 text-center flex-shrink-0 {index === 0 ? 'text-yellow-600 dark:text-yellow-400' : index === 1 ? 'text-gray-400' : index === 2 ? 'text-amber-700 dark:text-amber-500' : 'text-gray-400'}">
@@ -245,10 +242,6 @@
 													<span class="mx-1">&middot;</span>
 													<span>Dir. {nomination.metadata.director}</span>
 												{/if}
-												{#if nomination.metadata.runtime}
-													<span class="mx-1">&middot;</span>
-													<span>{formatRuntime(nomination.metadata.runtime)}</span>
-												{/if}
 											</div>
 											{#if nomination.metadata.tagline}
 												<div class="text-sm italic text-gray-400 dark:text-gray-500 mt-1">
@@ -257,6 +250,7 @@
 											{/if}
 										{/if}
 									</div>
+									<span class="font-mono text-sm text-gray-400 dark:text-gray-500 self-center flex-shrink-0">{ranking.points} pts</span>
 								</li>
 							{/if}
 						{/each}

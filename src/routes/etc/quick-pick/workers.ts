@@ -46,7 +46,7 @@ export type Session = {
     closedAt?: number;
     maxNominations: number;
     winner: string | null;
-    rankings: string[] | null; // Ordered list of nomination IDs from 1st to last place
+    rankings: { id: string; points: number }[] | null; // Ordered list from 1st to last place
     mode: SessionMode;
 }
 
@@ -243,7 +243,7 @@ export const finalize = async (sessionId: string, hostKey: string) => {
     }[];
 
     const rankings = bordaCount(votes);
-    const winner = rankings[0];
+    const winner = rankings[0]?.id ?? null;
 
     db.prepare("UPDATE sessions SET winner = ?, rankings = ? WHERE id = ? AND host_key = ?")
         .run(winner, JSON.stringify(rankings), sessionId, hostKey);
@@ -254,7 +254,7 @@ export const finalize = async (sessionId: string, hostKey: string) => {
 const bordaCount = (votes: {
     participant: string,
     votes: { id: string; value: string; rank: number; }[]
-}[]): string[] => {
+}[]): { id: string; points: number }[] => {
     // Sum up Borda points for each nomination
     // Higher rank = more points (already stored this way from vote() function)
     const pointTotals = new Map<string, number>();
@@ -267,11 +267,9 @@ const bordaCount = (votes: {
     }
 
     // Sort by total points (descending) to get rankings
-    const rankings = Array.from(pointTotals.entries())
+    return Array.from(pointTotals.entries())
         .sort((a, b) => b[1] - a[1])
-        .map(([nominationId]) => nominationId);
-
-    return rankings;
+        .map(([id, points]) => ({ id, points }));
 }
 
 const makeSessionId = (len: number) => {
