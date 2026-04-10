@@ -33,6 +33,7 @@
                 </label>
             </div>
         </fieldset>
+        <Input label="expected participants (optional)" name="expectedParticipants" type="number" />
         <Button>create session</Button>
     </form>
 

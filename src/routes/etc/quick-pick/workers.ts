@@ -4,6 +4,7 @@ import db from './db';
 try { db.exec(`ALTER TABLE sessions ADD COLUMN mode TEXT DEFAULT 'default'`); } catch {}
 try { db.exec(`ALTER TABLE nominations ADD COLUMN metadata TEXT`); } catch {}
 try { db.exec(`ALTER TABLE sessions ADD COLUMN rankings TEXT`); } catch {}
+try { db.exec(`ALTER TABLE sessions ADD COLUMN expected_participants INTEGER`); } catch {}
 
 export type SessionMode = 'default' | 'movie';
 
@@ -29,6 +30,7 @@ type SessionDbRecord = {
     closedAt?: number;
     maxNominations: number;
     mode: SessionMode;
+    expectedParticipants?: number;
 }
 
 export type Nomination = {
@@ -48,6 +50,7 @@ export type Session = {
     winner: string | null;
     rankings: { id: string; points: number }[] | null; // Ordered list from 1st to last place
     mode: SessionMode;
+    expectedParticipants?: number;
 }
 
 const getRawSession = async (sessionId: string): Promise<Session | null> => {
@@ -60,6 +63,7 @@ const getRawSession = async (sessionId: string): Promise<Session | null> => {
             s.winner,
             s.rankings,
             s.mode,
+            s.expected_participants,
             (SELECT json_group_array(p.id)
              FROM participants p
              WHERE p.session = s.id) as participants,
@@ -77,6 +81,7 @@ const getRawSession = async (sessionId: string): Promise<Session | null> => {
         winner: string | null;
         rankings: string | null;
         mode: SessionMode;
+        expected_participants: number | null;
         participants: string;
         nominations: string;
     } | undefined;
@@ -98,6 +103,7 @@ const getRawSession = async (sessionId: string): Promise<Session | null> => {
         winner: result.winner,
         rankings: result.rankings ? JSON.parse(result.rankings) : null,
         mode: result.mode ?? 'default',
+        expectedParticipants: result.expected_participants ?? undefined,
         participants: JSON.parse(result.participants),
         nominations,
     }
@@ -140,7 +146,13 @@ export const getVotedUsers = (sessionId: string): string[] => {
     return result.map(v => v.participant);
 }
 
-export const makeSession = async (mode: SessionMode = 'default') => {
+export const getNominatorCount = (sessionId: string): number => {
+    const result = db.prepare('SELECT COUNT(DISTINCT owner) as count FROM nominations WHERE session = ?')
+        .get(sessionId) as { count: number };
+    return result.count;
+}
+
+export const makeSession = async (mode: SessionMode = 'default', expectedParticipants?: number) => {
     const sessionId = makeSessionId(4);
     console.log(`Session ID: ${sessionId}`);
 
@@ -153,6 +165,7 @@ export const makeSession = async (mode: SessionMode = 'default') => {
         hostKey,
         maxNominations: 1,
         mode,
+        expectedParticipants,
     };
 
     await putSession(session);
@@ -164,7 +177,8 @@ export const makeSession = async (mode: SessionMode = 'default') => {
 }
 
 const putSession = async (session: SessionDbRecord) => {
-    db.prepare('INSERT INTO sessions (id, host_key, mode) VALUES (?, ?, ?)').run(session.id, session.hostKey, session.mode);
+    db.prepare('INSERT INTO sessions (id, host_key, mode, expected_participants) VALUES (?, ?, ?, ?)')
+        .run(session.id, session.hostKey, session.mode, session.expectedParticipants ?? null);
 }
 
 export const joinSession = async (sessionId: string) => {
@@ -184,6 +198,22 @@ export const nominate = async (sessionId: string, participantId: string, nominat
     console.log(`${participantId} has nominated ${nomination} in ${sessionId}`);
     db.prepare('INSERT INTO nominations (id, session, owner, value, metadata) VALUES (?, ?, ?, ?, ?)')
         .run(crypto.randomUUID(), sessionId, participantId, nomination, metadata ? JSON.stringify(metadata) : null);
+
+    // Auto-close: if expectedParticipants is set and enough distinct users have submitted, close the session
+    const sessionData = db.prepare('SELECT expected_participants, closed_at FROM sessions WHERE id = ?')
+        .get(sessionId) as { expected_participants: number | null; closed_at: number | null } | undefined;
+
+    if (sessionData?.expected_participants && !sessionData.closed_at) {
+        const { count } = db.prepare('SELECT COUNT(DISTINCT owner) as count FROM nominations WHERE session = ?')
+            .get(sessionId) as { count: number };
+
+        if (count >= sessionData.expected_participants) {
+            const now = Math.floor(Date.now() / 1000);
+            db.prepare('UPDATE sessions SET closed_at = ? WHERE id = ? AND closed_at IS NULL')
+                .run(now, sessionId);
+            console.log(`Session ${sessionId} auto-closed after ${count} participants submitted nominations`);
+        }
+    }
 }
 
 export const closeSession = async (sessionId: string, hostKey: string) => {
@@ -202,17 +232,26 @@ export const vote = async (sessionId: string, participantId: string, votes: stri
         db.prepare('INSERT INTO votes (session, participant, nomination, rank) values (?, ?, ?, ?)')
             .run(sessionId, participantId, votes[i], votes.length - i);
     }
+
+    // Auto-finalize: if all participants who submitted nominations have also voted, finalize
+    const sessionData = db.prepare('SELECT winner FROM sessions WHERE id = ?')
+        .get(sessionId) as { winner: string | null } | undefined;
+
+    if (sessionData && !sessionData.winner) {
+        const { nominatorCount } = db.prepare('SELECT COUNT(DISTINCT owner) as nominatorCount FROM nominations WHERE session = ?')
+            .get(sessionId) as { nominatorCount: number };
+
+        const { voterCount } = db.prepare('SELECT COUNT(DISTINCT participant) as voterCount FROM votes WHERE session = ?')
+            .get(sessionId) as { voterCount: number };
+
+        if (nominatorCount > 0 && voterCount >= nominatorCount) {
+            finalizeInternal(sessionId);
+            console.log(`Session ${sessionId} auto-finalized after all ${voterCount} nominators voted`);
+        }
+    }
 }
 
-export const finalize = async (sessionId: string, hostKey: string) => {
-    const session = db.prepare('SELECT * FROM sessions WHERE id = ? AND host_key = ?')
-        .get(sessionId, hostKey);
-
-    if (!session) {
-        console.error("Invalid hostKey");
-        return { success: false };
-    }
-
+const finalizeInternal = (sessionId: string) => {
     const rawVotes = db.prepare(`
         SELECT
             p.id,
@@ -245,10 +284,22 @@ export const finalize = async (sessionId: string, hostKey: string) => {
     const rankings = bordaCount(votes);
     const winner = rankings[0]?.id ?? null;
 
-    db.prepare("UPDATE sessions SET winner = ?, rankings = ? WHERE id = ? AND host_key = ?")
-        .run(winner, JSON.stringify(rankings), sessionId, hostKey);
+    db.prepare("UPDATE sessions SET winner = ?, rankings = ? WHERE id = ?")
+        .run(winner, JSON.stringify(rankings), sessionId);
 
     return { winner, rankings };
+}
+
+export const finalize = async (sessionId: string, hostKey: string) => {
+    const session = db.prepare('SELECT * FROM sessions WHERE id = ? AND host_key = ?')
+        .get(sessionId, hostKey);
+
+    if (!session) {
+        console.error("Invalid hostKey");
+        return { success: false };
+    }
+
+    return finalizeInternal(sessionId);
 }
 
 const bordaCount = (votes: {

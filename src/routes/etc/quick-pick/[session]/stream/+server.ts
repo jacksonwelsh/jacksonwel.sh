@@ -1,5 +1,5 @@
 import { error, type RequestHandler } from "@sveltejs/kit";
-import { getSession, getVotedUsers, type Session } from "../../workers";
+import { getSession, getVotedUsers, getNominatorCount, type Session } from "../../workers";
 
 export const GET: RequestHandler = ({ params, cookies }) => {
     const sessionId = params.session;
@@ -12,7 +12,7 @@ export const GET: RequestHandler = ({ params, cookies }) => {
             const encoder = new TextEncoder();
 
             // Send initial data
-            const send = (data: { session: Session, votedUsers: string[] }) => {
+            const send = (data: { session: Session, votedUsers: string[], nominatorCount: number }) => {
                 try {
                     controller.enqueue(
                         encoder.encode(`data: ${JSON.stringify(data)}\n\n`)
@@ -39,7 +39,8 @@ export const GET: RequestHandler = ({ params, cookies }) => {
                 if (session.isHost) {
                     votedUsers = getVotedUsers(sessionId);
                 }
-                send({ session, votedUsers });
+                const nominatorCount = getNominatorCount(sessionId);
+                send({ session, votedUsers, nominatorCount });
             }, 500);
 
             // Cleanup on disconnect

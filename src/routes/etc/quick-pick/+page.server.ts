@@ -6,8 +6,12 @@ export const actions = {
     create: async ({ cookies, request }) => {
         const data = await request.formData();
         const mode = (data.get('mode') as SessionMode) || 'default';
+        const expectedParticipantsStr = data.get('expectedParticipants');
+        const expectedParticipants = expectedParticipantsStr
+            ? parseInt(expectedParticipantsStr.toString(), 10)
+            : undefined;
 
-        const { session, hostId } = await makeSession(mode);
+        const { session, hostId } = await makeSession(mode, expectedParticipants && !isNaN(expectedParticipants) ? expectedParticipants : undefined);
         console.log({ session, hostId });
 
         cookies.set('quick-pick.hostKey',
