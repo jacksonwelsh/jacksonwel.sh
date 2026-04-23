@@ -20,6 +20,7 @@
 
 	let session = $state(data.session);
     let votedUsers = $state(data.votedUsers);
+    let nominatorCount = $state(0);
     let connected = $state(false);
     let eventSource: EventSource;
     let reconnectAttempts = 0;
@@ -39,6 +40,7 @@
             const eventData = JSON.parse(event.data);
             session = eventData.session;
             votedUsers = eventData.votedUsers;
+            nominatorCount = eventData.nominatorCount;
             connected = true;
             reconnectAttempts = 0;
         };
@@ -119,13 +121,22 @@
 
 			{#if isClosed}
 				<p>
-					{votedUserCount}
-					{#if votedUserCount === 1}person has{:else}people have{/if} voted.
+					{votedUserCount} of {nominatorCount}
+					{#if nominatorCount === 1}person has{:else}people have{/if} voted.
+					{#if session.expectedParticipants}
+						Votes will finalize automatically when all {nominatorCount} {nominatorCount === 1 ? 'participant has' : 'participants have'} voted.
+					{/if}
 				</p>
 			{:else}
 				<p>
-					{nominations.length}
-					{#if nominations.length === 1}nomination has{:else}nominations have{/if} been submtted.
+					{nominatorCount}
+					{#if session.expectedParticipants}
+						of {session.expectedParticipants}
+					{/if}
+					{#if nominatorCount === 1}participant has{:else}participants have{/if} submitted.
+					{#if session.expectedParticipants}
+						Submissions will close automatically when {session.expectedParticipants} {session.expectedParticipants === 1 ? 'participant has' : 'participants have'} submitted.
+					{/if}
 				</p>
 			{/if}
 
@@ -185,7 +196,7 @@
 					<Button disabled={votes.length !== nominations.length}>Submit votes</Button>
 				</form>
 			{:else}
-				<p>Your votes were submitted. Wait for the host to finalize.</p>
+				<p>Your votes were submitted. {session.expectedParticipants ? 'Results will finalize automatically once everyone has voted.' : 'Wait for the host to finalize.'}</p>
 			{/if}
 		{:else if session.winner && winnerNomination}
 			<div class="mt-4 p-4 bg-cyan-50 dark:bg-cyan-900/20 rounded-lg">
