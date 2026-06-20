@@ -2,7 +2,6 @@
 	import { preventDefault } from 'svelte/legacy';
 	import { onMount } from 'svelte';
 
-	import Button from '$lib/button.svelte';
 	import {
 		type DailyState,
 		GuessResult,
@@ -95,14 +94,14 @@
 		}
 	};
 
-	const handleSubmit = () => {
-		if (gameOver || hasWon || !selected) {
+	const submitGuess = (guess: string) => {
+		if (gameOver || hasWon || !guess) {
 			return;
 		}
 
-		guesses[guessIndex] = selected;
+		guesses[guessIndex] = guess;
 
-		if (selected === puzzle.title) {
+		if (guess === puzzle.title) {
 			results[guessIndex] = GuessResult.CORRECT;
 			hasWon = true;
 			gameOver = true;
@@ -159,7 +158,7 @@
 				</p>
 			</div>
 
-			<form onsubmit={preventDefault(() => handleSubmit())} id="game" class="w-full">
+			<form onsubmit={preventDefault(() => submitGuess(selected))} id="game" class="w-full">
 				<OddsChart
 					series={puzzle.series}
 					resolutionLabel={showResolution ? hintValue(puzzle, 'resolutionDate') : null}
@@ -191,22 +190,16 @@
 				{/if}
 
 				{#if !gameOver}
-					<GuessBox bind:this={guessBox} {titles} bind:value={selected} onpick={() => {}} />
+					<GuessBox
+						bind:this={guessBox}
+						{titles}
+						bind:value={selected}
+						onpick={(title) => submitGuess(title)}
+					/>
 
 					<p class="text-sm text-slate-400 my-1">
 						Guess {guessIndex + 1} of {MAX_GUESSES}
 					</p>
-
-					<Button
-						on:click={() => handleSubmit()}
-						type="submit"
-						disabled={!selected}
-						variant="primary"
-						size="xl"
-						class="w-full sm:w-[32rem] rounded-md"
-					>
-						Guess
-					</Button>
 				{:else}
 					<Share {results} index={puzzle.index} />
 				{/if}
