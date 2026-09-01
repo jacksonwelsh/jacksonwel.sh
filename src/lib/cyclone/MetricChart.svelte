@@ -19,10 +19,10 @@
 	let title = $derived(stream.metric.replaceAll('_', ' '));
 </script>
 
-<figure class="rounded-xl border border-slate-200 p-4 dark:border-slate-800">
+<figure class="border-t border-slate-200 py-4 dark:border-slate-800">
 	<figcaption class="mb-3 flex items-baseline justify-between">
 		<span class="text-sm capitalize text-slate-700 dark:text-slate-200">{title}</span>
-		<span class="text-xs text-slate-500">avg {Math.round(average)} {stream.unit}</span>
+		<span class="font-mono text-xs text-slate-500">avg {Math.round(average)} {stream.unit}</span>
 	</figcaption>
 	{#if points}
 		<svg

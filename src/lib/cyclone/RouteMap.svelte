@@ -52,7 +52,7 @@
 </script>
 
 <div
-	class="relative overflow-hidden rounded-2xl border border-slate-200 bg-slate-100 dark:border-slate-800 dark:bg-slate-900"
+	class="relative overflow-hidden border-y border-slate-200 bg-slate-100 dark:border-slate-800 dark:bg-slate-900"
 >
 	{#if fallback}
 		<img
@@ -68,7 +68,7 @@
 	></div>
 	{#if !token || failed}
 		<p
-			class="absolute bottom-3 left-3 rounded-md bg-white/90 px-3 py-2 text-xs text-slate-700 shadow dark:bg-slate-950/90 dark:text-slate-200"
+			class="absolute bottom-3 left-3 bg-white/90 px-3 py-2 text-xs text-slate-700 dark:bg-black/90 dark:text-slate-200"
 		>
 			Interactive map unavailable. Showing the privacy-approved snapshot.
 		</p>

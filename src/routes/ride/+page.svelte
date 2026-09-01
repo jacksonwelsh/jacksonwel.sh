@@ -10,42 +10,33 @@
 </svelte:head>
 
 <main
-	class="min-h-screen bg-slate-50 px-4 py-10 font-mono text-slate-950 dark:bg-slate-950 dark:text-slate-50 md:py-16"
+	class="min-h-screen bg-white px-4 pb-16 font-sans text-slate-950 dark:bg-black dark:text-slate-50"
 >
-	<div class="mx-auto max-w-6xl">
-		<nav class="mb-14 flex items-center justify-between text-sm">
-			<a href="/" class="font-mono-medium">jackson welsh</a>
-			<span class="text-teal-700 dark:text-teal-300">/ride</span>
+	<div class="mx-auto max-w-4xl">
+		<nav class="mb-20 pt-3 font-mono text-sm text-slate-400">
+			<a href="/" class="text-blue-500 hover:underline dark:text-blue-400">~</a>/ride
 		</nav>
-		<header class="mb-10 max-w-2xl">
-			<p class="mb-3 text-xs uppercase tracking-[0.22em] text-teal-700 dark:text-teal-300">
-				activity log
-			</p>
-			<h1 class="text-4xl font-mono-medium tracking-tight md:text-6xl">the long way around.</h1>
-			<p class="mt-5 leading-relaxed text-slate-600 dark:text-slate-300">
-				Rides first, with the occasional run, walk, or hike.
-			</p>
+		<header class="mb-12">
+			<h1 class="text-5xl font-bold tracking-tight md:text-6xl">rides</h1>
 		</header>
 
 		{#if data.unavailable}
-			<section
-				class="rounded-2xl border border-amber-300 bg-amber-50 p-6 text-amber-950 dark:border-amber-900 dark:bg-amber-950 dark:text-amber-100"
-			>
-				<h2 class="font-mono-medium">The activity feed is temporarily unavailable.</h2>
-				<p class="mt-2 text-sm opacity-80">Please try again in a little while.</p>
+			<section class="border-t border-amber-500 py-6 text-amber-900 dark:text-amber-200">
+				<h2 class="font-semibold">The activity feed is temporarily unavailable.</h2>
+				<p class="mt-1 text-sm opacity-80">Try again in a little while.</p>
 			</section>
 		{:else if data.page.activities.length === 0}
-			<p class="rounded-2xl border border-slate-200 p-8 text-slate-500 dark:border-slate-800">
-				No published activities yet.
+			<p class="border-t border-slate-200 py-8 text-slate-500 dark:border-slate-800">
+				Nothing here yet.
 			</p>
 		{:else}
-			<section class="grid gap-6 md:grid-cols-2" aria-label="Activities">
+			<section aria-label="Activities">
 				{#each data.page.activities as activity (activity.id)}<ActivityCard {activity} />{/each}
 			</section>
 			{#if data.page.next_cursor}
-				<div class="mt-10 text-center">
+				<div class="mt-8">
 					<a
-						class="inline-block rounded-full border border-teal-600 px-5 py-3 text-sm text-teal-800 hover:bg-teal-50 dark:text-teal-200 dark:hover:bg-teal-950"
+						class="text-sm text-blue-600 underline underline-offset-4 dark:text-blue-400"
 						href={`?cursor=${encodeURIComponent(data.page.next_cursor)}`}>Older activities →</a
 					>
 				</div>

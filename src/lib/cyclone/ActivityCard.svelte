@@ -7,47 +7,47 @@
 	let image = $derived(cover ?? activity.route_snapshot_url);
 </script>
 
-<article
-	class="group overflow-hidden rounded-2xl border border-slate-200 bg-white/70 dark:border-slate-800 dark:bg-slate-950/60"
->
-	<a href={`/ride/${activity.id}`} aria-label={`View ${activity.title}`}>
+<article class="group border-t border-slate-200 py-8 dark:border-slate-800 md:py-10">
+	<a
+		href={`/ride/${activity.id}`}
+		aria-label={`View ${activity.title}`}
+		class:grid={image}
+		class:gap-8={image}
+		class:md:grid-cols-[minmax(0,1fr)_minmax(15rem,0.7fr)]={image}
+		class:items-start={image}
+	>
 		{#if image}
 			<img
 				src={image}
 				alt=""
-				class="aspect-[16/9] w-full bg-slate-100 object-cover transition duration-300 group-hover:scale-[1.01] dark:bg-slate-900"
+				class="aspect-[16/10] w-full bg-slate-100 object-cover dark:bg-slate-900 md:order-2"
 			/>
-		{:else}
-			<div
-				class="flex aspect-[16/9] items-center justify-center bg-gradient-to-br from-teal-100 to-blue-100 text-4xl text-teal-800 dark:from-teal-950 dark:to-blue-950 dark:text-teal-300"
-				aria-hidden="true"
-			>
-				↗
-			</div>
 		{/if}
-		<div class="space-y-4 p-5 md:p-6">
+		<div class="max-w-2xl md:order-1">
 			<div>
-				<p class="mb-2 text-xs uppercase tracking-[0.18em] text-teal-700 dark:text-teal-300">
+				<p class="mb-2 font-mono text-xs text-slate-500 dark:text-slate-400">
 					{date(activity.local_date)} · {activityName[activity.type]}{activity.virtual
 						? ' · virtual'
 						: ''}
 				</p>
-				<h2 class="text-2xl font-mono-medium leading-tight text-slate-950 dark:text-slate-50">
+				<h2
+					class="text-2xl font-semibold leading-tight text-slate-950 decoration-2 underline-offset-4 group-hover:underline dark:text-slate-50 md:text-3xl"
+				>
 					{activity.title}
 				</h2>
 			</div>
 			{#if stats(activity.metrics).length}
-				<dl class="flex flex-wrap gap-x-6 gap-y-2">
+				<dl class="mt-4 flex flex-wrap gap-x-6 gap-y-2">
 					{#each stats(activity.metrics).slice(0, 3) as stat}
-						<div>
+						<div class="flex items-baseline gap-2">
 							<dt class="text-xs text-slate-500 dark:text-slate-400">{stat.label}</dt>
-							<dd class="text-sm text-slate-900 dark:text-slate-100">{stat.value}</dd>
+							<dd class="font-mono text-sm text-slate-900 dark:text-slate-100">{stat.value}</dd>
 						</div>
 					{/each}
 				</dl>
 			{/if}
 			{#if activity.description_html}
-				<p class="text-sm leading-relaxed text-slate-600 dark:text-slate-300">
+				<p class="mt-4 leading-relaxed text-slate-600 dark:text-slate-300">
 					{textExcerpt(activity.description_html)}
 				</p>
 			{/if}
