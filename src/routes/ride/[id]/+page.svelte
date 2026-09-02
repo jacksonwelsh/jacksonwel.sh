@@ -3,13 +3,21 @@
 	import PhotoGallery from '$lib/cyclone/PhotoGallery.svelte';
 	import RouteMap from '$lib/cyclone/RouteMap.svelte';
 	import WorkoutStructure from '$lib/cyclone/WorkoutStructure.svelte';
-	import { activityName, date, detailStats } from '$lib/cyclone/format';
+	import { activityName, date, detailStats, usesMiles } from '$lib/cyclone/format';
 	import { rideEmbedDescription } from '$lib/cyclone/embed';
 	import type { MetricStream, RoutePoint } from '$lib/cyclone/types';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
 	let activity = $derived(data.activity);
+	let hoverPosition = $state<number | undefined>();
+	let elevationDistance = $derived(routeDistance(activity.route_segments));
+	let elevationCursorLabel = $derived.by(() => {
+		const durationMilliseconds = (activity.metrics.duration_seconds ?? 0) * 1000;
+		if (!durationMilliseconds || !elevationDistance) return undefined;
+		return (elapsed: number) =>
+			distanceLabel(Math.min(Math.max(elapsed / durationMilliseconds, 0), 1) * elevationDistance);
+	});
 	let readyPhotos = $derived(
 		activity.photos.filter((photo) => photo.status === 'ready' && photo.feed_url)
 	);
@@ -22,9 +30,10 @@
 				(metricOrder.indexOf(b.metric) < 0 ? metricOrder.length : metricOrder.indexOf(b.metric))
 		)
 	);
+	let omittedRanges = $derived(pauseRanges(streams));
 	let elevationStream = $derived(
 		activity.type === 'outdoor_ride' && !streams.some((stream) => stream.metric === 'elevation')
-			? elevationProfile(activity.route_segments)
+			? elevationProfile(activity.route_segments, activity.metrics.duration_seconds)
 			: undefined
 	);
 	let embedDescription = $derived(rideEmbedDescription(activity, data.locale));
@@ -42,7 +51,44 @@
 		return 6_371_000 * 2 * Math.atan2(Math.sqrt(haversine), Math.sqrt(1 - haversine));
 	}
 
-	function elevationProfile(segments: RoutePoint[][]): MetricStream | undefined {
+	function routeDistance(segments: RoutePoint[][]) {
+		let distance = 0;
+		for (const segment of segments) {
+			let previous: RoutePoint | undefined;
+			for (const point of segment) {
+				if (previous) distance += pointDistance(previous, point);
+				previous = point;
+			}
+		}
+		return distance;
+	}
+
+	function distanceLabel(meters: number) {
+		const miles = usesMiles(data.locale);
+		const value = miles ? meters / 1609.344 : meters / 1000;
+		return `${new Intl.NumberFormat(data.locale, { maximumFractionDigits: 1 }).format(value)} ${miles ? 'mi' : 'km'}`;
+	}
+
+	function pauseRanges(streams: MetricStream[]): [number, number][] {
+		const preferredStream = streams.find((stream) => stream.metric === 'speed') ?? streams[0];
+		if (!preferredStream || preferredStream.samples.length < 3) return [];
+		const gaps = preferredStream.samples
+			.slice(1)
+			.map(([elapsed], index) => elapsed - preferredStream.samples[index][0])
+			.filter((gap) => gap > 0)
+			.sort((a, b) => a - b);
+		const medianGap = gaps[Math.floor(gaps.length / 2)] ?? 0;
+		const threshold = Math.max(30_000, medianGap * 4);
+		return preferredStream.samples.slice(1).flatMap(([elapsed], index) => {
+			const previous = preferredStream.samples[index][0];
+			return elapsed - previous > threshold ? [[previous, elapsed] as [number, number]] : [];
+		});
+	}
+
+	function elevationProfile(
+		segments: RoutePoint[][],
+		durationSeconds: number | undefined
+	): MetricStream | undefined {
 		let distance = 0;
 		const samples: [number, number][] = [];
 		for (const segment of segments) {
@@ -53,7 +99,22 @@
 				previous = point;
 			}
 		}
-		return samples.length > 1 ? { metric: 'elevation', unit: 'm', samples } : undefined;
+		const totalDistance = samples.at(-1)?.[0] ?? 0;
+		if (samples.length < 2 || !totalDistance || !durationSeconds) return undefined;
+
+		// Route points omit timestamps, so the fallback distributes their elevation along the ride duration.
+		return {
+			metric: 'elevation',
+			unit: 'm',
+			samples: samples.map(([sampleDistance, altitude]) => [
+				(sampleDistance / totalDistance) * durationSeconds * 1000,
+				altitude
+			])
+		};
+	}
+
+	function setHoverPosition(position: number | undefined) {
+		hoverPosition = position;
 	}
 </script>
 
@@ -159,9 +220,19 @@
 					{#each streams as stream (stream.metric)}<MetricChart
 							{stream}
 							locale={data.locale}
+							{hoverPosition}
+							onHoverPosition={setHoverPosition}
+							{omittedRanges}
 						/>{/each}
 					{#if elevationStream}
-						<MetricChart stream={elevationStream} locale={data.locale} xAxis="distance" />
+						<MetricChart
+							stream={elevationStream}
+							locale={data.locale}
+							{hoverPosition}
+							onHoverPosition={setHoverPosition}
+							cursorLabel={elevationCursorLabel}
+							{omittedRanges}
+						/>
 					{/if}
 				</div>
 			</section>
