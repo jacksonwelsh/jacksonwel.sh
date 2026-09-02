@@ -19,6 +19,16 @@
 	let failed = $state(false);
 	const cameraGlyph = { 1: '/cyclone/map-camera.svg?v=2' };
 	const checkeredFlagGlyph = { 1: '/cyclone/map-checkered-flag.svg?v=2' };
+	const maximumOverlayPointCount = 500;
+
+	function chunkPolyline<T>(points: T[]) {
+		if (points.length <= maximumOverlayPointCount) return points.length >= 2 ? [points] : [];
+		const chunks: T[][] = [];
+		for (let start = 0; start < points.length - 1; start += maximumOverlayPointCount - 1) {
+			chunks.push(points.slice(start, start + maximumOverlayPointCount));
+		}
+		return chunks;
+	}
 
 	function coordinateDistanceMeters(first: RoutePoint, second: RoutePoint) {
 		const radians = Math.PI / 180;
@@ -70,8 +80,10 @@
 		(window as any)[callback] = () => {
 			try {
 				mapkit = (window as any).mapkit;
-				const routeCoordinates = segments.map((segment) =>
-					segment.map((point) => new mapkit.Coordinate(point.latitude, point.longitude))
+				const routeCoordinates = segments.flatMap((segment) =>
+					chunkPolyline(
+						segment.map((point) => new mapkit.Coordinate(point.latitude, point.longitude))
+					)
 				);
 				haloOverlays = routeCoordinates.map(
 					(coordinates) =>
