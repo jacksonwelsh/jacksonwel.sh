@@ -28,7 +28,7 @@
 			: undefined
 	);
 	let embedDescription = $derived(rideEmbedDescription(activity, data.locale));
-	let embedImageURL = $derived(`${activity.canonical_url}/embed.png`);
+	let embedImageURL = $derived(activity.share_image_url);
 
 	function pointDistance(a: RoutePoint, b: RoutePoint) {
 		const radians = Math.PI / 180;
@@ -66,9 +66,11 @@
 	<meta property="og:title" content={`${activity.title} · Ride`} />
 	<meta property="og:description" content={embedDescription} />
 	<meta property="og:url" content={activity.canonical_url} />
-	<meta property="og:image" content={embedImageURL} />
-	<meta property="og:image:type" content="image/png" />
-	<meta property="og:image:alt" content={`Ride summary for ${activity.title}`} />
+	{#if embedImageURL}
+		<meta property="og:image" content={embedImageURL} />
+		<meta property="og:image:type" content="image/jpeg" />
+		<meta property="og:image:alt" content={`Ride summary for ${activity.title}`} />
+	{/if}
 	{#if activity.route_snapshot_url}
 		<meta property="og:image" content={activity.route_snapshot_url} />
 		<meta property="og:image:alt" content={`Route map for ${activity.title}`} />
@@ -81,7 +83,7 @@
 	<meta name="twitter:card" content="summary_large_image" />
 	<meta name="twitter:title" content={`${activity.title} · Ride`} />
 	<meta name="twitter:description" content={embedDescription} />
-	<meta name="twitter:image" content={embedImageURL} />
+	{#if embedImageURL}<meta name="twitter:image" content={embedImageURL} />{/if}
 </svelte:head>
 
 <main

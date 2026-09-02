@@ -42,7 +42,6 @@
 		"@editorjs/editorjs": "^2.30.6",
 		"@editorjs/header": "^2.8.7",
 		"@editorjs/list": "^1.10.0",
-		"@resvg/resvg-js": "^2.6.2",
 		"@sveltejs/adapter-node": "^5.2.2",
 		"@sveltejs/kit": "^2.5.27",
 		"better-sqlite3": "^12.4.1",
