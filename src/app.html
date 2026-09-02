@@ -1,29 +1,36 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
+	<head>
+		<title>Jackson Welsh</title>
+		<meta charset="utf-8" />
+		<meta
+			name="description"
+			content="Software engineer. Person of interest. Government watchlist member."
+		/>
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" />
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="icon" href="/favicon.png" />
+		<script
+			defer
+			data-domain="jacksonwel.sh"
+			src="https://plausible.jacksn.dev/js/script.tagged-events.js"
+		></script>
+		%sveltekit.head%
 
-<head>
-	<title>Jackson Welsh</title>
-	<meta charset="utf-8" />
-	<meta name="description" content="Software engineer. Person of interest. Government watchlist member." />
-	<meta name="viewport" content="width=device-width, initial-scale=1" />
-	<link rel="preconnect" href="https://fonts.gstatic.com" />
-	<link rel="preconnect" href="https://fonts.googleapis.com" />
-	<link rel="icon" href="/favicon.png" />
-	<script defer data-domain="jacksonwel.sh" src="https://plausible.jacksn.dev/js/script.tagged-events.js"></script>
-	%sveltekit.head%
+		<style>
+			.hljs {
+				background-color: transparent !important;
+				padding-left: 0px !important;
+				padding-right: 0px !important;
+			}
+		</style>
+	</head>
 
-	<style>
-		.hljs {
-			background-color: transparent !important;
-			padding-left: 0px !important;
-			padding-right: 0px !important;
-		}
-	</style>
-</head>
-
-<body class="dark:bg-black bg-slate-100 dark:text-slate-100 dark:selection:bg-teal-800 selection:bg-teal-200"
-	data-sveltekit-preload-data="hover">
-	<div>%sveltekit.body%</div>
-</body>
-
+	<body
+		class="dark:bg-black bg-slate-100 dark:text-slate-100 dark:selection:bg-teal-800 selection:bg-teal-200"
+		data-sveltekit-preload-data="hover"
+	>
+		<div>%sveltekit.body%</div>
+	</body>
 </html>

@@ -6,7 +6,7 @@ export const getUser = async (cookies: Cookies) => {
 		error(401, 'Not authenticated');
 	}
 
-    return null;
+	return null;
 };
 
 export const isAdmin = (user: UserObject): boolean => {

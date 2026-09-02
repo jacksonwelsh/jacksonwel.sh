@@ -135,8 +135,10 @@
 				<h2 id="route-heading" class="mb-4 font-mono text-xl">route</h2>
 				<RouteMap
 					segments={activity.route_segments}
+					photos={readyPhotos}
 					token={data.mapToken}
 					fallback={activity.route_snapshot_url}
+					fallbackDark={activity.route_snapshot_dark_url}
 				/>
 				<noscript
 					>{#if activity.route_snapshot_url}<img

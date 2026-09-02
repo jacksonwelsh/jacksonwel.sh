@@ -23,6 +23,7 @@ export type Photo = {
 	status: 'pending' | 'ready';
 	feed_url?: string;
 	thumbnail_url?: string;
+	location?: { latitude: number; longitude: number };
 };
 
 export type RoutePoint = { latitude: number; longitude: number; altitude_meters?: number };
@@ -51,6 +52,7 @@ export type ActivitySummary = {
 	local_date: string;
 	metrics: Metrics;
 	route_snapshot_url?: string;
+	route_snapshot_dark_url?: string;
 	share_image_url?: string;
 	share_image_style?: 'zonebuddy';
 	photos: Photo[];

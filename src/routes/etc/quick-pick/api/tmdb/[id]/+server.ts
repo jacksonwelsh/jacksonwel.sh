@@ -4,55 +4,55 @@ import type { RequestHandler } from './$types';
 import type { MovieMetadata } from '../../../workers';
 
 type TMDBMovieDetails = {
-    id: number;
-    title: string;
-    release_date: string;
-    genres: { id: number; name: string }[];
-    poster_path: string | null;
-    overview: string;
-    tagline: string;
-    origin_country: string[];
-    runtime: number | null;
+	id: number;
+	title: string;
+	release_date: string;
+	genres: { id: number; name: string }[];
+	poster_path: string | null;
+	overview: string;
+	tagline: string;
+	origin_country: string[];
+	runtime: number | null;
 };
 
 type TMDBCredits = {
-    crew: { id: number; name: string; job: string }[];
+	crew: { id: number; name: string; job: string }[];
 };
 
 export const GET: RequestHandler = async ({ params }) => {
-    const movieId = params.id;
+	const movieId = params.id;
 
-    if (!TMDB_API_KEY) {
-        return json({ error: 'TMDB API key not configured' }, { status: 500 });
-    }
+	if (!TMDB_API_KEY) {
+		return json({ error: 'TMDB API key not configured' }, { status: 500 });
+	}
 
-    // Fetch movie details and credits in parallel
-    const [detailsResponse, creditsResponse] = await Promise.all([
-        fetch(`https://api.themoviedb.org/3/movie/${movieId}?api_key=${TMDB_API_KEY}`),
-        fetch(`https://api.themoviedb.org/3/movie/${movieId}/credits?api_key=${TMDB_API_KEY}`)
-    ]);
+	// Fetch movie details and credits in parallel
+	const [detailsResponse, creditsResponse] = await Promise.all([
+		fetch(`https://api.themoviedb.org/3/movie/${movieId}?api_key=${TMDB_API_KEY}`),
+		fetch(`https://api.themoviedb.org/3/movie/${movieId}/credits?api_key=${TMDB_API_KEY}`)
+	]);
 
-    if (!detailsResponse.ok) {
-        return json({ error: 'TMDB API error' }, { status: detailsResponse.status });
-    }
+	if (!detailsResponse.ok) {
+		return json({ error: 'TMDB API error' }, { status: detailsResponse.status });
+	}
 
-    const details: TMDBMovieDetails = await detailsResponse.json();
-    const credits: TMDBCredits = creditsResponse.ok ? await creditsResponse.json() : { crew: [] };
+	const details: TMDBMovieDetails = await detailsResponse.json();
+	const credits: TMDBCredits = creditsResponse.ok ? await creditsResponse.json() : { crew: [] };
 
-    const director = credits.crew.find((c) => c.job === 'Director')?.name;
+	const director = credits.crew.find((c) => c.job === 'Director')?.name;
 
-    const movie: MovieMetadata = {
-        tmdbId: details.id,
-        title: details.title,
-        year: details.release_date ? parseInt(details.release_date.split('-')[0], 10) : 0,
-        genres: details.genres.map((g) => g.name),
-        posterPath: details.poster_path,
-        overview: details.overview,
-        tagline: details.tagline || undefined,
-        director: director,
-        originCountry: details.origin_country?.[0],
-        runtime: details.runtime || undefined,
-    };
+	const movie: MovieMetadata = {
+		tmdbId: details.id,
+		title: details.title,
+		year: details.release_date ? parseInt(details.release_date.split('-')[0], 10) : 0,
+		genres: details.genres.map((g) => g.name),
+		posterPath: details.poster_path,
+		overview: details.overview,
+		tagline: details.tagline || undefined,
+		director: director,
+		originCountry: details.origin_country?.[0],
+		runtime: details.runtime || undefined
+	};
 
-    return json({ movie });
+	return json({ movie });
 };

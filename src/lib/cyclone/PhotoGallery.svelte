@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import type { Photo } from './types';
 
 	let { photos }: { photos: Photo[] } = $props();
@@ -6,9 +7,18 @@
 	let dialog: HTMLDialogElement;
 	let activePhoto = $derived(current === undefined ? undefined : photos[current]);
 
-	function open(index: number) {
+	function open(index: number, notifyMap = true) {
 		current = index;
-		requestAnimationFrame(() => dialog.showModal());
+		if (!dialog.open) {
+			requestAnimationFrame(() => {
+				if (!dialog.open) dialog.showModal();
+			});
+		}
+		if (notifyMap) {
+			window.dispatchEvent(
+				new CustomEvent('cyclone:gallery-photo-select', { detail: { photoId: photos[index].id } })
+			);
+		}
 	}
 
 	function close() {
@@ -18,18 +28,28 @@
 
 	function previous() {
 		if (current === undefined) return;
-		current = (current - 1 + photos.length) % photos.length;
+		open((current - 1 + photos.length) % photos.length);
 	}
 
 	function next() {
 		if (current === undefined) return;
-		current = (current + 1) % photos.length;
+		open((current + 1) % photos.length);
 	}
 
 	function handleKeydown(event: KeyboardEvent) {
 		if (event.key === 'ArrowLeft') previous();
 		if (event.key === 'ArrowRight') next();
 	}
+
+	onMount(() => {
+		const showMappedPhoto = (event: Event) => {
+			const photoId = (event as CustomEvent<{ photoId?: string }>).detail?.photoId;
+			const index = photos.findIndex((photo) => photo.id === photoId);
+			if (index >= 0) open(index, false);
+		};
+		window.addEventListener('cyclone:map-photo-select', showMappedPhoto);
+		return () => window.removeEventListener('cyclone:map-photo-select', showMappedPhoto);
+	});
 </script>
 
 <section class="mb-14" aria-label="Activity photos">

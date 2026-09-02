@@ -32,11 +32,6 @@
 
 	const links = [
 		{
-			name: 'ride',
-			href: '/ride',
-			class: ''
-		},
-		{
 			name: 'blog',
 			href: '/blog',
 			class: ''

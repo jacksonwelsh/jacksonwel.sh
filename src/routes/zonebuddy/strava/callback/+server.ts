@@ -1,11 +1,6 @@
 import { env } from '$env/dynamic/private';
 import type { RequestHandler } from './$types';
-import {
-	STRAVA_TOKEN_URL,
-	appRedirect,
-	athleteName,
-	type StravaTokenResponse
-} from '../shared';
+import { STRAVA_TOKEN_URL, appRedirect, athleteName, type StravaTokenResponse } from '../shared';
 
 // GET /zonebuddy/strava/callback?code=...&state=...&scope=...
 //
