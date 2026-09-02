@@ -3,7 +3,8 @@
 	import PhotoGallery from '$lib/cyclone/PhotoGallery.svelte';
 	import RouteMap from '$lib/cyclone/RouteMap.svelte';
 	import WorkoutStructure from '$lib/cyclone/WorkoutStructure.svelte';
-	import { activityName, date, stats } from '$lib/cyclone/format';
+	import { activityName, date, detailStats } from '$lib/cyclone/format';
+	import type { MetricStream, RoutePoint } from '$lib/cyclone/types';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
@@ -11,6 +12,46 @@
 	let readyPhotos = $derived(
 		activity.photos.filter((photo) => photo.status === 'ready' && photo.feed_url)
 	);
+	let activityStats = $derived(detailStats(activity.metrics, data.locale, activity.type));
+	const metricOrder = ['power', 'heart_rate', 'speed', 'cadence'];
+	let streams = $derived(
+		[...data.streams].sort(
+			(a, b) =>
+				(metricOrder.indexOf(a.metric) < 0 ? metricOrder.length : metricOrder.indexOf(a.metric)) -
+				(metricOrder.indexOf(b.metric) < 0 ? metricOrder.length : metricOrder.indexOf(b.metric))
+		)
+	);
+	let elevationStream = $derived(
+		activity.type === 'outdoor_ride' && !streams.some((stream) => stream.metric === 'elevation')
+			? elevationProfile(activity.route_segments)
+			: undefined
+	);
+
+	function pointDistance(a: RoutePoint, b: RoutePoint) {
+		const radians = Math.PI / 180;
+		const latitudeDelta = (b.latitude - a.latitude) * radians;
+		const longitudeDelta = (b.longitude - a.longitude) * radians;
+		const latitudeA = a.latitude * radians;
+		const latitudeB = b.latitude * radians;
+		const haversine =
+			Math.sin(latitudeDelta / 2) ** 2 +
+			Math.cos(latitudeA) * Math.cos(latitudeB) * Math.sin(longitudeDelta / 2) ** 2;
+		return 6_371_000 * 2 * Math.atan2(Math.sqrt(haversine), Math.sqrt(1 - haversine));
+	}
+
+	function elevationProfile(segments: RoutePoint[][]): MetricStream | undefined {
+		let distance = 0;
+		const samples: [number, number][] = [];
+		for (const segment of segments) {
+			let previous: RoutePoint | undefined;
+			for (const point of segment) {
+				if (previous) distance += pointDistance(previous, point);
+				if (point.altitude_meters != null) samples.push([distance, point.altitude_meters]);
+				previous = point;
+			}
+		}
+		return samples.length > 1 ? { metric: 'elevation', unit: 'm', samples } : undefined;
+	}
 </script>
 
 <svelte:head>
@@ -41,11 +82,11 @@
 			<h1 class="text-4xl font-semibold leading-tight tracking-tight md:text-6xl">
 				{activity.title}
 			</h1>
-			{#if stats(activity.metrics, data.locale).length}
+			{#if activityStats.length}
 				<dl
 					class="mt-8 grid grid-cols-2 gap-x-5 gap-y-4 border-y border-slate-200 py-5 sm:grid-cols-4 dark:border-slate-800"
 				>
-					{#each stats(activity.metrics, data.locale) as stat}<div>
+					{#each activityStats as stat}<div>
 							<dt class="text-xs text-slate-500 dark:text-slate-400">{stat.label}</dt>
 							<dd class="mt-1 font-mono text-lg">{stat.value}</dd>
 						</div>{/each}
@@ -84,14 +125,19 @@
 			</section>
 		{/if}
 
-		{#if data.streams.length}
+		{#if streams.length || elevationStream}
 			<section class="mb-14" aria-labelledby="charts-heading">
-				<h2 id="charts-heading" class="mb-4 font-mono text-xl">effort</h2>
+				<h2 id="charts-heading" class="mb-4 font-mono text-xl">
+					{activity.type === 'outdoor_ride' ? 'ride data' : 'effort'}
+				</h2>
 				<div class="grid gap-x-8 gap-y-6 md:grid-cols-2">
-					{#each data.streams as stream (stream.metric)}<MetricChart
+					{#each streams as stream (stream.metric)}<MetricChart
 							{stream}
 							locale={data.locale}
 						/>{/each}
+					{#if elevationStream}
+						<MetricChart stream={elevationStream} locale={data.locale} xAxis="distance" />
+					{/if}
 				</div>
 			</section>
 		{/if}

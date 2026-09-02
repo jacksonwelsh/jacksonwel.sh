@@ -2,28 +2,44 @@
 	import { usesMiles } from './format';
 	import type { MetricStream } from './types';
 
-	let { stream, locale }: { stream: MetricStream; locale: string } = $props();
+	let {
+		stream,
+		locale,
+		xAxis = 'time'
+	}: { stream: MetricStream; locale: string; xAxis?: 'time' | 'distance' } = $props();
 	let selectedIndex = $state<number | undefined>();
 
 	const colors: Record<string, string> = {
 		power: '#34d399',
 		heart_rate: '#fb7185',
 		cadence: '#60a5fa',
-		speed: '#f59e0b'
+		speed: '#f59e0b',
+		elevation: '#a78bfa'
 	};
 
 	let color = $derived(colors[stream.metric] ?? '#2dd4bf');
 	let title = $derived(stream.metric.replaceAll('_', ' '));
 	let displayStream = $derived.by(() => {
-		if (stream.metric !== 'speed' || stream.unit !== 'm/s') return stream;
-		const multiplier = usesMiles(locale) ? 2.236936 : 3.6;
-		return {
-			...stream,
-			unit: usesMiles(locale) ? 'mph' : 'km/h',
-			samples: stream.samples.map(
-				([elapsed, value]) => [elapsed, value * multiplier] as [number, number]
-			)
-		};
+		if (stream.metric === 'speed' && stream.unit === 'm/s') {
+			const multiplier = usesMiles(locale) ? 2.236936 : 3.6;
+			return {
+				...stream,
+				unit: usesMiles(locale) ? 'mph' : 'km/h',
+				samples: stream.samples.map(
+					([elapsed, value]) => [elapsed, value * multiplier] as [number, number]
+				)
+			};
+		}
+		if (stream.metric === 'elevation' && stream.unit === 'm' && usesMiles(locale)) {
+			return {
+				...stream,
+				unit: 'ft',
+				samples: stream.samples.map(
+					([distance, value]) => [distance, value * 3.28084] as [number, number]
+				)
+			};
+		}
+		return stream;
 	});
 	let values = $derived(displayStream.samples.map((sample) => sample[1]));
 	let minimum = $derived(values.length ? Math.min(...values) : 0);
@@ -63,6 +79,14 @@
 			: `${minutes}:${String(seconds).padStart(2, '0')}`;
 	};
 
+	const distanceLabel = (meters: number) => {
+		const value = usesMiles(locale) ? meters / 1609.344 : meters / 1000;
+		return `${new Intl.NumberFormat(locale, { maximumFractionDigits: 1 }).format(value)} ${usesMiles(locale) ? 'mi' : 'km'}`;
+	};
+
+	const positionLabel = (position: number) =>
+		xAxis === 'distance' ? distanceLabel(position) : elapsedLabel(position);
+
 	const selectAt = (clientX: number, element: HTMLElement) => {
 		if (!coordinates.length) return;
 		const bounds = element.getBoundingClientRect();
@@ -100,7 +124,7 @@
 		</span>
 	</figcaption>
 	<p class="mb-3 h-4 text-right font-mono text-xs text-slate-500">
-		{selected ? elapsedLabel(selected.elapsed) : 'average'}
+		{selected ? positionLabel(selected.elapsed) : 'average'}
 	</p>
 	{#if linePath}
 		<div
@@ -111,7 +135,7 @@
 			aria-valuemin="0"
 			aria-valuemax={Math.max(coordinates.length - 1, 0)}
 			aria-valuenow={selectedIndex ?? 0}
-			aria-valuetext={`${valueLabel(selected?.value ?? coordinates[0]?.value ?? 0)} ${displayStream.unit} at ${elapsedLabel(selected?.elapsed ?? coordinates[0]?.elapsed ?? 0)}`}
+			aria-valuetext={`${valueLabel(selected?.value ?? coordinates[0]?.value ?? 0)} ${displayStream.unit} at ${positionLabel(selected?.elapsed ?? coordinates[0]?.elapsed ?? 0)}`}
 			onpointerdown={handlePointer}
 			onpointermove={handlePointer}
 			onpointerleave={() => (selectedIndex = undefined)}

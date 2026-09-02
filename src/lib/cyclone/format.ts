@@ -53,6 +53,12 @@ const localizedElevation = (meters: number, locale: string) => {
 	return `${new Intl.NumberFormat(locale, { maximumFractionDigits: 0 }).format(value)} ${unit}`;
 };
 
+const localizedSpeed = (metersPerSecond: number, locale: string) => {
+	const value = usesMiles(locale) ? metersPerSecond * 2.236936 : metersPerSecond * 3.6;
+	const unit = usesMiles(locale) ? 'mph' : 'km/h';
+	return `${new Intl.NumberFormat(locale, { maximumFractionDigits: 1 }).format(value)} ${unit}`;
+};
+
 export const stats = (metrics: Metrics, locale = 'en-US') =>
 	[
 		metrics.distance_meters == null
@@ -71,6 +77,45 @@ export const stats = (metrics: Metrics, locale = 'en-US') =>
 			? undefined
 			: { label: 'power', value: `${Math.round(metrics.average_power_watts)} W` }
 	].filter((item): item is { label: string; value: string } => item != null);
+
+export const detailStats = (metrics: Metrics, locale = 'en-US', type?: ActivityType) => {
+	if (type !== 'outdoor_ride') return stats(metrics, locale);
+	return [
+		metrics.distance_meters == null
+			? undefined
+			: { label: 'distance', value: localizedDistance(metrics.distance_meters, locale) },
+		duration(metrics.moving_duration_seconds ?? metrics.duration_seconds) == null
+			? undefined
+			: {
+					label: 'time',
+					value: duration(metrics.moving_duration_seconds ?? metrics.duration_seconds)!
+				},
+		metrics.average_speed_mps == null
+			? undefined
+			: { label: 'avg speed', value: localizedSpeed(metrics.average_speed_mps, locale) },
+		metrics.maximum_speed_mps == null
+			? undefined
+			: { label: 'max speed', value: localizedSpeed(metrics.maximum_speed_mps, locale) },
+		metrics.elevation_gain_meters == null
+			? undefined
+			: { label: 'elevation', value: localizedElevation(metrics.elevation_gain_meters, locale) },
+		metrics.average_power_watts == null
+			? undefined
+			: { label: 'avg power', value: `${Math.round(metrics.average_power_watts)} W` },
+		metrics.average_heart_rate_bpm == null
+			? undefined
+			: { label: 'avg heart rate', value: `${Math.round(metrics.average_heart_rate_bpm)} bpm` },
+		metrics.average_cadence_rpm == null
+			? undefined
+			: { label: 'avg cadence', value: `${Math.round(metrics.average_cadence_rpm)} rpm` },
+		metrics.active_energy_kcal == null
+			? undefined
+			: { label: 'energy', value: `${Math.round(metrics.active_energy_kcal)} kcal` },
+		metrics.work_kilojoules == null
+			? undefined
+			: { label: 'work', value: `${Math.round(metrics.work_kilojoules)} kJ` }
+	].filter((item): item is { label: string; value: string } => item != null);
+};
 
 export const textExcerpt = (html: string, limit = 180) => {
 	const plain = html
