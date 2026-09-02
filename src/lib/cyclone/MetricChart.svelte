@@ -117,24 +117,18 @@
 			onpointerleave={() => (selectedIndex = undefined)}
 			onkeydown={handleKey}
 		>
-			<svg viewBox="0 0 100 40" class="h-full w-full overflow-visible" aria-hidden="true">
+			<svg
+				viewBox="0 0 100 40"
+				preserveAspectRatio="none"
+				class="h-full w-full overflow-visible"
+				aria-hidden="true"
+			>
 				<defs>
 					<linearGradient id={gradientID} x1="0" y1="0" x2="0" y2="1">
 						<stop offset="0%" stop-color={color} stop-opacity="0.28" />
 						<stop offset="100%" stop-color={color} stop-opacity="0" />
 					</linearGradient>
 				</defs>
-				{#each [12, 24, 36] as y}
-					<line
-						x1="0"
-						{y}
-						x2="100"
-						y2={y}
-						class="stroke-slate-200 dark:stroke-slate-800"
-						stroke-width="0.5"
-						vector-effect="non-scaling-stroke"
-					/>
-				{/each}
 				<path d={areaPath} fill={`url(#${gradientID})`} />
 				<path
 					d={linePath}
@@ -155,10 +149,11 @@
 						stroke-width="1"
 						vector-effect="non-scaling-stroke"
 					/>
-					<circle
+					<ellipse
 						cx={selected.x}
 						cy={selected.y}
-						r="2.4"
+						rx="1.8"
+						ry="2.4"
 						fill={color}
 						stroke="currentColor"
 						stroke-width="1"
