@@ -17,6 +17,8 @@
 	} = $props();
 	let container: HTMLDivElement;
 	let failed = $state(false);
+	const cameraGlyph = { 1: '/cyclone/map-camera.svg?v=2' };
+	const checkeredFlagGlyph = { 1: '/cyclone/map-checkered-flag.svg?v=2' };
 
 	function coordinateDistanceMeters(first: RoutePoint, second: RoutePoint) {
 		const radians = Math.PI / 180;
@@ -132,7 +134,8 @@
 								new mapkit.Coordinate(firstPoint.latitude, firstPoint.longitude),
 								{
 									title: 'Visible route start and finish',
-									glyphText: '↻',
+									glyphImage: checkeredFlagGlyph,
+									selectedGlyphImage: checkeredFlagGlyph,
 									color: '#7c3aed',
 									glyphColor: '#ffffff',
 									titleVisibility: mapkit.FeatureVisibility.Hidden
@@ -145,7 +148,8 @@
 									new mapkit.Coordinate(firstPoint.latitude, firstPoint.longitude),
 									{
 										title: 'Visible route start',
-										glyphText: 'S',
+										glyphImage: checkeredFlagGlyph,
+										selectedGlyphImage: checkeredFlagGlyph,
 										color: '#16a34a',
 										glyphColor: '#ffffff',
 										titleVisibility: mapkit.FeatureVisibility.Hidden
@@ -156,7 +160,8 @@
 									new mapkit.Coordinate(lastPoint.latitude, lastPoint.longitude),
 									{
 										title: 'Visible route finish',
-										glyphText: 'F',
+										glyphImage: checkeredFlagGlyph,
+										selectedGlyphImage: checkeredFlagGlyph,
 										color: '#db2777',
 										glyphColor: '#ffffff',
 										titleVisibility: mapkit.FeatureVisibility.Hidden
@@ -166,7 +171,6 @@
 
 				photoAnnotations = photos.flatMap((photo, index) => {
 					if (!photo.location) return [];
-					const thumbnail = photo.thumbnail_url ?? photo.feed_url;
 					const annotation = new mapkit.MarkerAnnotation(
 						new mapkit.Coordinate(photo.location.latitude, photo.location.longitude),
 						{
@@ -174,8 +178,8 @@
 							subtitle: 'Along the public route',
 							color: '#0d9488',
 							glyphColor: '#ffffff',
-							glyphText: thumbnail ? undefined : String(index + 1),
-							glyphImage: thumbnail ? { 1: thumbnail } : undefined,
+							glyphImage: cameraGlyph,
+							selectedGlyphImage: cameraGlyph,
 							titleVisibility: mapkit.FeatureVisibility.Hidden,
 							clusteringIdentifier: 'ride-photos',
 							data: { photoId: photo.id }
@@ -196,7 +200,8 @@
 				map.showItems([...routeOverlays, ...annotations], {
 					padding: new mapkit.Padding(42, 42, 42, 42)
 				});
-			} catch {
+			} catch (error) {
+				console.error('Unable to initialize the Cyclone route map', error);
 				failed = true;
 			}
 			delete (window as any)[callback];
