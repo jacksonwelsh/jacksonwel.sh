@@ -51,6 +51,7 @@ export type ActivitySummary = {
 	local_date: string;
 	metrics: Metrics;
 	route_snapshot_url?: string;
+	share_image_style?: 'zonebuddy';
 	photos: Photo[];
 };
 

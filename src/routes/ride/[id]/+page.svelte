@@ -4,6 +4,7 @@
 	import RouteMap from '$lib/cyclone/RouteMap.svelte';
 	import WorkoutStructure from '$lib/cyclone/WorkoutStructure.svelte';
 	import { activityName, date, detailStats } from '$lib/cyclone/format';
+	import { rideEmbedDescription } from '$lib/cyclone/embed';
 	import type { MetricStream, RoutePoint } from '$lib/cyclone/types';
 	import type { PageData } from './$types';
 
@@ -26,6 +27,8 @@
 			? elevationProfile(activity.route_segments)
 			: undefined
 	);
+	let embedDescription = $derived(rideEmbedDescription(activity, data.locale));
+	let embedImageURL = $derived(`${activity.canonical_url}/embed.png`);
 
 	function pointDistance(a: RoutePoint, b: RoutePoint) {
 		const radians = Math.PI / 180;
@@ -56,11 +59,29 @@
 
 <svelte:head>
 	<title>{activity.title} · Ride · Jackson Welsh</title>
-	<meta
-		name="description"
-		content={`${activityName[activity.type]} on ${date(activity.local_date, data.locale)}`}
-	/>
+	<meta name="description" content={embedDescription} />
 	<link rel="canonical" href={activity.canonical_url} />
+	<meta property="og:type" content="website" />
+	<meta property="og:site_name" content="Jackson Welsh" />
+	<meta property="og:title" content={`${activity.title} · Ride`} />
+	<meta property="og:description" content={embedDescription} />
+	<meta property="og:url" content={activity.canonical_url} />
+	<meta property="og:image" content={embedImageURL} />
+	<meta property="og:image:type" content="image/png" />
+	<meta property="og:image:alt" content={`Ride summary for ${activity.title}`} />
+	{#if activity.route_snapshot_url}
+		<meta property="og:image" content={activity.route_snapshot_url} />
+		<meta property="og:image:alt" content={`Route map for ${activity.title}`} />
+	{/if}
+	{#each readyPhotos.slice(0, 3) as photo}
+		<meta property="og:image" content={photo.feed_url} />
+		<meta property="og:image:type" content="image/jpeg" />
+		<meta property="og:image:alt" content={`Ride photo for ${activity.title}`} />
+	{/each}
+	<meta name="twitter:card" content="summary_large_image" />
+	<meta name="twitter:title" content={`${activity.title} · Ride`} />
+	<meta name="twitter:description" content={embedDescription} />
+	<meta name="twitter:image" content={embedImageURL} />
 </svelte:head>
 
 <main
