@@ -28,6 +28,19 @@ export type Photo = {
 export type RoutePoint = { latitude: number; longitude: number; altitude_meters?: number };
 export type MetricStream = { metric: string; unit: string; samples: [number, number][] };
 
+export type ActivityInterval = {
+	index?: number;
+	duration_seconds?: number;
+	power_zone?: number | null;
+	[key: string]: unknown;
+};
+
+export type ActivityZones = {
+	power_seconds?: Record<string, number>;
+	heart_rate_seconds?: Record<string, number>;
+	[key: string]: unknown;
+};
+
 export type ActivitySummary = {
 	id: string;
 	canonical_url: string;
@@ -44,8 +57,8 @@ export type ActivitySummary = {
 export type ActivityDetail = ActivitySummary & {
 	route_segments: RoutePoint[][];
 	laps: Record<string, unknown>[];
-	intervals: Record<string, unknown>[];
-	zones: Record<string, unknown>;
+	intervals: ActivityInterval[];
+	zones: ActivityZones;
 };
 
 export type ActivityPage = { activities: ActivitySummary[]; next_cursor?: string };

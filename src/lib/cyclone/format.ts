@@ -8,8 +8,29 @@ export const activityName: Record<ActivityType, string> = {
 	hike: 'hike'
 };
 
-export const date = (value: string) =>
-	new Intl.DateTimeFormat('en-US', { dateStyle: 'long', timeZone: 'UTC' }).format(
+const region = (locale: string) => {
+	try {
+		return new Intl.Locale(locale).maximize().region;
+	} catch {
+		return 'US';
+	}
+};
+
+export const usesMiles = (locale: string) =>
+	['US', 'GB', 'LR', 'MM'].includes(region(locale) ?? '');
+
+export const localeFromHeader = (acceptLanguage: string | null) => {
+	const candidate = acceptLanguage?.split(',')[0]?.split(';')[0]?.trim();
+	if (!candidate) return 'en-US';
+	try {
+		return Intl.getCanonicalLocales(candidate)[0] ?? 'en-US';
+	} catch {
+		return 'en-US';
+	}
+};
+
+export const date = (value: string, locale = 'en-US') =>
+	new Intl.DateTimeFormat(locale, { dateStyle: 'long', timeZone: 'UTC' }).format(
 		new Date(`${value}T12:00:00Z`)
 	);
 
@@ -20,11 +41,23 @@ export const duration = (seconds?: number) => {
 	return hours ? `${hours}h ${minutes}m` : `${minutes}m`;
 };
 
-export const stats = (metrics: Metrics) =>
+const localizedDistance = (meters: number, locale: string) => {
+	const value = usesMiles(locale) ? meters / 1609.344 : meters / 1000;
+	const unit = usesMiles(locale) ? 'mi' : 'km';
+	return `${new Intl.NumberFormat(locale, { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(value)} ${unit}`;
+};
+
+const localizedElevation = (meters: number, locale: string) => {
+	const value = usesMiles(locale) ? meters * 3.28084 : meters;
+	const unit = usesMiles(locale) ? 'ft' : 'm';
+	return `${new Intl.NumberFormat(locale, { maximumFractionDigits: 0 }).format(value)} ${unit}`;
+};
+
+export const stats = (metrics: Metrics, locale = 'en-US') =>
 	[
 		metrics.distance_meters == null
 			? undefined
-			: { label: 'distance', value: `${(metrics.distance_meters / 1000).toFixed(1)} km` },
+			: { label: 'distance', value: localizedDistance(metrics.distance_meters, locale) },
 		duration(metrics.moving_duration_seconds ?? metrics.duration_seconds) == null
 			? undefined
 			: {
@@ -33,7 +66,7 @@ export const stats = (metrics: Metrics) =>
 				},
 		metrics.elevation_gain_meters == null
 			? undefined
-			: { label: 'elevation', value: `${Math.round(metrics.elevation_gain_meters)} m` },
+			: { label: 'elevation', value: localizedElevation(metrics.elevation_gain_meters, locale) },
 		metrics.average_power_watts == null
 			? undefined
 			: { label: 'power', value: `${Math.round(metrics.average_power_watts)} W` }
