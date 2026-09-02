@@ -12,9 +12,10 @@ export async function cycloneFetch<T>(fetcher: typeof fetch, path: string): Prom
 	return response.json() as Promise<T>;
 }
 
-export const listActivities = (fetcher: typeof fetch, cursor?: string) => {
+export const listActivities = (fetcher: typeof fetch, cursor?: string, order?: 'ride_date') => {
 	const query = new URLSearchParams({ limit: '12' });
 	if (cursor) query.set('cursor', cursor);
+	if (order) query.set('order', order);
 	return cycloneFetch<ActivityPage>(fetcher, `/activities?${query}`);
 };
 

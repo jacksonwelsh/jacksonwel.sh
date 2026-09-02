@@ -6,7 +6,7 @@ export const load: PageServerLoad = async ({ fetch, request, url }) => {
 	const locale = localeFromHeader(request.headers.get('accept-language'));
 	try {
 		return {
-			page: await listActivities(fetch, url.searchParams.get('cursor') ?? undefined),
+			page: await listActivities(fetch, url.searchParams.get('cursor') ?? undefined, 'ride_date'),
 			locale,
 			unavailable: false
 		};
