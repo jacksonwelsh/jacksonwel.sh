@@ -79,7 +79,14 @@ export const stats = (metrics: Metrics, locale = 'en-US') =>
 	].filter((item): item is { label: string; value: string } => item != null);
 
 export const detailStats = (metrics: Metrics, locale = 'en-US', type?: ActivityType) => {
-	if (type !== 'outdoor_ride') return stats(metrics, locale);
+	if (type !== 'outdoor_ride') {
+		const activityStats = stats(metrics, locale);
+		if (type !== 'indoor_ride' || metrics.work_kilojoules == null) return activityStats;
+		return [
+			...activityStats,
+			{ label: 'output', value: `${Math.round(metrics.work_kilojoules)} kJ` }
+		];
+	}
 	return [
 		metrics.distance_meters == null
 			? undefined
@@ -113,7 +120,7 @@ export const detailStats = (metrics: Metrics, locale = 'en-US', type?: ActivityT
 			: { label: 'energy', value: `${Math.round(metrics.active_energy_kcal)} kcal` },
 		metrics.work_kilojoules == null
 			? undefined
-			: { label: 'work', value: `${Math.round(metrics.work_kilojoules)} kJ` }
+			: { label: 'output', value: `${Math.round(metrics.work_kilojoules)} kJ` }
 	].filter((item): item is { label: string; value: string } => item != null);
 };
 
