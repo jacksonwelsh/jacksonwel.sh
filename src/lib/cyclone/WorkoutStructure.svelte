@@ -1,10 +1,26 @@
 <script lang="ts">
 	import type { ActivityInterval, ActivityZones } from './types';
+	import { zoneTargets } from './zoneTargets';
 
-	let { intervals, zones }: { intervals: ActivityInterval[]; zones: ActivityZones } = $props();
+	let {
+		intervals,
+		zones,
+		isZoneBuddy = false,
+		durationSeconds
+	}: {
+		intervals: ActivityInterval[];
+		zones: ActivityZones;
+		isZoneBuddy?: boolean;
+		durationSeconds?: number;
+	} = $props();
 
 	type ZoneDefinition = { name: string; color: string };
-	type ZoneRow = ZoneDefinition & { zone: number; seconds: number; percent: number };
+	type ZoneRow = ZoneDefinition & {
+		zone: number;
+		seconds: number;
+		percent: number;
+		scheduledSeconds?: number;
+	};
 
 	const powerZones: Record<number, ZoneDefinition> = {
 		1: { name: 'Active Recovery', color: '#8283F3' },
@@ -31,7 +47,14 @@
 		structuredIntervals.reduce((total, interval) => total + Number(interval.duration_seconds), 0)
 	);
 	let currentInterval = $derived(structuredIntervals[selectedInterval]);
-	let powerRows = $derived(zoneRows(zones.power_seconds, powerZones));
+	let powerRows: ZoneRow[] = $derived(
+		isZoneBuddy
+			? zoneTargets(intervals, zones, durationSeconds).map((row) => ({
+					...row,
+					...powerZones[row.zone]
+				}))
+			: zoneRows(zones.power_seconds, powerZones)
+	);
 	let heartRateRows = $derived(zoneRows(zones.heart_rate_seconds, heartRateZones));
 
 	function zoneRows(
@@ -122,7 +145,14 @@
 		<div class="grid gap-x-12 gap-y-10 md:grid-cols-2">
 			{#if powerRows.length}
 				<div>
-					<h3 class="mb-4 text-sm font-medium">Power zones</h3>
+					<h3 class="mb-4 text-sm font-medium">
+						{isZoneBuddy ? 'Zone targets met' : 'Power zones'}
+					</h3>
+					{#if isZoneBuddy}
+						<p class="mb-4 text-sm text-slate-500 dark:text-slate-400">
+							Time in the cued zone / total time cued.
+						</p>
+					{/if}
 					<ul class="space-y-4">
 						{#each powerRows as row}
 							<li>
@@ -133,7 +163,8 @@
 									<span
 										class="whitespace-nowrap font-mono text-xs text-slate-500 dark:text-slate-400"
 									>
-										{duration(row.seconds)} · {Math.round(row.percent)}%
+										{duration(row.seconds)}{#if row.scheduledSeconds !== undefined}
+											/ {duration(row.scheduledSeconds)}{/if} · {Math.round(row.percent)}%
 									</span>
 								</div>
 								<div class="h-2 overflow-hidden rounded-full bg-slate-100 dark:bg-slate-900">

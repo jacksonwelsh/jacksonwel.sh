@@ -238,6 +238,11 @@
 			</section>
 		{/if}
 
-		<WorkoutStructure intervals={activity.intervals} zones={activity.zones} />
+		<WorkoutStructure
+			intervals={activity.intervals}
+			zones={activity.zones}
+			isZoneBuddy={activity.share_image_style === 'zonebuddy'}
+			durationSeconds={activity.metrics.duration_seconds}
+		/>
 	</article>
 </main>
