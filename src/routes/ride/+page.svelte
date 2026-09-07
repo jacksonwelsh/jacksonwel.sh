@@ -31,9 +31,10 @@
 			</p>
 		{:else}
 			<section aria-label="Activities">
-				{#each data.page.activities as activity (activity.id)}<ActivityCard
+				{#each data.page.activities as activity, index (activity.id)}<ActivityCard
 						{activity}
 						locale={data.locale}
+						priority={index === 0}
 					/>{/each}
 			</section>
 			{#if data.page.next_cursor}

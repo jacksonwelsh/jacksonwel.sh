@@ -1,4 +1,5 @@
 import { env } from '$env/dynamic/private';
+import { summarizeActivityPage } from './feed';
 import type { ActivityDetail, ActivityPage, MetricStream } from './types';
 
 const endpoint = () => (env.CYCLONE_API_URL || 'http://127.0.0.1:8080/v1').replace(/\/$/, '');
@@ -12,11 +13,15 @@ export async function cycloneFetch<T>(fetcher: typeof fetch, path: string): Prom
 	return response.json() as Promise<T>;
 }
 
-export const listActivities = (fetcher: typeof fetch, cursor?: string, order?: 'ride_date') => {
+export const listActivities = async (
+	fetcher: typeof fetch,
+	cursor?: string,
+	order?: 'ride_date'
+) => {
 	const query = new URLSearchParams({ limit: '12' });
 	if (cursor) query.set('cursor', cursor);
 	if (order) query.set('order', order);
-	return cycloneFetch<ActivityPage>(fetcher, `/activities?${query}`);
+	return summarizeActivityPage(await cycloneFetch<ActivityPage>(fetcher, `/activities?${query}`));
 };
 
 export const getActivity = (fetcher: typeof fetch, id: string) =>

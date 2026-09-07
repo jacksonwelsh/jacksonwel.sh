@@ -2,9 +2,14 @@
 	import { activityName, date, stats, textExcerpt } from './format';
 	import type { ActivitySummary } from './types';
 
-	let { activity, locale }: { activity: ActivitySummary; locale: string } = $props();
+	let {
+		activity,
+		locale,
+		priority = false
+	}: { activity: ActivitySummary; locale: string; priority?: boolean } = $props();
 	let cover = $derived(activity.photos.find((photo) => photo.cover)?.feed_url);
 	let image = $derived(cover ?? activity.route_snapshot_url);
+	let visibleStats = $derived(stats(activity.metrics, locale).slice(0, 3));
 </script>
 
 <article class="group border-t border-slate-200 py-8 dark:border-slate-800 md:py-10">
@@ -20,6 +25,9 @@
 			<img
 				src={image}
 				alt=""
+				loading={priority ? 'eager' : 'lazy'}
+				fetchpriority={priority ? 'high' : 'auto'}
+				decoding="async"
 				class="aspect-[16/10] w-full bg-slate-100 object-cover dark:bg-slate-900 md:order-2"
 			/>
 		{/if}
@@ -36,9 +44,9 @@
 					{activity.title}
 				</h2>
 			</div>
-			{#if stats(activity.metrics, locale).length}
+			{#if visibleStats.length}
 				<dl class="mt-4 flex flex-wrap gap-x-6 gap-y-2">
-					{#each stats(activity.metrics, locale).slice(0, 3) as stat}
+					{#each visibleStats as stat}
 						<div class="flex items-baseline gap-2">
 							<dt class="text-xs text-slate-500 dark:text-slate-400">{stat.label}</dt>
 							<dd class="font-mono text-sm text-slate-900 dark:text-slate-100">{stat.value}</dd>
