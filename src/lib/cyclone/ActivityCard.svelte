@@ -1,14 +1,16 @@
 <script lang="ts">
 	import { activityName, date, stats, textExcerpt } from './format';
 	import type { ActivitySummary } from './types';
+	import { cardImage } from './cardImage';
 
 	let {
 		activity,
 		locale,
 		priority = false
 	}: { activity: ActivitySummary; locale: string; priority?: boolean } = $props();
-	let cover = $derived(activity.photos.find((photo) => photo.cover)?.feed_url);
-	let image = $derived(cover ?? activity.route_snapshot_url);
+	let cover = $derived(activity.photos.find((photo) => photo.cover));
+	let imageSource = $derived(cardImage(cover, activity.route_snapshot_url));
+	let image = $derived(imageSource.src);
 	let visibleStats = $derived(stats(activity.metrics, locale).slice(0, 3));
 </script>
 
@@ -24,6 +26,8 @@
 		{#if image}
 			<img
 				src={image}
+				srcset={imageSource.srcset}
+				sizes="(min-width: 928px) 356px, (min-width: 768px) calc(41.1765vw - 26.353px), calc(100vw - 32px)"
 				alt=""
 				loading={priority ? 'eager' : 'lazy'}
 				fetchpriority={priority ? 'high' : 'auto'}
