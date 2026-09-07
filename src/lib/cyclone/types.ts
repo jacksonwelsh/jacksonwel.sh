@@ -26,7 +26,12 @@ export type Photo = {
 	location?: { latitude: number; longitude: number };
 };
 
-export type RoutePoint = { latitude: number; longitude: number; altitude_meters?: number };
+export type RoutePoint = {
+	latitude: number;
+	longitude: number;
+	altitude_meters?: number;
+	elapsed_milliseconds?: number;
+};
 export type MetricStream = { metric: string; unit: string; samples: [number, number][] };
 
 export type ActivityInterval = {

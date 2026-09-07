@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { routePositionAt } from './routeHover';
 	import type { Photo, RoutePoint } from './types';
 
 	let {
@@ -7,16 +8,23 @@
 		photos = [],
 		token,
 		fallback,
-		fallbackDark
+		fallbackDark,
+		hoverPosition
 	}: {
 		segments: RoutePoint[][];
 		photos?: Photo[];
 		token?: string;
 		fallback?: string;
 		fallbackDark?: string;
+		hoverPosition?: number;
 	} = $props();
 	let container: HTMLDivElement;
 	let failed = $state(false);
+	let updateHoverMarker = $state<((point: RoutePoint | undefined) => void) | undefined>();
+	let hoverPoint = $derived(routePositionAt(segments, hoverPosition));
+	$effect(() => {
+		updateHoverMarker?.(hoverPoint);
+	});
 	const cameraGlyph = { 1: '/cyclone/map-camera.svg?v=2' };
 	const checkeredFlagGlyph = { 1: '/cyclone/map-checkered-flag.svg?v=2' };
 	const maximumOverlayPointCount = 500;
@@ -212,6 +220,31 @@
 				map.showItems([...routeOverlays, ...annotations], {
 					padding: new mapkit.Padding(42, 42, 42, 42)
 				});
+				let hoverAnnotation: any;
+				updateHoverMarker = (point) => {
+					if (!point) {
+						if (hoverAnnotation) hoverAnnotation.visible = false;
+						return;
+					}
+					const coordinate = new mapkit.Coordinate(point.latitude, point.longitude);
+					if (!hoverAnnotation) {
+						hoverAnnotation = new mapkit.Annotation(
+							coordinate,
+							() => {
+								const dot = document.createElement('div');
+								dot.setAttribute('aria-label', 'Position at graph cursor');
+								dot.style.cssText =
+									'width:16px;height:16px;border:3px solid white;border-radius:50%;background:#2563eb;box-shadow:0 0 0 2px #1e3a8a,0 2px 6px #0006;box-sizing:border-box;pointer-events:none';
+								return dot;
+							},
+							{ enabled: false, animates: false, appearanceAnimation: '', displayPriority: 1000 }
+						);
+						map.addAnnotation(hoverAnnotation);
+					} else {
+						hoverAnnotation.coordinate = coordinate;
+						hoverAnnotation.visible = true;
+					}
+				};
 			} catch (error) {
 				console.error('Unable to initialize the Cyclone route map', error);
 				failed = true;
@@ -229,6 +262,7 @@
 		return () => {
 			darkMode.removeEventListener('change', applyTheme);
 			window.removeEventListener('cyclone:gallery-photo-select', selectGalleryPhoto);
+			updateHoverMarker = undefined;
 			map?.destroy?.();
 			script.remove();
 			delete (window as any)[callback];

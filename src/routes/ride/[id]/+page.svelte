@@ -2,6 +2,7 @@
 	import MetricChart from '$lib/cyclone/MetricChart.svelte';
 	import PhotoGallery from '$lib/cyclone/PhotoGallery.svelte';
 	import RouteMap from '$lib/cyclone/RouteMap.svelte';
+	import { timedElevation } from '$lib/cyclone/routeHover';
 	import { workoutTimeline, intervalAt } from '$lib/cyclone/workoutTimeline';
 	import WorkoutStructure from '$lib/cyclone/WorkoutStructure.svelte';
 	import { activityName, date, detailStats, usesMiles } from '$lib/cyclone/format';
@@ -23,7 +24,8 @@
 	let elevationDistance = $derived(routeDistance(activity.route_segments));
 	let elevationCursorLabel = $derived.by(() => {
 		const durationMilliseconds = (activity.metrics.duration_seconds ?? 0) * 1000;
-		if (!durationMilliseconds || !elevationDistance) return undefined;
+		if (!durationMilliseconds || !elevationDistance || timedElevation(activity.route_segments))
+			return undefined;
 		return (elapsed: number) =>
 			distanceLabel(Math.min(Math.max(elapsed / durationMilliseconds, 0), 1) * elevationDistance);
 	});
@@ -98,6 +100,8 @@
 		segments: RoutePoint[][],
 		durationSeconds: number | undefined
 	): MetricStream | undefined {
+		const timed = timedElevation(segments);
+		if (timed) return timed;
 		let distance = 0;
 		const samples: [number, number][] = [];
 		for (const segment of segments) {
@@ -111,7 +115,7 @@
 		const totalDistance = samples.at(-1)?.[0] ?? 0;
 		if (samples.length < 2 || !totalDistance || !durationSeconds) return undefined;
 
-		// Route points omit timestamps, so the fallback distributes their elevation along the ride duration.
+		// Older routes without timing distribute elevation along the ride duration.
 		return {
 			metric: 'elevation',
 			unit: 'm',
@@ -206,6 +210,7 @@
 				<h2 id="route-heading" class="mb-4 font-mono text-xl">route</h2>
 				<RouteMap
 					segments={activity.route_segments}
+					{hoverPosition}
 					photos={readyPhotos}
 					token={data.mapToken}
 					fallback={activity.route_snapshot_url}
