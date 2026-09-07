@@ -159,11 +159,6 @@
 					<h3 class="mb-4 text-sm font-medium">
 						{isZoneBuddy ? 'Zone targets met' : 'Power zones'}
 					</h3>
-					{#if isZoneBuddy}
-						<p class="mb-4 text-sm text-slate-500 dark:text-slate-400">
-							Time in the cued zone / total time cued.
-						</p>
-					{/if}
 					<ul class="space-y-4">
 						{#each powerRows as row}
 							<li>
@@ -175,7 +170,7 @@
 										class="whitespace-nowrap font-mono text-xs text-slate-500 dark:text-slate-400"
 									>
 										{duration(row.seconds)}{#if row.scheduledSeconds !== undefined}
-											/ {duration(row.scheduledSeconds)}{/if} · {Math.round(row.percent)}%
+											{' / '}{duration(row.scheduledSeconds)}{/if} · {Math.round(row.percent)}%
 									</span>
 								</div>
 								<div class="h-2 overflow-hidden rounded-full bg-slate-100 dark:bg-slate-900">
