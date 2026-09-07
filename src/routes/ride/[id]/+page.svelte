@@ -13,6 +13,7 @@
 	let { data }: { data: PageData } = $props();
 	let activity = $derived(data.activity);
 	let hoverPosition = $state<number | undefined>();
+	let mapHoverPosition = $state<number | undefined>();
 	let hoveredInterval = $state<number | undefined>();
 	let timeline = $derived(workoutTimeline(activity.intervals));
 	let activeInterval = $derived(hoveredInterval ?? intervalAt(timeline, hoverPosition));
@@ -126,11 +127,14 @@
 		};
 	}
 
-	function setHoverPosition(position: number | undefined) {
+	function setHoverPosition(position: number | undefined, pointerHover = false) {
+		mapHoverPosition = pointerHover ? position : undefined;
 		if (position !== undefined) hoveredInterval = undefined;
 		hoverPosition = position;
 	}
 </script>
+
+<svelte:window onblur={() => setHoverPosition(undefined)} />
 
 <svelte:head>
 	<title>{activity.title} · Ride · Jackson Welsh</title>
@@ -210,7 +214,7 @@
 				<h2 id="route-heading" class="mb-4 font-mono text-xl">route</h2>
 				<RouteMap
 					segments={activity.route_segments}
-					{hoverPosition}
+					hoverPosition={mapHoverPosition}
 					photos={readyPhotos}
 					token={data.mapToken}
 					fallback={activity.route_snapshot_url}

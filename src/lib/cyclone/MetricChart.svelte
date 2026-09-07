@@ -14,7 +14,7 @@
 		stream: MetricStream;
 		locale: string;
 		hoverPosition?: number;
-		onHoverPosition?: (position: number | undefined) => void;
+		onHoverPosition?: (position: number | undefined, pointerHover?: boolean) => void;
 		highlightedRange?: [number, number];
 		cursorLabel?: (position: number) => string;
 		omittedRanges?: [number, number][];
@@ -86,11 +86,19 @@
 		values.length ? values.reduce((sum, value) => sum + value, 0) / values.length : 0
 	);
 	let end = $derived(displayStream.samples.at(-1)?.[0] || 1);
-	let visibleEnd = $derived(compactPosition(end) || 1);
+	let start = $derived(stream.metric === 'elevation' ? (visibleSamples[0]?.[0] ?? 0) : 0);
+	let visibleStart = $derived(compactPosition(start));
+	let visibleEnd = $derived(compactPosition(end) - visibleStart || 1);
+	const plotPosition = (position: number) => compactPosition(position) - visibleStart;
+	let chartHoverPosition = $derived(
+		hoverPosition === undefined || stream.metric !== 'elevation'
+			? hoverPosition
+			: Math.min(Math.max(hoverPosition, start), end)
+	);
 	let coordinates = $derived.by(() => {
 		const span = Math.max(maximum - minimum, 1);
 		return visibleSamples.map(([elapsed, value]) => ({
-			x: (compactPosition(elapsed) / visibleEnd) * 100,
+			x: (plotPosition(elapsed) / visibleEnd) * 100,
 			y: 36 - ((value - minimum) / span) * 30,
 			elapsed,
 			value
@@ -103,9 +111,10 @@
 		linePath ? `${linePath} L ${coordinates.at(-1)?.x} 38 L ${coordinates[0].x} 38 Z` : ''
 	);
 	let selected = $derived.by(() => {
-		if (hoverPosition == null || !coordinates.length || isOmitted(hoverPosition)) return undefined;
+		if (chartHoverPosition == null || !coordinates.length || isOmitted(chartHoverPosition))
+			return undefined;
 		return coordinates.reduce((nearest, point) =>
-			Math.abs(point.elapsed - hoverPosition) < Math.abs(nearest.elapsed - hoverPosition)
+			Math.abs(point.elapsed - chartHoverPosition) < Math.abs(nearest.elapsed - chartHoverPosition)
 				? point
 				: nearest
 		);
@@ -113,7 +122,7 @@
 	let cursorX = $derived(
 		hoverPosition == null
 			? undefined
-			: Math.min(Math.max((compactPosition(hoverPosition) / visibleEnd) * 100, 0), 100)
+			: Math.min(Math.max((plotPosition(hoverPosition) / visibleEnd) * 100, 0), 100)
 	);
 	let selectedPosition = $derived(hoverPosition ?? selected?.elapsed);
 	let selectedElevationGain = $derived.by(() => {
@@ -137,12 +146,12 @@
 	);
 	let highlightStart = $derived(
 		highlightedRange
-			? Math.max(0, Math.min(100, (compactPosition(highlightedRange[0]) / visibleEnd) * 100))
+			? Math.max(0, Math.min(100, (plotPosition(highlightedRange[0]) / visibleEnd) * 100))
 			: 0
 	);
 	let highlightEnd = $derived(
 		highlightedRange
-			? Math.max(0, Math.min(100, (compactPosition(highlightedRange[1]) / visibleEnd) * 100))
+			? Math.max(0, Math.min(100, (plotPosition(highlightedRange[1]) / visibleEnd) * 100))
 			: 100
 	);
 	const chartID = $props.id();
@@ -166,15 +175,18 @@
 	const positionLabel = (position: number) => elapsedLabel(position);
 	const selectedLabel = (position: number) => cursorLabel?.(position) ?? positionLabel(position);
 
-	const selectAt = (clientX: number, element: HTMLElement) => {
+	const selectAt = (clientX: number, element: HTMLElement, pointerHover: boolean) => {
 		if (!coordinates.length) return;
 		const bounds = element.getBoundingClientRect();
 		const ratio = Math.min(Math.max((clientX - bounds.left) / bounds.width, 0), 1);
-		onHoverPosition?.(expandPosition(ratio * visibleEnd));
+		onHoverPosition?.(
+			Math.min(Math.max(expandPosition(visibleStart + ratio * visibleEnd), start), end),
+			pointerHover
+		);
 	};
 
 	const handlePointer = (event: PointerEvent) =>
-		selectAt(event.clientX, event.currentTarget as HTMLElement);
+		selectAt(event.clientX, event.currentTarget as HTMLElement, event.pointerType !== 'touch');
 
 	const toggleElevationGain = () => {
 		if (stream.metric === 'elevation' && selected) {
@@ -233,11 +245,15 @@
 			aria-label={`${title} sample`}
 			aria-valuemin="0"
 			aria-valuemax={visibleEnd}
-			aria-valuenow={hoverPosition == null ? 0 : compactPosition(hoverPosition)}
+			aria-valuenow={hoverPosition == null
+				? 0
+				: Math.min(Math.max(plotPosition(hoverPosition), 0), visibleEnd)}
 			aria-valuetext={`${valueLabel(selected?.value ?? coordinates[0]?.value ?? 0)} ${displayStream.unit} at ${selectedLabel(selectedPosition ?? selected?.elapsed ?? coordinates[0]?.elapsed ?? 0)}`}
+			onpointerenter={handlePointer}
 			onpointerdown={handlePointer}
 			onpointermove={handlePointer}
 			onpointerleave={() => onHoverPosition?.(undefined)}
+			onpointercancel={() => onHoverPosition?.(undefined)}
 			onblur={() => onHoverPosition?.(undefined)}
 			onclick={toggleElevationGain}
 			onkeydown={handleKey}

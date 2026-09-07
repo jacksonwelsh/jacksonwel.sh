@@ -223,7 +223,10 @@
 				let hoverAnnotation: any;
 				updateHoverMarker = (point) => {
 					if (!point) {
-						if (hoverAnnotation) hoverAnnotation.visible = false;
+						if (hoverAnnotation) {
+							map.removeAnnotation(hoverAnnotation);
+							hoverAnnotation = undefined;
+						}
 						return;
 					}
 					const coordinate = new mapkit.Coordinate(point.latitude, point.longitude);
@@ -237,7 +240,14 @@
 									'width:16px;height:16px;border:3px solid white;border-radius:50%;background:#2563eb;box-shadow:0 0 0 2px #1e3a8a,0 2px 6px #0006;box-sizing:border-box;pointer-events:none';
 								return dot;
 							},
-							{ enabled: false, animates: false, appearanceAnimation: '', displayPriority: 1000 }
+							{
+								// MapKit anchors at the bottom center; center the 16px dot on its coordinate.
+								anchorOffset: new DOMPoint(0, -8),
+								enabled: false,
+								animates: false,
+								appearanceAnimation: '',
+								displayPriority: 1000
+							}
 						);
 						map.addAnnotation(hoverAnnotation);
 					} else {
