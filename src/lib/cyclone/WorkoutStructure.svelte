@@ -1,17 +1,22 @@
 <script lang="ts">
 	import type { ActivityInterval, ActivityZones } from './types';
+	import { workoutTimeline } from './workoutTimeline';
 	import { zoneTargets } from './zoneTargets';
 
 	let {
 		intervals,
 		zones,
 		isZoneBuddy = false,
-		durationSeconds
+		durationSeconds,
+		activeInterval,
+		onHoverInterval
 	}: {
 		intervals: ActivityInterval[];
 		zones: ActivityZones;
 		isZoneBuddy?: boolean;
 		durationSeconds?: number;
+		activeInterval?: number;
+		onHoverInterval?: (index: number | undefined) => void;
 	} = $props();
 
 	type ZoneDefinition = { name: string; color: string };
@@ -40,13 +45,17 @@
 	};
 
 	let selectedInterval = $state(0);
-	let structuredIntervals = $derived(
-		intervals.filter((interval) => Number(interval.duration_seconds) > 0)
-	);
+	let structuredIntervals = $derived(workoutTimeline(intervals).map(({ interval }) => interval));
 	let totalIntervalSeconds = $derived(
 		structuredIntervals.reduce((total, interval) => total + Number(interval.duration_seconds), 0)
 	);
-	let currentInterval = $derived(structuredIntervals[selectedInterval]);
+	let displayedInterval = $derived(activeInterval ?? selectedInterval);
+	let currentInterval = $derived(structuredIntervals[displayedInterval]);
+
+	function selectInterval(index: number) {
+		selectedInterval = index;
+		onHoverInterval?.(index);
+	}
 	let powerRows: ZoneRow[] = $derived(
 		isZoneBuddy
 			? zoneTargets(intervals, zones, durationSeconds).map((row) => ({
@@ -110,15 +119,17 @@
 						{@const zone = Number(interval.power_zone)}
 						<button
 							type="button"
-							class="h-full min-w-1 opacity-90 outline-none transition-[opacity,filter] hover:opacity-100 focus-visible:brightness-75 dark:focus-visible:brightness-125"
-							class:opacity-40={selectedInterval !== index}
+							class="h-full min-w-1 outline-none transition-[opacity,filter] focus-visible:brightness-75 dark:focus-visible:brightness-125"
+							style:opacity={activeInterval === undefined || activeInterval === index ? 1 : 0.25}
 							style:flex-grow={Number(interval.duration_seconds)}
 							style:flex-basis={`${(Number(interval.duration_seconds) / totalIntervalSeconds) * 100}%`}
 							style:background-color={powerZones[zone]?.color ?? '#cbd5e1'}
 							aria-label={intervalLabel(interval, index)}
-							onpointerenter={() => (selectedInterval = index)}
-							onfocus={() => (selectedInterval = index)}
-							onclick={() => (selectedInterval = index)}
+							onpointerenter={() => selectInterval(index)}
+							onpointerleave={() => onHoverInterval?.(undefined)}
+							onfocus={() => selectInterval(index)}
+							onblur={() => onHoverInterval?.(undefined)}
+							onclick={() => selectInterval(index)}
 						></button>
 					{/each}
 				</div>
@@ -126,7 +137,7 @@
 					{@const currentZone = Number(currentInterval.power_zone)}
 					<p class="mt-3 text-sm text-slate-600 dark:text-slate-300" aria-live="polite">
 						<span class="font-mono text-slate-400"
-							>{selectedInterval + 1}/{structuredIntervals.length}</span
+							>{displayedInterval + 1}/{structuredIntervals.length}</span
 						>
 						<span class="mx-2 text-slate-300 dark:text-slate-700">·</span>
 						{#if powerZones[currentZone]}

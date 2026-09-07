@@ -8,12 +8,14 @@
 		hoverPosition,
 		onHoverPosition,
 		cursorLabel,
+		highlightedRange,
 		omittedRanges = []
 	}: {
 		stream: MetricStream;
 		locale: string;
 		hoverPosition?: number;
 		onHoverPosition?: (position: number | undefined) => void;
+		highlightedRange?: [number, number];
 		cursorLabel?: (position: number) => string;
 		omittedRanges?: [number, number][];
 	} = $props();
@@ -133,6 +135,17 @@
 				: cumulativeElevationGain
 			: (selected?.value ?? average)
 	);
+	let highlightStart = $derived(
+		highlightedRange
+			? Math.max(0, Math.min(100, (compactPosition(highlightedRange[0]) / visibleEnd) * 100))
+			: 0
+	);
+	let highlightEnd = $derived(
+		highlightedRange
+			? Math.max(0, Math.min(100, (compactPosition(highlightedRange[1]) / visibleEnd) * 100))
+			: 100
+	);
+	const chartID = $props.id();
 	let gradientID = $derived(`metric-${stream.metric.replaceAll(/[^a-z0-9]/gi, '-')}`);
 
 	const valueLabel = (value: number) =>
@@ -184,17 +197,14 @@
 					? -1
 					: coordinates.length
 				: coordinates.reduce(
-					(best, point, index) =>
-						Math.abs(point.elapsed - hoverPosition) <
-						Math.abs(coordinates[best].elapsed - hoverPosition)
-							? index
-							: best,
-					0
-				);
-		const nextIndex = Math.min(
-			Math.max(currentIndex + direction, 0),
-			coordinates.length - 1
-		);
+						(best, point, index) =>
+							Math.abs(point.elapsed - hoverPosition) <
+							Math.abs(coordinates[best].elapsed - hoverPosition)
+								? index
+								: best,
+						0
+					);
+		const nextIndex = Math.min(Math.max(currentIndex + direction, 0), coordinates.length - 1);
 		onHoverPosition?.(coordinates[nextIndex].elapsed);
 	};
 </script>
@@ -209,7 +219,11 @@
 		</span>
 	</figcaption>
 	<p class="mb-3 h-4 text-right font-mono text-xs text-slate-500">
-		{selected ? selectedLabel(selectedPosition ?? selected.elapsed) : stream.metric === 'elevation' ? 'total gain' : 'average'}
+		{selected
+			? selectedLabel(selectedPosition ?? selected.elapsed)
+			: stream.metric === 'elevation'
+				? 'total gain'
+				: 'average'}
 	</p>
 	{#if linePath}
 		<div
@@ -224,6 +238,7 @@
 			onpointerdown={handlePointer}
 			onpointermove={handlePointer}
 			onpointerleave={() => onHoverPosition?.(undefined)}
+			onblur={() => onHoverPosition?.(undefined)}
 			onclick={toggleElevationGain}
 			onkeydown={handleKey}
 		>
@@ -238,17 +253,30 @@
 						<stop offset="0%" stop-color={color} stop-opacity="0.28" />
 						<stop offset="100%" stop-color={color} stop-opacity="0" />
 					</linearGradient>
+					<clipPath id={`${chartID}-focus`}>
+						<rect x={highlightStart} y="0" width={highlightEnd - highlightStart} height="40" />
+					</clipPath>
 				</defs>
-				<path d={areaPath} fill={`url(#${gradientID})`} />
-				<path
-					d={linePath}
-					fill="none"
-					stroke={color}
-					stroke-width="1.5"
-					stroke-linejoin="round"
-					stroke-linecap="round"
-					vector-effect="non-scaling-stroke"
-				/>
+				{#snippet plot()}
+					<path d={areaPath} fill={`url(#${gradientID})`} />
+					<path
+						d={linePath}
+						fill="none"
+						stroke={color}
+						stroke-width="1.5"
+						stroke-linejoin="round"
+						stroke-linecap="round"
+						vector-effect="non-scaling-stroke"
+					/>
+				{/snippet}
+				<g opacity={highlightedRange ? 0.2 : 1}>
+					{@render plot()}
+				</g>
+				{#if highlightedRange}
+					<g clip-path={`url(#${chartID}-focus)`}>
+						{@render plot()}
+					</g>
+				{/if}
 				{#if selected}
 					<line
 						x1={cursorX ?? selected.x}

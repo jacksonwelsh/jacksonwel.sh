@@ -2,6 +2,7 @@
 	import MetricChart from '$lib/cyclone/MetricChart.svelte';
 	import PhotoGallery from '$lib/cyclone/PhotoGallery.svelte';
 	import RouteMap from '$lib/cyclone/RouteMap.svelte';
+	import { workoutTimeline, intervalAt } from '$lib/cyclone/workoutTimeline';
 	import WorkoutStructure from '$lib/cyclone/WorkoutStructure.svelte';
 	import { activityName, date, detailStats, usesMiles } from '$lib/cyclone/format';
 	import { rideEmbedDescription } from '$lib/cyclone/embed';
@@ -11,6 +12,14 @@
 	let { data }: { data: PageData } = $props();
 	let activity = $derived(data.activity);
 	let hoverPosition = $state<number | undefined>();
+	let hoveredInterval = $state<number | undefined>();
+	let timeline = $derived(workoutTimeline(activity.intervals));
+	let activeInterval = $derived(hoveredInterval ?? intervalAt(timeline, hoverPosition));
+	let highlightedRange: [number, number] | undefined = $derived(
+		hoveredInterval === undefined || !timeline[hoveredInterval]
+			? undefined
+			: [timeline[hoveredInterval].start, timeline[hoveredInterval].end]
+	);
 	let elevationDistance = $derived(routeDistance(activity.route_segments));
 	let elevationCursorLabel = $derived.by(() => {
 		const durationMilliseconds = (activity.metrics.duration_seconds ?? 0) * 1000;
@@ -114,6 +123,7 @@
 	}
 
 	function setHoverPosition(position: number | undefined) {
+		if (position !== undefined) hoveredInterval = undefined;
 		hoverPosition = position;
 	}
 </script>
@@ -221,6 +231,7 @@
 							{stream}
 							locale={data.locale}
 							{hoverPosition}
+							{highlightedRange}
 							onHoverPosition={setHoverPosition}
 							{omittedRanges}
 						/>{/each}
@@ -229,6 +240,7 @@
 							stream={elevationStream}
 							locale={data.locale}
 							{hoverPosition}
+							{highlightedRange}
 							onHoverPosition={setHoverPosition}
 							cursorLabel={elevationCursorLabel}
 							{omittedRanges}
@@ -240,6 +252,8 @@
 
 		<WorkoutStructure
 			intervals={activity.intervals}
+			{activeInterval}
+			onHoverInterval={(index) => (hoveredInterval = index)}
 			zones={activity.zones}
 			isZoneBuddy={activity.share_image_style === 'zonebuddy'}
 			durationSeconds={activity.metrics.duration_seconds}
