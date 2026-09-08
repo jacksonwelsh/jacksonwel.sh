@@ -285,9 +285,9 @@
 >
 	{#if fallback || fallbackDark}
 		<picture class="absolute inset-0 block h-full w-full">
-			{#if fallbackDark}<source media="(prefers-color-scheme: dark)" srcset={fallbackDark} />{/if}
+			{#if fallback}<source media="(prefers-color-scheme: light)" srcset={fallback} />{/if}
 			<img
-				src={fallback ?? fallbackDark}
+				src={fallbackDark ?? fallback}
 				alt="Map of the approved public route"
 				class="h-full w-full object-cover"
 			/>

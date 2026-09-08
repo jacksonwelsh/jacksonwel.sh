@@ -9,7 +9,9 @@
 		priority = false
 	}: { activity: ActivitySummary; locale: string; priority?: boolean } = $props();
 	let cover = $derived(activity.photos.find((photo) => photo.cover));
-	let imageSource = $derived(cardImage(cover, activity.route_snapshot_url));
+	let imageSource = $derived(
+		cardImage(cover, activity.route_snapshot_dark_url ?? activity.route_snapshot_url)
+	);
 	let image = $derived(imageSource.src);
 	let visibleStats = $derived(stats(activity.metrics, locale).slice(0, 3));
 </script>
@@ -24,16 +26,21 @@
 		class:items-start={image}
 	>
 		{#if image}
-			<img
-				src={image}
-				srcset={imageSource.srcset}
-				sizes="(min-width: 928px) 356px, (min-width: 768px) calc(41.1765vw - 26.353px), calc(100vw - 32px)"
-				alt=""
-				loading={priority ? 'eager' : 'lazy'}
-				fetchpriority={priority ? 'high' : 'auto'}
-				decoding="async"
-				class="aspect-[16/10] w-full bg-slate-100 object-cover dark:bg-slate-900 md:order-2"
-			/>
+			<picture class="md:order-2">
+				{#if !cover?.thumbnail_url && !cover?.feed_url && activity.route_snapshot_url}
+					<source media="(prefers-color-scheme: light)" srcset={activity.route_snapshot_url} />
+				{/if}
+				<img
+					src={image}
+					srcset={imageSource.srcset}
+					sizes="(min-width: 928px) 356px, (min-width: 768px) calc(41.1765vw - 26.353px), calc(100vw - 32px)"
+					alt=""
+					loading={priority ? 'eager' : 'lazy'}
+					fetchpriority={priority ? 'high' : 'auto'}
+					decoding="async"
+					class="aspect-[16/10] w-full bg-slate-100 object-cover dark:bg-slate-900"
+				/>
+			</picture>
 		{/if}
 		<div class="max-w-2xl md:order-1">
 			<div>

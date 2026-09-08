@@ -50,6 +50,7 @@
 	);
 	let embedDescription = $derived(rideEmbedDescription(activity, data.locale));
 	let embedImageURL = $derived(activity.share_image_url);
+	let embedMapURL = $derived(activity.route_snapshot_dark_url ?? activity.route_snapshot_url);
 
 	function pointDistance(a: RoutePoint, b: RoutePoint) {
 		const radians = Math.PI / 180;
@@ -150,8 +151,8 @@
 		<meta property="og:image:type" content="image/jpeg" />
 		<meta property="og:image:alt" content={`Ride summary for ${activity.title}`} />
 	{/if}
-	{#if activity.route_snapshot_url}
-		<meta property="og:image" content={activity.route_snapshot_url} />
+	{#if embedMapURL}
+		<meta property="og:image" content={embedMapURL} />
 		<meta property="og:image:alt" content={`Route map for ${activity.title}`} />
 	{/if}
 	{#each readyPhotos.slice(0, 3) as photo}
@@ -220,13 +221,19 @@
 					fallback={activity.route_snapshot_url}
 					fallbackDark={activity.route_snapshot_dark_url}
 				/>
-				<noscript
-					>{#if activity.route_snapshot_url}<img
-							src={activity.route_snapshot_url}
-							alt="Map of the approved public route"
-							class="mt-4 w-full"
-						/>{/if}</noscript
-				>
+				<noscript>
+					{#if embedMapURL}
+						<picture>
+							{#if activity.route_snapshot_url}
+								<source
+									media="(prefers-color-scheme: light)"
+									srcset={activity.route_snapshot_url}
+								/>
+							{/if}
+							<img src={embedMapURL} alt="Map of the approved public route" class="mt-4 w-full" />
+						</picture>
+					{/if}
+				</noscript>
 			</section>
 		{/if}
 
