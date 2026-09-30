@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { usesMiles } from './format';
+	import { hoveredPowerZone, powerZones } from './powerZones';
 	import type { MetricStream } from './types';
 
 	let {
@@ -8,6 +9,8 @@
 		hoverPosition,
 		onHoverPosition,
 		cursorLabel,
+		summaryAverage,
+		powerZoneBounds,
 		highlightedRange,
 		omittedRanges = []
 	}: {
@@ -17,6 +20,8 @@
 		onHoverPosition?: (position: number | undefined, pointerHover?: boolean) => void;
 		highlightedRange?: [number, number];
 		cursorLabel?: (position: number) => string;
+		summaryAverage?: number;
+		powerZoneBounds?: number[];
 		omittedRanges?: [number, number][];
 	} = $props();
 
@@ -82,8 +87,14 @@
 	});
 	let minimum = $derived(values.length ? Math.min(...values) : 0);
 	let maximum = $derived(values.length ? Math.max(...values) : 0);
+	let averageValues = $derived(
+		stream.metric === 'cadence' ? values.filter((value) => value > 0) : values
+	);
 	let average = $derived(
-		values.length ? values.reduce((sum, value) => sum + value, 0) / values.length : 0
+		summaryAverage ??
+			(averageValues.length
+				? averageValues.reduce((sum, value) => sum + value, 0) / averageValues.length
+				: 0)
 	);
 	let end = $derived(displayStream.samples.at(-1)?.[0] || 1);
 	let start = $derived(stream.metric === 'elevation' ? (visibleSamples[0]?.[0] ?? 0) : 0);
@@ -119,6 +130,11 @@
 				: nearest
 		);
 	});
+	let selectedZone = $derived(
+		stream.metric === 'power' && selected
+			? hoveredPowerZone(selected.value, powerZoneBounds)
+			: undefined
+	);
 	let cursorX = $derived(
 		hoverPosition == null
 			? undefined
@@ -230,7 +246,12 @@
 			{displayStream.unit}
 		</span>
 	</figcaption>
-	<p class="mb-3 h-4 text-right font-mono text-xs text-slate-500">
+	<p class="mb-3 flex min-h-4 justify-end gap-2 font-mono text-xs text-slate-500">
+		{#if selectedZone}
+			<span style:color={powerZones[selectedZone].color}
+				>Z{selectedZone} · {powerZones[selectedZone].name}</span
+			>
+		{/if}
 		{selected
 			? selectedLabel(selectedPosition ?? selected.elapsed)
 			: stream.metric === 'elevation'
@@ -248,7 +269,7 @@
 			aria-valuenow={hoverPosition == null
 				? 0
 				: Math.min(Math.max(plotPosition(hoverPosition), 0), visibleEnd)}
-			aria-valuetext={`${valueLabel(selected?.value ?? coordinates[0]?.value ?? 0)} ${displayStream.unit} at ${selectedLabel(selectedPosition ?? selected?.elapsed ?? coordinates[0]?.elapsed ?? 0)}`}
+			aria-valuetext={`${valueLabel(selected?.value ?? coordinates[0]?.value ?? 0)} ${displayStream.unit}${selectedZone ? `, zone ${selectedZone} ${powerZones[selectedZone].name}` : ''} at ${selectedLabel(selectedPosition ?? selected?.elapsed ?? coordinates[0]?.elapsed ?? 0)}`}
 			onpointerenter={handlePointer}
 			onpointerdown={handlePointer}
 			onpointermove={handlePointer}

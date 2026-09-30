@@ -37,14 +37,22 @@
 						priority={index === 0}
 					/>{/each}
 			</section>
-			{#if data.page.next_cursor}
-				<div class="mt-8">
+		{/if}
+		{#if data.previousHref || data.nextHref}
+			<nav class="mt-8 flex justify-between gap-6" aria-label="Activity pages">
+				{#if data.previousHref}
 					<a
 						class="text-sm text-blue-600 underline underline-offset-4 dark:text-blue-400"
-						href={`?cursor=${encodeURIComponent(data.page.next_cursor)}`}>Older activities →</a
+						href={data.previousHref}>← Newer activities</a
 					>
-				</div>
-			{/if}
+				{/if}
+				{#if data.nextHref}
+					<a
+						class="ml-auto text-sm text-blue-600 underline underline-offset-4 dark:text-blue-400"
+						href={data.nextHref}>Older activities →</a
+					>
+				{/if}
+			</nav>
 		{/if}
 	</div>
 </main>

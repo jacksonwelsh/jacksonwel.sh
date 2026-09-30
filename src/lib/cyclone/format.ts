@@ -59,7 +59,7 @@ const localizedSpeed = (metersPerSecond: number, locale: string) => {
 	return `${new Intl.NumberFormat(locale, { maximumFractionDigits: 1 }).format(value)} ${unit}`;
 };
 
-export const stats = (metrics: Metrics, locale = 'en-US') =>
+const baseStats = (metrics: Metrics, locale = 'en-US') =>
 	[
 		metrics.distance_meters == null
 			? undefined
@@ -78,9 +78,16 @@ export const stats = (metrics: Metrics, locale = 'en-US') =>
 			: { label: 'power', value: `${Math.round(metrics.average_power_watts)} W` }
 	].filter((item): item is { label: string; value: string } => item != null);
 
+export const stats = (metrics: Metrics, locale = 'en-US') => [
+	...baseStats(metrics, locale).filter((stat) => stat.label !== 'power'),
+	...(metrics.work_kilojoules == null
+		? []
+		: [{ label: 'energy', value: `${Math.round(metrics.work_kilojoules)} kJ` }])
+];
+
 export const detailStats = (metrics: Metrics, locale = 'en-US', type?: ActivityType) => {
 	if (type !== 'outdoor_ride') {
-		const activityStats = stats(metrics, locale);
+		const activityStats = baseStats(metrics, locale);
 		if (type !== 'indoor_ride' || metrics.work_kilojoules == null) return activityStats;
 		return [
 			...activityStats,

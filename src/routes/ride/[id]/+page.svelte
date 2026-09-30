@@ -245,6 +245,10 @@
 				<div class="grid gap-x-8 gap-y-6 md:grid-cols-2">
 					{#each streams as stream (stream.metric)}<MetricChart
 							{stream}
+							powerZoneBounds={activity.power_zones?.upper_bounds_watts}
+							summaryAverage={stream.metric === 'cadence'
+								? activity.metrics.average_cadence_rpm
+								: undefined}
 							locale={data.locale}
 							{hoverPosition}
 							{highlightedRange}
@@ -271,6 +275,7 @@
 			{activeInterval}
 			onHoverInterval={(index) => (hoveredInterval = index)}
 			zones={activity.zones}
+			powerTimeSeconds={activity.power_zones?.time_seconds}
 			isZoneBuddy={activity.share_image_style === 'zonebuddy'}
 			durationSeconds={activity.metrics.duration_seconds}
 		/>

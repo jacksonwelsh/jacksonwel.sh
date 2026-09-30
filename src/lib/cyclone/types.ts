@@ -63,7 +63,14 @@ export type ActivitySummary = {
 	photos: Photo[];
 };
 
+export type PowerZoneData = {
+	ftp_watts: number;
+	upper_bounds_watts: number[];
+	time_seconds: Record<string, number>;
+};
+
 export type ActivityDetail = ActivitySummary & {
+	power_zones?: PowerZoneData;
 	route_segments: RoutePoint[][];
 	laps: Record<string, unknown>[];
 	intervals: ActivityInterval[];

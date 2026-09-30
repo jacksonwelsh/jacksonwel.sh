@@ -2,11 +2,13 @@
 	import type { ActivityInterval, ActivityZones } from './types';
 	import { workoutTimeline } from './workoutTimeline';
 	import { zoneTargets } from './zoneTargets';
+	import { powerZones } from './powerZones';
 
 	let {
 		intervals,
 		zones,
 		isZoneBuddy = false,
+		powerTimeSeconds,
 		durationSeconds,
 		activeInterval,
 		onHoverInterval
@@ -14,6 +16,7 @@
 		intervals: ActivityInterval[];
 		zones: ActivityZones;
 		isZoneBuddy?: boolean;
+		powerTimeSeconds?: Record<string, number>;
 		durationSeconds?: number;
 		activeInterval?: number;
 		onHoverInterval?: (index: number | undefined) => void;
@@ -27,15 +30,6 @@
 		scheduledSeconds?: number;
 	};
 
-	const powerZones: Record<number, ZoneDefinition> = {
-		1: { name: 'Active Recovery', color: '#8283F3' },
-		2: { name: 'Endurance', color: '#5FB8F9' },
-		3: { name: 'Tempo', color: '#64D7A9' },
-		4: { name: 'Threshold', color: '#B1D946' },
-		5: { name: 'VO₂ Max', color: '#F6C849' },
-		6: { name: 'Anaerobic', color: '#F09048' },
-		7: { name: 'Neuromuscular', color: '#DA555B' }
-	};
 	const heartRateZones: Record<number, ZoneDefinition> = {
 		1: { name: 'Recovery', color: '#5FB8F9' },
 		2: { name: 'Aerobic', color: '#64D7A9' },
@@ -56,24 +50,40 @@
 		selectedInterval = index;
 		onHoverInterval?.(index);
 	}
+	let hasZoneIntervals = $derived(
+		structuredIntervals.some((interval) => {
+			const zone = Number(interval.power_zone);
+			return Number.isInteger(zone) && zone >= 1 && zone <= 7;
+		})
+	);
+	let hasTargets = $derived(isZoneBuddy && hasZoneIntervals);
 	let powerRows: ZoneRow[] = $derived(
-		isZoneBuddy
+		hasTargets
 			? zoneTargets(intervals, zones, durationSeconds).map((row) => ({
 					...row,
 					...powerZones[row.zone]
 				}))
-			: zoneRows(zones.power_seconds, powerZones)
+			: zoneRows(
+					powerTimeSeconds ?? (isZoneBuddy ? undefined : zones.power_seconds),
+					powerZones,
+					true
+				)
 	);
 	let heartRateRows = $derived(zoneRows(zones.heart_rate_seconds, heartRateZones));
 
 	function zoneRows(
 		values: Record<string, number> | undefined,
-		definitions: Record<number, ZoneDefinition>
+		definitions: Record<number, ZoneDefinition>,
+		includeEmpty = false
 	): ZoneRow[] {
 		if (!values) return [];
 		const total = Object.values(values).reduce((sum, value) => sum + Number(value || 0), 0);
 		if (!total) return [];
-		return Object.entries(values)
+		return Object.entries(
+			includeEmpty
+				? { ...Object.fromEntries(Object.keys(definitions).map((key) => [key, 0])), ...values }
+				: values
+		)
 			.map(([key, value]) => {
 				const zone = Number(key);
 				return {
@@ -83,7 +93,7 @@
 					...(definitions[zone] ?? { name: `Zone ${zone}`, color: '#94a3b8' })
 				};
 			})
-			.filter((row) => row.seconds > 0)
+			.filter((row) => includeEmpty || row.seconds > 0)
 			.sort((a, b) => a.zone - b.zone);
 	}
 
@@ -157,7 +167,7 @@
 			{#if powerRows.length}
 				<div>
 					<h3 class="mb-4 text-sm font-medium">
-						{isZoneBuddy ? 'Zone targets met' : 'Power zones'}
+						{hasTargets ? 'Zone targets met' : hasZoneIntervals ? 'Power zones' : 'Time in zones'}
 					</h3>
 					<ul class="space-y-4">
 						{#each powerRows as row}
