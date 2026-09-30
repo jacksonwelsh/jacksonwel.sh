@@ -32,7 +32,13 @@ export type RoutePoint = {
 	altitude_meters?: number;
 	elapsed_milliseconds?: number;
 };
-export type MetricStream = { metric: string; unit: string; samples: [number, number][] };
+export type MetricStream = {
+	metric: string;
+	unit: string;
+	samples: [number, number][];
+	// Sample indices that start a new continuous segment in a locally generated profile.
+	segmentStarts?: number[];
+};
 
 export type ActivityInterval = {
 	index?: number;

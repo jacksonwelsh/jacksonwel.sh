@@ -57,6 +57,7 @@ test('uses actual route timing for elevation and omits untimed points', () => {
 		{
 			metric: 'elevation',
 			unit: 'm',
+			segmentStarts: [1],
 			samples: [
 				[1000, 10],
 				[7000, 30]

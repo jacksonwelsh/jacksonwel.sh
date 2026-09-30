@@ -29,17 +29,32 @@ export function routePositionAt(
 
 export function timedElevation(segments: RoutePoint[][]): MetricStream | undefined {
 	const samples: [number, number][] = [];
-	for (const point of segments.flat()) {
-		const elapsed = point.elapsed_milliseconds;
-		if (
-			elapsed !== undefined &&
-			Number.isFinite(elapsed) &&
-			elapsed >= 0 &&
-			point.altitude_meters !== undefined &&
-			Number.isFinite(point.altitude_meters)
-		) {
-			samples.push([elapsed, point.altitude_meters]);
+	const segmentStarts: number[] = [];
+	for (const segment of segments) {
+		let connected = false;
+		for (const point of segment) {
+			const elapsed = point.elapsed_milliseconds;
+			if (
+				elapsed !== undefined &&
+				Number.isFinite(elapsed) &&
+				elapsed >= 0 &&
+				point.altitude_meters !== undefined &&
+				Number.isFinite(point.altitude_meters)
+			) {
+				if (!connected && samples.length) segmentStarts.push(samples.length);
+				samples.push([elapsed, point.altitude_meters]);
+				connected = true;
+			} else {
+				connected = false;
+			}
 		}
 	}
-	return samples.length >= 2 ? { metric: 'elevation', unit: 'm', samples } : undefined;
+	return samples.length >= 2
+		? {
+				metric: 'elevation',
+				unit: 'm',
+				samples,
+				...(segmentStarts.length ? { segmentStarts } : {})
+			}
+		: undefined;
 }

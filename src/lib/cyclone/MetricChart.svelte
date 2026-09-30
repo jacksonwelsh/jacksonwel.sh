@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { usesMiles } from './format';
+	import { elevationGains } from './elevationGain';
 	import { hoveredPowerZone, powerZones } from './powerZones';
 	import type { MetricStream } from './types';
 
@@ -10,6 +11,7 @@
 		onHoverPosition,
 		cursorLabel,
 		summaryAverage,
+		summaryElevationGainMeters,
 		powerZoneBounds,
 		highlightedRange,
 		omittedRanges = []
@@ -21,6 +23,7 @@
 		highlightedRange?: [number, number];
 		cursorLabel?: (position: number) => string;
 		summaryAverage?: number;
+		summaryElevationGainMeters?: number;
 		powerZoneBounds?: number[];
 		omittedRanges?: [number, number][];
 	} = $props();
@@ -76,15 +79,20 @@
 		return elapsed;
 	};
 
-	let visibleSamples = $derived(displayStream.samples.filter(([elapsed]) => !isOmitted(elapsed)));
+	let visibleIndices = $derived(
+		displayStream.samples.flatMap(([elapsed], index) => (isOmitted(elapsed) ? [] : [index]))
+	);
+	let visibleSamples = $derived(visibleIndices.map((index) => displayStream.samples[index]));
 	let values = $derived(visibleSamples.map((sample) => sample[1]));
-	let cumulativeElevationGain = $derived.by(() => {
-		let gain = 0;
-		for (let index = 1; index < visibleSamples.length; index++) {
-			gain += Math.max(visibleSamples[index][1] - visibleSamples[index - 1][1], 0);
-		}
-		return gain;
-	});
+	let profileGains = $derived(
+		stream.metric === 'elevation' ? elevationGains(displayStream, omittedRanges) : []
+	);
+	let cumulativeElevationGain = $derived(profileGains.at(-1) ?? 0);
+	let totalElevationGain = $derived(
+		summaryElevationGainMeters === undefined
+			? cumulativeElevationGain
+			: summaryElevationGainMeters * (displayStream.unit === 'ft' ? 3.28084 : 1)
+	);
 	let minimum = $derived(values.length ? Math.min(...values) : 0);
 	let maximum = $derived(values.length ? Math.max(...values) : 0);
 	let averageValues = $derived(
@@ -108,7 +116,8 @@
 	);
 	let coordinates = $derived.by(() => {
 		const span = Math.max(maximum - minimum, 1);
-		return visibleSamples.map(([elapsed, value]) => ({
+		return visibleSamples.map(([elapsed, value], index) => ({
+			gain: profileGains[visibleIndices[index]] ?? 0,
 			x: (plotPosition(elapsed) / visibleEnd) * 100,
 			y: 36 - ((value - minimum) / span) * 30,
 			elapsed,
@@ -141,23 +150,14 @@
 			: Math.min(Math.max((plotPosition(hoverPosition) / visibleEnd) * 100, 0), 100)
 	);
 	let selectedPosition = $derived(hoverPosition ?? selected?.elapsed);
-	let selectedElevationGain = $derived.by(() => {
-		if (!selected) return cumulativeElevationGain;
-		let gain = 0;
-		for (let index = 1; index < visibleSamples.length; index++) {
-			if (visibleSamples[index][0] > selected.elapsed) break;
-			gain += Math.max(visibleSamples[index][1] - visibleSamples[index - 1][1], 0);
-		}
-		return gain;
-	});
 	let showCumulativeElevationGain = $state(false);
 	let displayedValue = $derived(
 		stream.metric === 'elevation'
 			? selected
 				? showCumulativeElevationGain
-					? selectedElevationGain
+					? selected.gain
 					: selected.value
-				: cumulativeElevationGain
+				: totalElevationGain
 			: (selected?.value ?? average)
 	);
 	let highlightStart = $derived(
@@ -253,9 +253,11 @@
 			>
 		{/if}
 		{selected
-			? selectedLabel(selectedPosition ?? selected.elapsed)
+			? `${stream.metric === 'elevation' && showCumulativeElevationGain ? 'estimated gain · ' : ''}${selectedLabel(selectedPosition ?? selected.elapsed)}`
 			: stream.metric === 'elevation'
-				? 'total gain'
+				? summaryElevationGainMeters === undefined
+					? 'estimated total gain'
+					: 'total gain'
 				: 'average'}
 	</p>
 	{#if linePath}

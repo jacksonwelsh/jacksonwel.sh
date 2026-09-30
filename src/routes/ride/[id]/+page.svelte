@@ -106,11 +106,19 @@
 		if (timed) return timed;
 		let distance = 0;
 		const samples: [number, number][] = [];
+		const segmentStarts: number[] = [];
 		for (const segment of segments) {
 			let previous: RoutePoint | undefined;
+			let connected = false;
 			for (const point of segment) {
 				if (previous) distance += pointDistance(previous, point);
-				if (point.altitude_meters != null) samples.push([distance, point.altitude_meters]);
+				if (point.altitude_meters != null && Number.isFinite(point.altitude_meters)) {
+					if (!connected && samples.length) segmentStarts.push(samples.length);
+					samples.push([distance, point.altitude_meters]);
+					connected = true;
+				} else {
+					connected = false;
+				}
 				previous = point;
 			}
 		}
@@ -121,6 +129,7 @@
 		return {
 			metric: 'elevation',
 			unit: 'm',
+			segmentStarts,
 			samples: samples.map(([sampleDistance, altitude]) => [
 				(sampleDistance / totalDistance) * durationSeconds * 1000,
 				altitude
@@ -245,6 +254,7 @@
 				<div class="grid gap-x-8 gap-y-6 md:grid-cols-2">
 					{#each streams as stream (stream.metric)}<MetricChart
 							{stream}
+							summaryElevationGainMeters={activity.metrics.elevation_gain_meters}
 							powerZoneBounds={activity.power_zones?.upper_bounds_watts}
 							summaryAverage={stream.metric === 'cadence'
 								? activity.metrics.average_cadence_rpm
@@ -258,6 +268,7 @@
 					{#if elevationStream}
 						<MetricChart
 							stream={elevationStream}
+							summaryElevationGainMeters={activity.metrics.elevation_gain_meters}
 							locale={data.locale}
 							{hoverPosition}
 							{highlightedRange}
