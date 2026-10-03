@@ -19,6 +19,10 @@
 		hoverPosition?: number;
 	} = $props();
 	let container: HTMLDivElement;
+	let inlineHost: HTMLDivElement;
+	let mapShell: HTMLDivElement;
+	let dialog: HTMLDialogElement;
+	let sizeButton: HTMLButtonElement;
 	const mapId = $props.id();
 	let expanded = $state(false);
 	let failed = $state(false);
@@ -30,6 +34,35 @@
 	const cameraGlyph = { 1: '/cyclone/map-camera.svg?v=2' };
 	const checkeredFlagGlyph = { 1: '/cyclone/map-checkered-flag.svg?v=2' };
 	const maximumOverlayPointCount = 500;
+
+	function expandMap() {
+		// Move the existing map into the top layer without resetting its camera or annotations.
+		dialog.appendChild(mapShell);
+		dialog.showModal();
+		expanded = true;
+		sizeButton.focus({ preventScroll: true });
+	}
+
+	function restoreMap() {
+		inlineHost.appendChild(mapShell);
+		expanded = false;
+		sizeButton.focus({ preventScroll: true });
+	}
+
+	$effect(() => {
+		if (!expanded) return;
+		const previousOverflow = document.body.style.overflow;
+		document.body.style.overflow = 'hidden';
+		return () => {
+			document.body.style.overflow = previousOverflow;
+		};
+	});
+
+	onMount(() => () => {
+		// Restore Svelte's DOM ownership before the component is removed.
+		inlineHost.appendChild(mapShell);
+		dialog.close();
+	});
 
 	function chunkPolyline<T>(points: T[]) {
 		if (points.length <= maximumOverlayPointCount) return points.length >= 2 ? [points] : [];
@@ -282,42 +315,108 @@
 	});
 </script>
 
-<div class="mb-2 flex justify-end">
-	<button
-		type="button"
-		class="min-h-11 px-3 font-mono text-sm text-teal-700 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500 dark:text-teal-400"
-		aria-expanded={expanded}
-		aria-controls={mapId}
-		onclick={() => (expanded = !expanded)}
-	>
-		{expanded ? 'Collapse map' : 'Expand map'}
-	</button>
-</div>
-<div
-	id={mapId}
-	class="relative overflow-hidden border-y border-slate-200 bg-slate-100 dark:border-slate-800 dark:bg-slate-900"
->
-	{#if fallback || fallbackDark}
-		<picture class="absolute inset-0 block h-full w-full">
-			{#if fallback}<source media="(prefers-color-scheme: light)" srcset={fallback} />{/if}
-			<img
-				src={fallbackDark ?? fallback}
-				alt="Map of the approved public route"
-				class="h-full w-full object-cover"
-			/>
-		</picture>
-	{/if}
+<div bind:this={inlineHost} class="h-[24rem]">
 	<div
-		bind:this={container}
-		class="relative w-full"
-		style:height={expanded ? 'max(32rem, 80dvh)' : '24rem'}
-		aria-label="Interactive map of the approved public route"
-	></div>
-	{#if !token || failed}
-		<p
-			class="absolute bottom-3 left-3 bg-white/90 px-3 py-2 text-xs text-slate-700 dark:bg-black/90 dark:text-slate-200"
+		bind:this={mapShell}
+		id={mapId}
+		class="map-shell relative h-full w-full overflow-hidden bg-slate-100 dark:bg-slate-900"
+		class:expanded
+	>
+		{#if fallback || fallbackDark}
+			<picture class="absolute inset-0 block h-full w-full">
+				{#if fallback}<source media="(prefers-color-scheme: light)" srcset={fallback} />{/if}
+				<img
+					src={fallbackDark ?? fallback}
+					alt="Map of the approved public route"
+					class="h-full w-full object-cover"
+				/>
+			</picture>
+		{/if}
+		<div
+			bind:this={container}
+			class="relative h-full w-full"
+			aria-label="Interactive map of the approved public route"
+		></div>
+		<button
+			bind:this={sizeButton}
+			type="button"
+			class="map-size-control"
+			aria-label={expanded ? 'Collapse map' : 'Expand map'}
+			title={expanded ? 'Collapse map (Escape)' : 'Expand map'}
+			aria-expanded={expanded}
+			aria-controls={mapId}
+			onclick={() => (expanded ? dialog.close() : expandMap())}
 		>
-			Interactive map unavailable. Showing the privacy-approved snapshot.
-		</p>
-	{/if}
+			<svg
+				width="20"
+				height="20"
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				aria-hidden="true"
+			>
+				{#if expanded}
+					<!-- arrow.down.right.and.arrow.up.left -->
+					<path d="M4 4l6 6m-6 0h6V4m10 16l-6-6m6 0h-6v6" />
+				{:else}
+					<!-- arrow.up.left.and.arrow.down.right -->
+					<path d="M10 10L4 4m0 6V4h6m4 10l6 6m0-6v6h-6" />
+				{/if}
+			</svg>
+		</button>
+		{#if !token || failed}
+			<p
+				class="absolute bottom-3 left-3 bg-white/90 px-3 py-2 text-xs text-slate-700 dark:bg-black/90 dark:text-slate-200"
+			>
+				Interactive map unavailable. Showing the privacy-approved snapshot.
+			</p>
+		{/if}
+	</div>
 </div>
+
+<dialog
+	bind:this={dialog}
+	class="m-0 h-dvh w-dvw max-h-none max-w-none overflow-hidden border-0 bg-slate-100 p-0 dark:bg-slate-900 backdrop:bg-black/80"
+	aria-label="Full-screen route map"
+	onclose={restoreMap}
+></dialog>
+
+<style>
+	.map-shell {
+		border-block: 1px solid light-dark(#e2e8f0, #1e293b);
+		color-scheme: light dark;
+	}
+
+	.map-shell.expanded {
+		border: 0;
+	}
+
+	.map-size-control {
+		position: absolute;
+		top: max(10px, env(safe-area-inset-top));
+		left: max(10px, env(safe-area-inset-left));
+		display: grid;
+		place-items: center;
+		width: 44px;
+		height: 44px;
+		border: 0;
+		border-radius: 8px;
+		background: light-dark(rgb(255 255 255 / 95%), rgb(44 44 46 / 95%));
+		color: light-dark(#1c1c1e, #f5f5f7);
+		box-shadow: 0 1px 5px #0003;
+		backdrop-filter: blur(12px);
+		cursor: pointer;
+	}
+
+	.map-size-control:hover {
+		background: light-dark(#f2f2f7, #48484a);
+	}
+
+	.map-size-control:focus-visible {
+		outline: 3px solid #007aff;
+		outline-offset: 2px;
+	}
+</style>
