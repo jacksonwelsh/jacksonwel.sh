@@ -400,15 +400,19 @@
 		left: max(10px, env(safe-area-inset-left));
 		display: grid;
 		place-items: center;
-		width: 44px;
+		width: 45px;
 		height: 24px;
 		padding: 0;
 		border: 0;
-		border-radius: 6px;
-		background: light-dark(rgb(255 255 255 / 90%), rgb(30 30 30 / 90%));
-		color: light-dark(#0d9488, #a1a1a6);
-		box-shadow: 0 1px 3px rgb(0 0 0 / 12%);
-		backdrop-filter: blur(20px);
+		border-radius: 20% / 37.5%;
+		/* Surface values measured from MapKit JS 6's map-type control. */
+		--control-background: light-dark(#fff, #121212);
+		--control-pressed: light-dark(#e5e5e5, #2a2a2a);
+		--control-focus: light-dark(#cce5ff, #0c3159);
+		--control-focus-pressed: light-dark(#7fbdff, #0366cf);
+		background: var(--control-background);
+		color: light-dark(#0d9488, #fff);
+		box-shadow: 0 0 0 0.5px light-dark(rgb(0 0 0 / 5%), rgb(255 255 255 / 5%));
 		cursor: pointer;
 	}
 
@@ -419,18 +423,44 @@
 		inset: -10px 0;
 	}
 
+	@supports (backdrop-filter: blur(30px)) or (-webkit-backdrop-filter: blur(30px)) {
+		.map-size-control {
+			--control-background: light-dark(rgb(255 255 255 / 75%), rgb(18 18 18 / 60%));
+			--control-pressed: light-dark(rgb(229 229 229 / 60%), rgb(42 42 42 / 60%));
+			--control-focus: light-dark(rgb(204 229 255 / 60%), rgb(12 49 89 / 60%));
+			--control-focus-pressed: light-dark(rgb(127 189 255 / 60%), rgb(3 102 207 / 60%));
+			-webkit-backdrop-filter: blur(30px);
+			backdrop-filter: blur(30px);
+		}
+	}
+
+	.map-size-control svg {
+		pointer-events: none;
+		opacity: 0.55;
+	}
+
 	@media (hover: hover) {
-		.map-size-control:hover {
-			background: light-dark(#fff, #363636);
+		.map-size-control:hover svg {
+			opacity: 0.85;
 		}
 	}
 
 	.map-size-control:active {
-		background: light-dark(#e8e8ed, #454545);
+		background: var(--control-pressed);
 	}
 
 	.map-size-control:focus-visible {
-		outline: 2px solid #0d9488;
-		outline-offset: 2px;
+		background: var(--control-focus);
+		box-shadow: 0 0 0 2px #007cff;
+		outline: none;
+	}
+
+	.map-size-control:focus-visible:active {
+		background: var(--control-focus-pressed);
+	}
+
+	.map-size-control:active svg,
+	.map-size-control:focus-visible svg {
+		opacity: 0.85;
 	}
 </style>
