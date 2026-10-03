@@ -348,8 +348,8 @@
 			onclick={() => (expanded ? dialog.close() : expandMap())}
 		>
 			<svg
-				width="20"
-				height="20"
+				width="16"
+				height="16"
 				viewBox="0 0 24 24"
 				fill="none"
 				stroke="currentColor"
@@ -401,22 +401,36 @@
 		display: grid;
 		place-items: center;
 		width: 44px;
-		height: 44px;
+		height: 24px;
+		padding: 0;
 		border: 0;
-		border-radius: 8px;
-		background: light-dark(rgb(255 255 255 / 95%), rgb(44 44 46 / 95%));
-		color: light-dark(#1c1c1e, #f5f5f7);
-		box-shadow: 0 1px 5px #0003;
-		backdrop-filter: blur(12px);
+		border-radius: 6px;
+		background: light-dark(rgb(255 255 255 / 90%), rgb(30 30 30 / 90%));
+		color: light-dark(#0d9488, #a1a1a6);
+		box-shadow: 0 1px 3px rgb(0 0 0 / 12%);
+		backdrop-filter: blur(20px);
 		cursor: pointer;
 	}
 
-	.map-size-control:hover {
-		background: light-dark(#f2f2f7, #48484a);
+	/* Keep a 44px touch target around MapKit's compact, 24px-high control face. */
+	.map-size-control::before {
+		content: '';
+		position: absolute;
+		inset: -10px 0;
+	}
+
+	@media (hover: hover) {
+		.map-size-control:hover {
+			background: light-dark(#fff, #363636);
+		}
+	}
+
+	.map-size-control:active {
+		background: light-dark(#e8e8ed, #454545);
 	}
 
 	.map-size-control:focus-visible {
-		outline: 3px solid #007aff;
+		outline: 2px solid #0d9488;
 		outline-offset: 2px;
 	}
 </style>
