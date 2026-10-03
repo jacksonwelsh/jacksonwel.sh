@@ -19,6 +19,8 @@
 		hoverPosition?: number;
 	} = $props();
 	let container: HTMLDivElement;
+	const mapId = $props.id();
+	let expanded = $state(false);
 	let failed = $state(false);
 	let updateHoverMarker = $state<((point: RoutePoint | undefined) => void) | undefined>();
 	let hoverPoint = $derived(routePositionAt(segments, hoverPosition));
@@ -280,7 +282,19 @@
 	});
 </script>
 
+<div class="mb-2 flex justify-end">
+	<button
+		type="button"
+		class="min-h-11 px-3 font-mono text-sm text-teal-700 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500 dark:text-teal-400"
+		aria-expanded={expanded}
+		aria-controls={mapId}
+		onclick={() => (expanded = !expanded)}
+	>
+		{expanded ? 'Collapse map' : 'Expand map'}
+	</button>
+</div>
 <div
+	id={mapId}
 	class="relative overflow-hidden border-y border-slate-200 bg-slate-100 dark:border-slate-800 dark:bg-slate-900"
 >
 	{#if fallback || fallbackDark}
@@ -295,7 +309,8 @@
 	{/if}
 	<div
 		bind:this={container}
-		class="relative h-[24rem] w-full"
+		class="relative w-full"
+		style:height={expanded ? 'max(32rem, 80dvh)' : '24rem'}
 		aria-label="Interactive map of the approved public route"
 	></div>
 	{#if !token || failed}
